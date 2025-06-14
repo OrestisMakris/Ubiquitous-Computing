@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Eye, AlertTriangle, Users } from 'lucide-react'; // Target and Brain removed
+// Ensure this line includes all necessary icons:
+import { Eye, AlertTriangle, Users, MapPin, Clock, Search, Award } from 'lucide-react'; 
 const ProfileTag = ({ profileType, isHighConcern }) => {
   let bgColor = 'bg-gray-200';
   let textColor = 'text-gray-700';
