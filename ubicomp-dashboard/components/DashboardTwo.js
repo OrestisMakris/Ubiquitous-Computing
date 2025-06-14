@@ -1,13 +1,20 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Wifi, MapPin } from 'lucide-react';
+
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer , ResponsiveContainer as BarRespas BarResp
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer as BarResp
 } from 'recharts';
-
-
+ 
 const RSSI_CENTER_PLOT = -30; // Strongest signal (closest to center)
-const RSSI_EDGE_PLOT = -90;   // Weakest signal (at the edge of the plot area)
+const RSSI_EDGE_PLOT   = -90; // Weakest signal (at the edge of the plot area)
 const BUBBLE_DIAMETER = 20;         // smaller, less “dynamic” size
 const CENTER_DOT_DIAMETER = 8;      // a bit smaller center marker
 
