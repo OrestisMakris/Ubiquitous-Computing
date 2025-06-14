@@ -150,81 +150,55 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div
-              className="relative w-full aspect-square max-w-xs mx-auto bg-blue-100 rounded-full" // Light blue background
-              style={{
-                minWidth: '150px',
-              }}
-            >
-              {/* Red Center Dot */}
-              <div
-                className="absolute bg-red-500 rounded-full"
-                style={{
-                  width: `${CENTER_DOT_DIAMETER}px`,
-                  height: `${CENTER_DOT_DIAMETER}px`,
-                  left: '50%',
-                  top: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: 1, // Ensure it's visible
-                }}
-                title="Scanner Center"
+<Card>
+  <CardHeader>
+    <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="w-full flex justify-center py-4">
+      <svg
+        width={256}
+        height={256}
+        viewBox="0 0 256 256"
+      >
+        {/* outer circle background (light blue) */}
+        <circle cx="128" cy="128" r="120" fill="#DBEAFE" />
+        {/* center marker (red) */}
+        <circle cx="128" cy="128" r="6" fill="red" />
+        {devices
+          .filter(d => typeof d.rssi === "number")
+          .map((d, i, arr) => {
+            // normalize RSSI
+            const range = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT; 
+            const clamped = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
+            const norm = (clamped - RSSI_EDGE_PLOT) / range; // 0…1
+            // radial distance in px
+            const maxR = 120 - BUBBLE_DIAMETER / 2;
+            const dist = (1 - norm) * maxR;
+            // angle
+            const angle = ((360 / arr.length) * i + 45) * (Math.PI/180);
+            const x = 128 + dist * Math.cos(angle);
+            const y = 128 + dist * Math.sin(angle);
+            console.log(d.name, d.rssi, norm.toFixed(2), x.toFixed(0), y.toFixed(0));
+            return (
+              <circle
+                key={d.pseudonym}
+                cx={x}
+                cy={y}
+                r={BUBBLE_DIAMETER/2}
+                fill="black"
+                stroke="white"
+                strokeWidth="1"
               />
-
-              {devices
-                .filter(device => typeof device.rssi === 'number' && !isNaN(device.rssi))
-                .map((d, i, filteredArray) => {
-                  const rssiRange = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
-                  let normalizedRssi = 0;
-                  
-                  if (rssiRange !== 0) {
-                    const clampedRssi = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
-                    normalizedRssi = (clampedRssi - RSSI_EDGE_PLOT) / rssiRange;
-                  }
-                  
-                  const radialDistancePercent = (1 - normalizedRssi) * PLOT_AREA_RADIUS_PERCENT;
-                  const angleDegrees = (filteredArray.length > 0 ? (360 / filteredArray.length) * i : 0) + 45;
-                  const angleRadians = (angleDegrees * Math.PI) / 180;
-                  const xPct = 50 + radialDistancePercent * Math.cos(angleRadians);
-                  const yPct = 50 + radialDistancePercent * Math.sin(angleRadians);
-
-                  // LOG 2: Check calculated values for each dot
-                  console.log(`Device: ${d.name}, RSSI: ${d.rssi}, NormRSSI: ${normalizedRssi.toFixed(2)}, RadialDist%: ${radialDistancePercent.toFixed(2)}, X%: ${xPct.toFixed(2)}, Y%: ${yPct.toFixed(2)}`);
-
-                  return (
-                    <div
-                      key={d.pseudonym}
-                      title={`${d.name} (${d.rssi} dBm)`}
-                      className="absolute bg-black rounded-full" // Black dots
-                      style={{
-                        width: `${BUBBLE_DIAMETER}px`,
-                        height: `${BUBBLE_DIAMETER}px`,
-                        left: `${xPct}%`,
-                        top: `${yPct}%`,
-                        transform: 'translate(-50%, -50%)',
-                        transition: 'left 0.5s ease-out, top 0.5s ease-out',
-                        zIndex: 2, // Above center dot, below other UI if any
-                      }}
-                    />
-                  );
-              })}
-              {devices.filter(device => typeof device.rssi === 'number' && !isNaN(device.rssi)).length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center p-4">
-                  <p className="text-gray-500 italic text-center">
-                    {devices.length > 0 ? "No devices with valid signal data to display." : "No devices detected."}
-                  </p>
-                </div>
-              )}
-            </div>
-            <p className="text-center text-xs text-gray-500 mt-2">
-              Closer to center = Closer to scanner (Stronger Signal)
-            </p>
-          </CardContent>
-        </Card>
+            );
+          })}
+      </svg>
+    </div>
+    <p className="text-center text-xs text-gray-500">
+      Closer to center = stronger signal
+    </p>
+  </CardContent>
+</Card>
         {/* 3. Recent Detection Timeline (Bar Chart) */}
     <Card className="md:col-span-2">
     <CardHeader>
