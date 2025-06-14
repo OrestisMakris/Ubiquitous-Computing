@@ -1,6 +1,5 @@
 // pages/api/daily-unique.js
 import { pool } from '@/lib/db';
-
 export default async function handler(req, res) {
   const now = new Date();
   const nine = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9);

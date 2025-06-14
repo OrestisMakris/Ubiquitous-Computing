@@ -1,41 +1,17 @@
-// components/ui/card.js
 import React from 'react';
 
-export function Card({ children, className = '', ...props }) {
-  return (
-    <div
-      className={`bg-white/80 backdrop-blur-md rounded-3xl shadow-md p-4 transition hover:shadow-lg ${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
+export function Card({ children, ...props }) {
+  return <div style={{ border: '1px solid #ccc', borderRadius: 6, padding: 16, margin: 8 }} {...props}>{children}</div>;
 }
 
-export function CardHeader({ children, className = '', ...props }) {
-  return (
-    <div className={`mb-4 ${className}`} {...props}>
-      {children}
-    </div>
-  );
+export function CardHeader({ children, ...props }) {
+  return <div style={{ fontWeight: 'bold', marginBottom: 8 }} {...props}>{children}</div>;
 }
 
-export function CardTitle({ children, className = '', ...props }) {
-  return (
-    <h3
-      className={`text-lg font-medium text-gray-900 ${className}`}
-      style={{ fontFamily: 'SF Pro Display' }}
-      {...props}
-    >
-      {children}
-    </h3>
-  );
+export function CardTitle({ children, ...props }) {
+  return <h2 style={{ margin: 0, fontSize: '1.25rem' }} {...props}>{children}</h2>;
 }
 
-export function CardContent({ children, className = '', ...props }) {
-  return (
-    <div className={`text-gray-700 ${className}`} {...props}>
-      {children}
-    </div>
-  );
+export function CardContent({ children, ...props }) {
+  return <div {...props}>{children}</div>;
 }
