@@ -318,7 +318,7 @@ export default function DashboardThree() {
             <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
                 <CardHeader className="pb-2 pt-3 px-4 sm:px-5 bg-slate-50 border-b border-slate-200">
                     <CardTitle className="text-base sm:text-lg font-semibold text-slate-700 flex items-center">
-                        <UsersIcon className="h-5 w-5 mr-2 text-purple-500 flex-shrink-0" /> Co-location Frequency
+                        <Users className="h-5 w-5 mr-2 text-purple-500 flex-shrink-0" /> Co-location Frequency
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
@@ -365,7 +365,7 @@ export default function DashboardThree() {
                 <CardContent className="p-3 sm:p-4 space-y-1">
                     <DetailItem icon={MapPin} text="Predict next likely location" iconColor="text-orange-500"/>
                     <DetailItem icon={Clock} text="Estimate arrival times" iconColor="text-orange-500"/>
-                    <DetailItem icon={UsersIcon} text="Correlation with academic performance" iconColor="text-orange-500"/>
+                    <DetailItem icon={Users} text="Correlation with academic performance" iconColor="text-orange-500"/>
                 </CardContent>
             </Card>
         </div>
