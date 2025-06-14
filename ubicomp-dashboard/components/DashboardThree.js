@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export default function DashboardThree() {
-  const [lastSeen, setLastSeen]   = useState([]);
-  const [cooccur,  setCooccur]    = useState([]);
-  const [routine,  setRoutine]    = useState([]);
-  const [pageIndex, setPageIndex] = useState(0);
+  const [lastSeen, setLastSeen] = useState([]);
+  const [cooccur,  setCooccur]  = useState([]);
+  const [routine,  setRoutine]  = useState([]);
 
-  // 1) fetch every 10s
+  // fetch & refresh every 10s
   useEffect(() => {
     let mounted = true;
     async function fetchAll() {
@@ -26,7 +25,7 @@ export default function DashboardThree() {
     return () => { mounted = false; clearInterval(iv); };
   }, []);
 
-  // 2) group + pick top 3 real + 17 fake = 20
+  // group patterns
   const allPatterns = [
     ...lastSeen.map(p => ({ ...p, pattern_type: 'last_seen' })),
     ...cooccur .map(p => ({ ...p, pattern_type: 'cooccur'   })),
@@ -37,28 +36,16 @@ export default function DashboardThree() {
     acc[device_name][pattern_type].push(message);
     return acc;
   }, {});
-
   const allDevices = Object.values(grouped);
-  const realDevices = allDevices.filter(d => d.device_name.startsWith('[Real]')).slice(0, 3);
-  const fakeDevices = allDevices.filter(d => !d.device_name.startsWith('[Real]')).slice(0, 17);
-  const displayDevices = [...realDevices, ...fakeDevices];
 
-  // 3) rotate pages of 6 cards every 10s
-  const pageSize = 6;
-  const totalPages = Math.ceil(displayDevices.length / pageSize);
-
-  useEffect(() => {
-    setPageIndex(0);
-    const iv2 = setInterval(() => {
-      setPageIndex(pi => (pi + 1) % totalPages);
-    }, 10000);
-    return () => clearInterval(iv2);
-  }, [displayDevices, totalPages]);
-
-  const visible = displayDevices.slice(
-    pageIndex * pageSize,
-    pageIndex * pageSize + pageSize
-  );
+  // pick top 3 real + 17 fake, drop any “Unknown”
+  const real = allDevices
+    .filter(d => d.device_name.startsWith('[Real]') && !d.device_name.includes('(Unknown)'))
+    .slice(0, 3);
+  const fake = allDevices
+    .filter(d => !d.device_name.startsWith('[Real]') && !d.device_name.includes('(Unknown)'))
+    .slice(0, 17);
+  const visible = [...real, ...fake];
 
   return (
     <div>
@@ -78,7 +65,7 @@ export default function DashboardThree() {
               <div>
                 <h4 className="font-semibold">Movement Patterns</h4>
                 {dev.last_seen.length
-                  ? dev.last_seen.map((m, j) => (
+                  ? dev.last_seen.map((m,j) => (
                       <div key={j} className="flex items-center py-1">
                         <span>📍</span><span className="ml-2">{m}</span>
                       </div>
@@ -88,12 +75,12 @@ export default function DashboardThree() {
               </div>
               <div className="mt-4">
                 <h4 className="font-semibold">Social Insights</h4>
-                {dev.cooccur.map((m, j) => (
+                {dev.cooccur.map((m,j) => (
                   <div key={j} className="flex items-center py-1">
                     <span>👥</span><span className="ml-2">{m}</span>
                   </div>
                 ))}
-                {dev.routine.map((m, j) => (
+                {dev.routine.map((m,j) => (
                   <div key={j} className="flex items-center py-1">
                     <span>⏱️</span><span className="ml-2">{m}</span>
                   </div>
