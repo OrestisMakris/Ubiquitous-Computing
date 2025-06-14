@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Wifi, MapPin } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer as BarResp
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer , ResponsiveContainer as BarRespas BarResp
 } from 'recharts';
 
 
