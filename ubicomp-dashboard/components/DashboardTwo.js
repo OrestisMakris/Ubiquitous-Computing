@@ -1,6 +1,6 @@
-import dynamic from 'next/dynamic'
-import { Tabs, TabsList, TabsContent } from '@/components/ui/tabs'
-import React, { useState, useEffect, useRef } from 'react'; 
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'; // <-- Add this line
+import React, { useState, useEffect, useRef } from 'react';
+
 
 export default function DashboardTwo() {
   const [current, setCurrent] = useState([]);
