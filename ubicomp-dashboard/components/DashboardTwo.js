@@ -178,17 +178,15 @@ export default function DashboardTwo() {
             </div>
           </CardContent>
         </Card>
-        
-        {/* 3. Proximity Clusters Card (Third column, SVG made smaller) */}
         <Card>
           <CardHeader>
-            <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
+            <CardTitle>📶 Proximity Closer to center = stronger signal</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center">
             <div className="flex items-center justify-center w-full py-6">
               <svg
-                width={200} {/* <-- Reduced width */}
-                height={200} {/* <-- Reduced height */}
+                width={200}   // Removed comment
+                height={200}  // Removed comment
                 viewBox="0 0 256 256" // ViewBox remains the same for consistent internal coordinates
                 className="mx-auto"
               >
@@ -196,7 +194,7 @@ export default function DashboardTwo() {
                 <circle
                   cx="128"
                   cy="128"
-                  r={CENTER_DOT_DIAMETER / 2} // This is 4 if CENTER_DOT_DIAMETER is 8
+                  r={CENTER_DOT_DIAMETER / 2} 
                   fill="red"
                 />
                 {devices
@@ -205,8 +203,7 @@ export default function DashboardTwo() {
                     const range = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
                     const clamped = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
                     const norm = (clamped - RSSI_EDGE_PLOT) / range;
-                    // maxR should be based on the viewBox radius (120) minus bubble radius
-                    const maxR = 120 - (BUBBLE_DIAMETER / 2); // BUBBLE_DIAMETER is 16, so radius is 8
+                    const maxR = 120 - (BUBBLE_DIAMETER / 2); 
                     const dist = (1 - norm) * maxR;
                     const angle = ((360 / arr.length) * i + 45) * (Math.PI / 180);
                     const x = 128 + dist * Math.cos(angle);
@@ -217,7 +214,7 @@ export default function DashboardTwo() {
                         key={d.pseudonym}
                         cx={x}
                         cy={y}
-                        r={BUBBLE_DIAMETER / 2} // This is 8
+                        r={BUBBLE_DIAMETER / 2} 
                         fill="rgb(0, 9, 78)"
                         stroke="#fff"
                         strokeWidth="1"
@@ -226,13 +223,8 @@ export default function DashboardTwo() {
                   })}
               </svg>
             </div>
-            <p className="text-center text-xs text-gray-500 mt-1">
-              Closer to center = stronger signal
-            </p>
           </CardContent>
         </Card>
-        
-        {/* Recent Detection Timeline Card - spans full width below */}
         <Card className="md:col-span-3">
             {/* ... content for timeline ... */}
             <CardHeader>
