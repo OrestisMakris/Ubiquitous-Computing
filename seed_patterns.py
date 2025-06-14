@@ -83,7 +83,7 @@ def seed_synthetic():
         for s in random.sample(SOCIAL_TEMPLATES, random.randint(2,4)):
             to_upsert.append((p, fake_name, 'cooccur', f"{s}.", now))
 
-        if random.random() < 0.2:
+        if random.random() < 0.4:
             jab = random.choice(DEVICE_JABS).format(name=fake_name)
             to_upsert.append((p, fake_name, 'cooccur', f"{jab}", now))
 
