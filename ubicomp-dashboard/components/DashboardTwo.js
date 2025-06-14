@@ -201,27 +201,32 @@ export default function DashboardTwo() {
     </div>
   </CardContent>
 </Card>
-        {/* 3. Recent Detection Timeline (Bar Chart) */}
     <Card className="md:col-span-2">
-    <CardHeader>
-        <CardTitle>⏱️ Χρονογράφημα Σημάτων (τελευταία ~15′)</CardTitle>
-    </CardHeader>
-    <CardContent>
-        <BarResp width="100%" height={150}>
-        <BarChart data={hist}>
-            {/* only show ticks at -15′, -10′, -5′, -2′, -1′ */}
-            <XAxis
-            dataKey="time"
-            ticks={['-15′','-10′','-5′','-2′','-1′']}
-            tick={{ fontSize: 10 }}
-            />
-            <YAxis domain={[0, 'dataMax']} hide={true} />
-            <Tooltip />
-            <Bar dataKey="count" fill="#0017a5" radius={[4, 4, 0, 0]} />
-        </BarChart>
-        </BarResp>
-    </CardContent>
-    </Card>
+        <CardHeader>
+          <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-2 text-sm text-gray-600">
+            Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
+            συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση σήματος,
+            όχι “νέα” συσκευή.
+          </p>
+          <BarResp width="100%" height={150}>
+            <BarChart data={hist}>
+              <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+              <YAxis hide domain={[0, 'dataMax']} />
+              <Tooltip />
+              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                {hist.map((entry, i) => {
+                  const alpha = 0.3 + (i / (hist.length - 1)) * 0.7
+                  const fill = `rgba(0,23,73,${alpha.toFixed(2)})`
+                  return <Cell key={i} fill={fill} />
+                })}
+              </Bar>
+            </BarChart>
+          </BarResp>
+        </CardContent>
+      </Card>
       </div>
 
       <Card className="mx-auto max-w-lg">
