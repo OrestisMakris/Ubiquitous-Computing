@@ -52,7 +52,7 @@ def seed_synthetic():
     # fetch & cap to 20 distinct pseudonyms
     cur.execute("SELECT DISTINCT pseudonym FROM device_sessions")
     all_pseuds = [r['pseudonym'] for r in cur.fetchall()]
-    all_pseuds = random.sample(all_pseuds, min(len(all_pseuds), 20))
+    all_pseuds = random.sample(all_pseuds, min(len(all_pseuds), 200))
 
     now = datetime.now().replace(microsecond=0)
     to_upsert = []
