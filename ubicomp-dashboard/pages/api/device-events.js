@@ -1,5 +1,6 @@
 // pages/api/device-events.js
 import { pool } from '@/lib/db';
+
 export default async function handler(req, res) {
   const windowMin = 15;
   const [rows] = await pool.query(
