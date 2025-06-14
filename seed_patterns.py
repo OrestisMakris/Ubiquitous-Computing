@@ -34,11 +34,9 @@ GREEK_NAMES = [
     "Κατερίνα","Νίκος","Άννα","Σπύρος","Χριστίνα"
 ]
 DEVICE_BRANDS = ["iPhone","Samsung","HTC","Pixel","OnePlus","Airpods", "MacBook", "Dell", "Lenovo", "HP", "Asus"]
-
 def seed_synthetic():
     db = mysql.connector.connect(**DB_CONF)
     cur = db.cursor(dictionary=True)
-        # empty the synthetic_patterns table before seeding
     cur.execute("TRUNCATE TABLE synthetic_patterns")
 
     # 1. fetch *all* pseudonyms ever seen
@@ -52,7 +50,12 @@ def seed_synthetic():
         # pick brand + Greek personal name
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
-        # …existing code for msg1/msg2/msg3…
+        # generate three pattern messages
+        bld = random.choice(BUILDINGS)
+        ts  = random_time()
+        msg1 = f"Last spotted at {bld} around {ts}."
+        msg2 = f"Frequently co-located with {random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)} at {random.choice(BUILDINGS)}."
+        msg3 = f"Typically active {random.choice(CLASS_TIMES)} in the {random.choice(BUILDINGS)}."
 
         for typ, msg in [('last_seen', msg1), ('cooccur', msg2), ('routine', msg3)]:
             to_upsert.append((p, fake_name, typ, msg, now))
