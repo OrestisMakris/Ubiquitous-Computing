@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Eye, AlertTriangle, Users, MapPin, Clock, Award, Search } from 'lucide-react';
+import { Eye, AlertTriangle, Users } from 'lucide-react';
 
 export default function DashboardThree() {
   const [surveillanceProfiles, setSurveillanceProfiles] = useState([]);
@@ -11,13 +11,13 @@ export default function DashboardThree() {
     const fetchAndProcessData = async () => {
       setIsLoading(true);
       try {
-        // 1. Fetch visible devices from database
+        // 1. Fetch devices from database (last 15 minutes)
         const visibleDevicesRes = await fetch('/api/visible-devices');
         if (!visibleDevicesRes.ok) throw new Error(`Failed to fetch visible devices: ${visibleDevicesRes.statusText}`);
         const visibleDevicesData = await visibleDevicesRes.json();
         const allVisibleDevices = Array.isArray(visibleDevicesData.devices) ? visibleDevicesData.devices : [];
 
-        // 2. Filter for phones only and extract real names
+        // 2. Filter for phones only and use real names
         const confirmedPhones = allVisibleDevices.filter(
           d => d.major_class && d.major_class.toLowerCase() === 'phone'
         );
@@ -33,7 +33,7 @@ export default function DashboardThree() {
         const profilesData = await profilesRes.json();
         let dbProfiles = Array.isArray(profilesData.profiles) ? profilesData.profiles : [];
 
-        // 4. Enhance real phone profiles with isNew flag
+        // 4. Add isNew flag to profiles based on real phone data
         dbProfiles = dbProfiles.map(profile => {
           const correspondingPhone = confirmedPhones.find(phone => 
             phone.name === profile.display_device_name || phone.name === profile.device_name_trigger
@@ -44,7 +44,7 @@ export default function DashboardThree() {
           return profile;
         });
 
-        // 5. Sort profiles - absence first, then high concern, then real phones
+        // 5. Sort profiles - absence first, then high concern, then alphabetical
         dbProfiles.sort((a, b) => {
           if (a.profile_type === 'absence' && b.profile_type !== 'absence') return -1;
           if (b.profile_type === 'absence' && a.profile_type !== 'absence') return 1;
@@ -53,7 +53,7 @@ export default function DashboardThree() {
           return (a.display_device_name || a.profile_name).localeCompare(b.display_device_name || b.profile_name);
         });
 
-        setSurveillanceProfiles(dbProfiles.slice(0, 8)); // Show max 8 profiles
+        setSurveillanceProfiles(dbProfiles.slice(0, 6)); // Show max 6 profiles
 
         // 6. Generate synthetic co-location data from active devices
         const activeDeviceNames = dbProfiles
@@ -63,7 +63,7 @@ export default function DashboardThree() {
         const newCoLocationData = [];
         if (activeDeviceNames.length >= 2) {
           const usedPairs = new Set();
-          const numPairs = Math.min(3, Math.floor(activeDeviceNames.length / 1.5));
+          const numPairs = Math.min(2, Math.floor(activeDeviceNames.length / 1.5));
           
           for (let i = 0; i < numPairs; i++) {
             let name1Index = Math.floor(Math.random() * activeDeviceNames.length);
@@ -96,16 +96,6 @@ export default function DashboardThree() {
     const interval = setInterval(fetchAndProcessData, 15000);
     return () => clearInterval(interval);
   }, []);
-
-  const DetailItem = ({ icon: IconComponent, text, iconColor = "text-blue-500" }) => {
-    if (!text) return null;
-    return (
-      <div className="flex items-start space-x-2 mb-1">
-        <IconComponent className={`h-4 w-4 ${iconColor} mt-0.5 flex-shrink-0`} />
-        <span className="text-sm text-gray-700 leading-relaxed">{text}</span>
-      </div>
-    );
-  };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -141,7 +131,7 @@ export default function DashboardThree() {
                 </div>
               )}
               
-              {/* Profile Cards Grid */}
+              {/* Profile Cards */}
               <div className="space-y-4">
                 {!isLoading && surveillanceProfiles.map((profile) => (
                   <div key={profile.id || profile.profile_name} className="bg-gray-50 rounded-lg p-5 border-l-4 border-blue-500 hover:shadow-md transition-shadow">
@@ -170,7 +160,7 @@ export default function DashboardThree() {
                       )}
                     </div>
 
-                    {/* Profile Content - Only show for non-absence profiles */}
+                    {/* Profile Content - Two Column Layout */}
                     {profile.profile_type !== 'absence' && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Movement Patterns */}
@@ -178,27 +168,31 @@ export default function DashboardThree() {
                           <h4 className="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">
                             Movement Patterns
                           </h4>
-                          <div className="space-y-1">
-                            <DetailItem 
-                              icon={MapPin} 
-                              text={profile.movement_pattern_1} 
-                              iconColor="text-red-500" 
-                            />
-                            <DetailItem 
-                              icon={Clock} 
-                              text={profile.movement_pattern_2} 
-                              iconColor="text-blue-500" 
-                            />
-                            <DetailItem 
-                              icon={MapPin} 
-                              text={profile.movement_pattern_3} 
-                              iconColor="text-green-500" 
-                            />
-                            <DetailItem 
-                              icon={MapPin} 
-                              text={profile.movement_pattern_4} 
-                              iconColor="text-purple-500" 
-                            />
+                          <div className="space-y-2">
+                            {profile.movement_pattern_1 && (
+                              <div className="flex items-start space-x-2">
+                                <span className="text-red-500 text-sm">📍</span>
+                                <span className="text-sm text-gray-700">{profile.movement_pattern_1}</span>
+                              </div>
+                            )}
+                            {profile.movement_pattern_2 && (
+                              <div className="flex items-start space-x-2">
+                                <span className="text-blue-500 text-sm">⏰</span>
+                                <span className="text-sm text-gray-700">{profile.movement_pattern_2}</span>
+                              </div>
+                            )}
+                            {profile.movement_pattern_3 && (
+                              <div className="flex items-start space-x-2">
+                                <span className="text-green-500 text-sm">🏢</span>
+                                <span className="text-sm text-gray-700">{profile.movement_pattern_3}</span>
+                              </div>
+                            )}
+                            {profile.movement_pattern_4 && (
+                              <div className="flex items-start space-x-2">
+                                <span className="text-purple-500 text-sm">🚶</span>
+                                <span className="text-sm text-gray-700">{profile.movement_pattern_4}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -207,17 +201,19 @@ export default function DashboardThree() {
                           <h4 className="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">
                             Social Insights
                           </h4>
-                          <div className="space-y-1">
-                            <DetailItem 
-                              icon={Award} 
-                              text={profile.social_insight_1} 
-                              iconColor="text-yellow-500" 
-                            />
-                            <DetailItem 
-                              icon={Search} 
-                              text={profile.social_insight_2} 
-                              iconColor="text-indigo-500" 
-                            />
+                          <div className="space-y-2">
+                            {profile.social_insight_1 && (
+                              <div className="flex items-start space-x-2">
+                                <span className="text-yellow-500 text-sm">🎯</span>
+                                <span className="text-sm text-gray-700">{profile.social_insight_1}</span>
+                              </div>
+                            )}
+                            {profile.social_insight_2 && (
+                              <div className="flex items-start space-x-2">
+                                <span className="text-indigo-500 text-sm">⚡</span>
+                                <span className="text-sm text-gray-700">{profile.social_insight_2}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -281,22 +277,22 @@ export default function DashboardThree() {
           <Card className="bg-white shadow-lg">
             <CardHeader className="pb-3 pt-4 px-5 bg-orange-50 border-b border-orange-100">
               <CardTitle className="text-lg font-semibold text-gray-700 flex items-center">
-                <Search className="h-5 w-5 mr-2 text-orange-600" />
+                <span className="text-orange-600 mr-2">🧠</span>
                 Behavioral Predictions
               </CardTitle>
             </CardHeader>
             <CardContent className="p-5 space-y-3">
               <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-orange-500" />
-                <span className="text-sm text-gray-600">🎯 Predict next likely location</span>
+                <span className="text-orange-500">🎯</span>
+                <span className="text-sm text-gray-600">Predict next likely location</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4 text-orange-500" />
-                <span className="text-sm text-gray-600">⏰ Estimate arrival times</span>
+                <span className="text-orange-500">⏰</span>
+                <span className="text-sm text-gray-600">Estimate arrival times</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Award className="h-4 w-4 text-orange-500" />
-                <span className="text-sm text-gray-600">📊 Correlation with academic performance</span>
+                <span className="text-orange-500">📊</span>
+                <span className="text-sm text-gray-600">Correlation with academic performance</span>
               </div>
             </CardContent>
           </Card>
@@ -307,7 +303,7 @@ export default function DashboardThree() {
       <footer className="mt-10 py-4 px-6 bg-red-100 border border-red-300 rounded-lg shadow-md">
         <p className="text-center text-sm font-medium text-red-700">
           <AlertTriangle className="inline h-5 w-5 mr-2" />
-          ⚠️ WARNING: This is a simulated surveillance demonstration. No actual persistent tracking or cross-session data linkage occurs.
+          ⚠️ WARNING: This is a simulated surveillance demonstration. No actual persistent tracking occurs.
         </p>
       </footer>
     </div>
