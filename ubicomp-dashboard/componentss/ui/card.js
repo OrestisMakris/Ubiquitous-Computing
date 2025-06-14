@@ -4,7 +4,7 @@ import React from 'react';
 export function Card({ children, className = '', ...props }) {
   return (
     <div
-      className={`bg-white/80 backdrop-blur-md rounded-2xl shadow p-4 transition hover:shadow-lg ${className}`}
+      className={`bg-white/80 backdrop-blur-md rounded-3xl shadow-md p-4 transition hover:shadow-lg ${className}`}
       {...props}
     >
       {children}
@@ -14,7 +14,7 @@ export function Card({ children, className = '', ...props }) {
 
 export function CardHeader({ children, className = '', ...props }) {
   return (
-    <div className={`mb-2 ${className}`} {...props}>
+    <div className={`mb-4 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -34,7 +34,7 @@ export function CardTitle({ children, className = '', ...props }) {
 
 export function CardContent({ children, className = '', ...props }) {
   return (
-    <div className={className} {...props}>
+    <div className={`text-gray-700 ${className}`} {...props}>
       {children}
     </div>
   );
