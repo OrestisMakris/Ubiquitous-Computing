@@ -1,126 +1,72 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Eye, AlertTriangle, Users, MapPin, Clock, Search, Award } from 'lucide-react';
+import { Eye, AlertTriangle, Users } from 'lucide-react';
 
-const ProfileTag = ({ profileType, isHighConcern }) => {
-  let bgColor = 'bg-gray-200';
-  let textColor = 'text-gray-700';
-  // Improved text formatting for profileType
-  let text = profileType.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-
-  if (profileType === 'Real Phone Synthetic') { // Match the formatted text
-    bgColor = 'bg-green-100'; // Lighter green
-    textColor = 'text-green-700';
-    text = `📱 ${text}`;
-  } else if (isHighConcern) {
-    bgColor = 'bg-yellow-100'; // Lighter yellow
-    textColor = 'text-yellow-700';
-    text = `⚠️ ${text}`;
-  } else if (profileType === 'Absence') { // Match the formatted text
-    bgColor = 'bg-red-100'; // Lighter red
-    textColor = 'text-red-700';
-    // No emoji here, it's in the provocative note
-  } else if (profileType === 'Generic') { // Match the formatted text
-    bgColor = 'bg-blue-100'; // Lighter blue
-    textColor = 'text-blue-700';
-  }
-
-  return (
-    <span className={`px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${bgColor} ${textColor} whitespace-nowrap shadow-sm`}>
-      {text}
-    </span>
-  );
-};
+// Enhanced movement patterns with more emojis and variety
 const syntheticMovementPatterns = [
-  "Περνάει από τον σαρωτή Α (Νέο Κτίριο CEID) καθημερινά στις 8:30 π.μ.",
-  "Συχνές μετακινήσεις μεταξύ Κυλικείου και Εργαστηρίων Η/Υ",
-  "Ασυνεπής παρουσία στο campus",
-  "Σταθερή παρουσία κοντά στον server room του CEID",
-  "Κινείται γρήγορα μεταξύ κτιρίων",
-  "Εντοπίστηκε κοντά στην είσοδο του Νέου Κτιρίου CEID",
-  "Η δραστηριότητα μειώνεται τις ηλιόλουστες μέρες",
-  "Συχνές διελεύσεις από το Νέο Κτίριο του CEID"
-];
-
-const syntheticTimeDetails = [
-  "Τελευταία Θέαση: Τετάρτη 14:30 κοντά στο Κυλικείο CEID",
-  "Τελευταία Θέαση: Τρίτη 19:45 κοντά στο ΙΤΥΕ 'Διόφαντος'",
-  "Τελευταία Θέαση: Στο υπόγειο, κοντά στο E-Sports Club",
-  "Τελευταία Θέαση: Πριν 2 ώρες κοντά στην Πρυτανεία",
-  "Τελευταία Θέαση: Χθες, απολαμβάνοντας τον ήλιο στο γκαζόν του campus",
-  "Πιθανόν επισκέπτης ή νέος φοιτητής",
-  "Υψηλή μεταφορά δεδομένων προς εξωτερικούς IP",
-  "Τελευταία δραστηριότητα: Πριν 2 ώρες"
-];
-
-const syntheticLocationDetails = [
-  "Πρωί: Αίθουσα Ε0.1",
-  "Απόγευμα: Αίθουσα Σεμιναρίων",
-  "Βράδυ: Κυλικείο Πανεπιστημιούπολης",
-  "Βράδυ: Ενεργός στο δίκτυο του Πανεπιστημίου, πιθανόν για gaming",
-  "Κινείται προς τις αίθουσες διδασκαλίας",
-  "Λειτουργεί κυρίως εκτός ωραρίου γραφείου",
-  "Τοποθεσία: Άγνωστη όταν έχει καλό καιρό",
-  "Πρωί: Συνήθως ήσυχη παρουσία"
+  "� Passes scanner B daily at 8:30 AM",
+  "⏰ Last Seen: Wednesday 14:30",
+  "🏢 Morning: Academic Zone", 
+  "🍽️ Afternoon: Cafeteria",
+  "📱 Inconsistent campus presence",
+  "🕐 Last Seen: Tuesday 19:45",
+  "🌃 Evening: Recreation Center",
+  "📚 Sporadic library visits",
+  "🚶 Frequently co-located with other devices",
+  "🕒 Last Seen: Thursday 12:15",
+  "🍕 Lunch Areas",
+  "📖 Study Spaces",
+  "🏃 Κινείται γρήγορα μεταξύ κτιρίων",
+  "📍 Εντοπίστηκε κοντά στο Κυλικείο CEID",
+  "⌚ Σταθερή παρουσία >30 λεπτά",
+  "🚪 Συχνές διελεύσεις από το Νέο Κτίριο"
 ];
 
 const syntheticSocialInsights = [
-  "Ομάδες: Ομάδα Ρομποτικής CEID, Κύκλος Μελέτης Αλγορίθμων",
-  "Ομάδες: Θεατρική Ομάδα Πανεπιστημίου Πατρών, Φωτογραφικός Όμιλος",
-  "Ομάδες: E-Sports Club Patras, Anime Fan Group",
-  "Κοινωνικός Κύκλος: Άγνωστος, περνάει απαρατήρητος/η",
-  "Κοινωνικές Προτιμήσεις: Εκτιμά τον εξωτερικό χώρο",
-  "Συνδέσεις: Κρυπτογραφημένες, μη αναγνωρίσιμες",
-  "Αλληλεπιδράσεις: Ελάχιστες προς το παρόν",
-  "Αλληλεπιδράσεις: Κάτω από το κανονικό"
+  "🎮 Clubs: Gaming Club, Study Group",
+  "🎭 Clubs: Drama Society", 
+  "🗣️ Clubs: Debate Team",
+  "⚡ Behavioral Note: Prioritizing fun over exam prep?",
+  "⚖️ Behavioral Note: Potential work-life balance struggles",
+  "🤝 Behavioral Note: Close social collaboration detected",
+  "🎯 Ομάδες: Ομάδα Ρομποτικής CEID",
+  "🎪 Ομάδες: Θεατρική Ομάδα Πατρών",
+  "🎮 Ομάδες: E-Sports Club Patras",
+  "📱 Συμπεριφορική Σημείωση: Υψηλή κατανάλωση bandwidth",
+  "🔍 Αλληλεπιδράσεις υπό ανάλυση",
+  "👥 Κοινωνικός Κύκλος: Διάφορες συνδέσεις"
 ];
 
-const syntheticBehavioralNotes = [
-  "Συμπεριφορική Σημείωση: Φαίνεται να δίνει προτεραιότητα στις ακαδημαϊκές υποχρεώσεις. Ή μήπως όχι;",
-  "Συμπεριφορική Σημείωση: Πιθανές δυσκολίες ισορροπίας μεταξύ φοιτητικής ζωής και διαβάσματος",
-  "Συμπεριφορική Σημείωση: Υψηλή κατανάλωση bandwidth τις νυχτερινές ώρες",
-  "Συμπεριφορική Σημείωση: Φαίνεται τυπικός φοιτητής/τρια. Ή μήπως όχι;",
-  "Συμπεριφορική Σημείωση: Όταν έχει καλό καιρό, εξαφανίζεται. Προτεραιότητα στην έξοδο, ε;",
-  "Συμπεριφορική Σημείωση: Δραστηριότητα χρήζει διερεύνησης",
-  "Συμπεριφορική Σημείωση: Εξερευνά τον χώρο",
-  "Συμπεριφορική Σημείωση: Νέα συσκευή, απαιτείται προσοχή"
-];
-
-// More varied absence scenarios
+// More varied absence scenarios with emojis
 const absentDeviceScenarios = [
   {
+    name: "Laptop_Sofia",
+    type: "CompSci Student",
+    message: "💻 Είναι καλά το 'Laptop_Sofia'; Δεν εντοπίστηκε από κανέναν σαρωτή του campus από χθες το πρωί. Παρακολουθούμε στενά."
+  },
+  {
+    name: "Tablet_Maria", 
+    type: "PhD Candidate",
+    message: "📱 Το Tablet της Μαρίας δεν έχει συνδεθεί στο δίκτυο εδώ και 48 ώρες. Έχει παραδώσει την εργασία της;"
+  },
+  {
     name: "Galaxy_Nikos",
-    type: "PhD Student",
-    message: "Το Galaxy του Νίκου δεν έχει εμφανιστεί στο δίκτυο εδώ και 3 μέρες. Έχει τελειώσει τη διατριβή του;"
+    type: "Lab Assistant",
+    message: "📞 Το Galaxy του Νίκου εξαφανίστηκε από το εργαστήριο. Οι φοιτητές ρωτάνε για τα μαθήματά τους!"
   },
   {
-    name: "iPhone_Maria",
-    type: "Professor",
-    message: "Η Καθηγήτρια Μαρία δεν έχει συνδεθεί από το γραφείο της εδώ και μια εβδομάδα. Είναι σε συνέδριο;"
-  },
-  {
-    name: "Pixel_Andreas",
-    type: "Lab Assistant", 
-    message: "Ο Andreas δεν έχει εμφανιστεί στο εργαστήριο από την Παρασκευή. Οι φοιτητές ρωτάνε για τα μαθήματά τους."
+    name: "iPhone_Andreas",
+    type: "Professor", 
+    message: "📵 Ο Καθηγητής Andreas δεν έχει συνδεθεί εδώ και μια εβδομάδα. Σε συνέδριο ή σε διακοπές;"
   },
   {
     name: "OnePlus_Katerina",
     type: "MSc Student",
-    message: "Η Κατερίνα απουσιάζει από τα μαθήματα εδώ και 5 μέρες. Το τηλέφωνό της δεν εντοπίζεται πουθενά στο campus."
+    message: "🔍 Η Κατερίνα απουσιάζει 5 μέρες από τα μαθήματα. Το τηλέφωνό της αδιάφορο στις κλήσεις του δικτύου."
   }
 ];
 
 const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
-const DetailItem = ({ icon: IconComponent, text, iconColor = "text-slate-500" }) => {
-  if (!text) return null;
-  return (
-    <div className="flex items-start space-x-2 mb-2">
-      <IconComponent className={`h-4 w-4 ${iconColor} mt-0.5 flex-shrink-0`} />
-      <span className="text-slate-700 text-sm leading-relaxed">{text}</span>
-    </div>
-  );
-};
 
 export default function DashboardThree() {
   const [surveillanceProfiles, setSurveillanceProfiles] = useState([]);
@@ -137,20 +83,19 @@ export default function DashboardThree() {
         const visibleDevicesData = await visibleDevicesRes.json();
         const allVisibleDevices = Array.isArray(visibleDevicesData.devices) ? visibleDevicesData.devices : [];
 
-        // STRICT PHONE FILTERING - Only devices with major_class = 'Phone'
+        // STRICT PHONE FILTERING
         const confirmedPhones = allVisibleDevices.filter(
           d => d.major_class && d.major_class.toLowerCase() === 'phone'
         );
         const confirmedPhoneDisplayNames = new Set(confirmedPhones.map(p => p.name));
 
-        // Generate synthetic absence profiles (randomly select 1-2)
-        const numAbsenceProfiles = Math.floor(Math.random() * 2) + 1; // 1 or 2
+        // Generate 1-2 random absence profiles
+        const numAbsenceProfiles = Math.floor(Math.random() * 2) + 1;
         const selectedAbsenceScenarios = [];
         const shuffledScenarios = [...absentDeviceScenarios].sort(() => 0.5 - Math.random());
         
         for (let i = 0; i < Math.min(numAbsenceProfiles, shuffledScenarios.length); i++) {
           const scenario = shuffledScenarios[i];
-          // Only add if this device is NOT currently visible
           if (!confirmedPhoneDisplayNames.has(scenario.name)) {
             selectedAbsenceScenarios.push({
               id: `absence-${scenario.name}-${Date.now()}`,
@@ -164,31 +109,39 @@ export default function DashboardThree() {
           }
         }
 
-        // Generate synthetic profiles for real phones
-        const generatedSyntheticProfilesForRealPhones = [];
+        // Generate profiles for real phones with varied data
+        const generatedPhoneProfiles = [];
         for (const phone of confirmedPhones) {
-          generatedSyntheticProfilesForRealPhones.push({
-            id: `real-sync-${phone.name}-${Date.now()}`,
-            profile_name: `${phone.name}_RealSynthetic`,
+          // Get 4 random movement patterns
+          const shuffledMovements = [...syntheticMovementPatterns].sort(() => 0.5 - Math.random());
+          const movements = shuffledMovements.slice(0, 4);
+          
+          // Get 2 random social insights  
+          const shuffledSocial = [...syntheticSocialInsights].sort(() => 0.5 - Math.random());
+          const socialInsights = shuffledSocial.slice(0, 2);
+
+          generatedPhoneProfiles.push({
+            id: `phone-${phone.name}-${Date.now()}`,
+            profile_name: `${phone.name}_Profile`,
             device_name_trigger: phone.name,
             display_device_name: phone.name,
-            movement_pattern_1: getRandomElement(syntheticMovementPatterns),
-            movement_pattern_2: getRandomElement(syntheticTimeDetails),
-            movement_pattern_3: getRandomElement(syntheticLocationDetails),
-            movement_pattern_4: Math.random() < 0.7 ? getRandomElement(syntheticLocationDetails) : null,
-            social_insight_1: getRandomElement(syntheticSocialInsights),
-            social_insight_2: Math.random() < 0.8 ? getRandomElement(syntheticBehavioralNotes) : null,
-            is_high_concern: Math.random() < 0.25,
-            profile_type: 'real_phone_synthetic',
-            provocative_note: Math.random() < 0.6 ? `📱 Το ${phone.name} παρακολουθείται με ειδικό πρωτόκολλο. Σημαντικές πληροφορίες συλλέγονται.` : null,
+            movement_pattern_1: movements[0] || null,
+            movement_pattern_2: movements[1] || null, 
+            movement_pattern_3: movements[2] || null,
+            movement_pattern_4: movements[3] || null,
+            social_insight_1: socialInsights[0] || null,
+            social_insight_2: socialInsights[1] || null,
+            is_high_concern: Math.random() < 0.3, // 30% chance
+            profile_type: 'active_phone',
+            provocative_note: Math.random() < 0.4 ? `� Το ${phone.name} υπό εντατική παρακολούθηση. Κρίσιμες πληροφορίες συλλέγονται.` : null,
             isNewActualDevice: phone.isNew
           });
         }
         
-        // Combine absence and real phone profiles ONLY
-        let combinedProfiles = [...selectedAbsenceScenarios, ...generatedSyntheticProfilesForRealPhones];
+        // Combine profiles
+        let combinedProfiles = [...selectedAbsenceScenarios, ...generatedPhoneProfiles];
 
-        // Sort: absence first, then real phones, high concern prioritized
+        // Sort: absence first, then high concern, then alphabetical
         combinedProfiles.sort((a, b) => {
           if (a.profile_type === 'absence' && b.profile_type !== 'absence') return -1;
           if (b.profile_type === 'absence' && a.profile_type !== 'absence') return 1;
@@ -197,12 +150,11 @@ export default function DashboardThree() {
           return (a.display_device_name || a.profile_name).localeCompare(b.display_device_name || b.profile_name);
         });
 
-        // Limit profiles displayed
         const displayableProfiles = combinedProfiles.slice(0, MAX_PROFILES_TO_DISPLAY);
         setSurveillanceProfiles(displayableProfiles);
 
-        // Generate co-location data only from real phones
-        const activePhoneNames = generatedSyntheticProfilesForRealPhones.map(p => p.display_device_name);
+        // Generate co-location data from active phones
+        const activePhoneNames = generatedPhoneProfiles.map(p => p.display_device_name);
         const newCoLocationData = [];
         if (activePhoneNames.length >= 2) {
           const usedPairs = new Set();
@@ -216,7 +168,7 @@ export default function DashboardThree() {
             if (activePhoneNames[name1Index] !== activePhoneNames[name2Index] && !usedPairs.has(pairKey)) {
               newCoLocationData.push({
                 pair: `${activePhoneNames[name1Index]} + ${activePhoneNames[name2Index]}`,
-                frequency: `${Math.floor(Math.random() * 60) + 40}%`
+                frequency: `${Math.floor(Math.random() * 50) + 50}%` // 50-99%
               });
               usedPairs.add(pairKey);
             }
@@ -239,103 +191,108 @@ export default function DashboardThree() {
   }, []);
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen font-sans">
-      <header className="text-center mb-8 sm:mb-12">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">The Watcher</h1>
-        <p className="text-base sm:text-lg text-gray-600 mt-1 sm:mt-2">Dynamic Device Surveillance Feed</p>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <header className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-800">The Watcher</h1>
+        <p className="text-lg text-gray-600 mt-2">Comprehensive Device Tracking System</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        {/* Main Surveillance Feed - Card Layout */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center text-xl sm:text-2xl font-semibold text-gray-700 mb-4">
-            <Eye className="h-6 w-6 sm:h-7 sm:w-7 mr-2.5 text-blue-600" />
-            Surveillance Feed
-          </div>
-          
-          {isLoading && (
-            <div className="bg-white rounded-lg shadow-md p-8 text-center">
-              <p className="text-gray-500 text-lg">Φόρτωση προφίλ παρακολούθησης...</p>
-            </div>
-          )}
-          
-          {!isLoading && surveillanceProfiles.length === 0 && (
-            <div className="bg-white rounded-lg shadow-md p-8 text-center">
-              <p className="text-gray-600 text-lg">Δεν υπάρχουν ενεργά προφίλ παρακολούθησης.</p>
-            </div>
-          )}
-          
-          {!isLoading && surveillanceProfiles.map((profile) => (
-            <div key={profile.id || profile.profile_name} className="bg-white rounded-lg shadow-md p-5 sm:p-6 border-l-4 border-blue-500">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg sm:text-xl font-semibold text-blue-700">
-                    {profile.display_device_name}
-                    {profile.isNewActualDevice && (
-                      <span className="ml-2 px-2 py-1 bg-red-100 text-red-600 rounded-md text-xs font-bold shadow-sm">
-                        Νέα!
-                      </span>
-                    )}
-                  </h3>
-                  {profile.profile_type === 'absence' && (
-                    <p className="text-sm text-red-600 font-medium mt-1">ABSENCE DETECTED</p>
-                  )}
-                  {profile.profile_type === 'real_phone_synthetic' && (
-                    <p className="text-sm text-green-600 font-medium mt-1">ACTIVE PHONE TRACKING</p>
-                  )}
-                </div>
-                {(profile.is_high_concern || profile.profile_type === 'absence') && (
-                  <AlertTriangle className={`h-6 w-6 flex-shrink-0 ${profile.profile_type === 'absence' ? 'text-red-500' : 'text-yellow-500'}`} />
-                )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Surveillance Feed */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-gray-50 px-6 py-4 border-b">
+              <div className="flex items-center text-xl font-semibold text-gray-700">
+                <Eye className="h-6 w-6 mr-3 text-blue-600" />
+                Active Surveillance Profiles
               </div>
-
-              {profile.profile_type !== 'absence' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Movement Patterns</h4>
-                    <DetailItem icon={MapPin} text={profile.movement_pattern_1} iconColor="text-blue-500" />
-                    <DetailItem icon={Clock} text={profile.movement_pattern_2} iconColor="text-green-500" />
-                    <DetailItem icon={MapPin} text={profile.movement_pattern_3} iconColor="text-purple-500" />
-                    <DetailItem icon={MapPin} text={profile.movement_pattern_4} iconColor="text-orange-500" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Social Insights</h4>
-                    <DetailItem icon={Award} text={profile.social_insight_1} iconColor="text-yellow-500" />
-                    <DetailItem icon={Search} text={profile.social_insight_2} iconColor="text-indigo-500" />
-                  </div>
-                </div>
-              )}
-
-              {profile.provocative_note && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className={`text-sm font-medium ${
-                    profile.profile_type === 'absence' ? 'text-red-700' :
-                    profile.is_high_concern ? 'text-yellow-700' :
-                    profile.profile_type === 'real_phone_synthetic' ? 'text-green-700' :
-                    'text-gray-600'
-                  }`}>
-                    {profile.profile_type === 'absence' ? `⚠️ ${profile.provocative_note}` : profile.provocative_note}
-                  </p>
-                </div>
-              )}
             </div>
-          ))}
+            
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              {isLoading && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 text-lg">🔄 Φόρτωση προφίλ παρακολούθησης...</p>
+                </div>
+              )}
+              
+              {!isLoading && surveillanceProfiles.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-600 text-lg">📵 Δεν υπάρχουν ενεργά προφίλ.</p>
+                </div>
+              )}
+              
+              {!isLoading && surveillanceProfiles.map((profile) => (
+                <div key={profile.id || profile.profile_name} className="bg-gray-50 rounded-lg p-5 border-l-4 border-blue-500">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-blue-700 flex items-center">
+                        {profile.display_device_name}
+                        {profile.isNewActualDevice && (
+                          <span className="ml-2 px-2 py-1 bg-red-100 text-red-600 rounded text-xs font-bold">
+                            Νέα!
+                          </span>
+                        )}
+                      </h3>
+                      {profile.profile_type === 'absence' && (
+                        <p className="text-sm text-red-600 font-medium mt-1">⚠️ ABSENCE</p>
+                      )}
+                    </div>
+                    {(profile.is_high_concern || profile.profile_type === 'absence') && (
+                      <AlertTriangle className={`h-6 w-6 ${profile.profile_type === 'absence' ? 'text-red-500' : 'text-yellow-500'}`} />
+                    )}
+                  </div>
+
+                  {profile.profile_type !== 'absence' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-600 mb-2 uppercase">Movement Patterns</h4>
+                        {profile.movement_pattern_1 && <p className="text-sm text-gray-700 mb-1">{profile.movement_pattern_1}</p>}
+                        {profile.movement_pattern_2 && <p className="text-sm text-gray-700 mb-1">{profile.movement_pattern_2}</p>}
+                        {profile.movement_pattern_3 && <p className="text-sm text-gray-700 mb-1">{profile.movement_pattern_3}</p>}
+                        {profile.movement_pattern_4 && <p className="text-sm text-gray-700 mb-1">{profile.movement_pattern_4}</p>}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-600 mb-2 uppercase">Social Insights</h4>
+                        {profile.social_insight_1 && <p className="text-sm text-gray-700 mb-1">{profile.social_insight_1}</p>}
+                        {profile.social_insight_2 && <p className="text-sm text-gray-700 mb-1">{profile.social_insight_2}</p>}
+                      </div>
+                    </div>
+                  )}
+
+                  {profile.provocative_note && (
+                    <div className="mt-4 pt-3 border-t border-gray-300">
+                      <p className={`text-sm font-medium ${
+                        profile.profile_type === 'absence' ? 'text-red-700' :
+                        profile.is_high_concern ? 'text-yellow-700' :
+                        'text-green-700'
+                      }`}>
+                        {profile.provocative_note}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Right Column: Info Panels */}
+        {/* Right Column */}
         <div className="space-y-6">
-          <Card className="bg-white shadow-md rounded-lg">
-            <CardHeader className="pb-3 pt-4 px-5 bg-gray-50 border-b border-gray-200">
+          {/* Co-location Panel */}
+          <Card className="bg-white shadow-lg">
+            <CardHeader className="pb-3 pt-4 px-5 bg-gray-50 border-b">
               <CardTitle className="text-lg font-semibold text-gray-700 flex items-center">
-                <Users className="h-5 w-5 mr-2 text-purple-500" /> Co-location Frequency
+                <Users className="h-5 w-5 mr-2 text-purple-500" /> 📍 Co-location Frequency
               </CardTitle>
             </CardHeader>
             <CardContent className="p-5 space-y-3">
-              {isLoading && <p className="text-sm text-gray-500">Loading data...</p>}
-              {!isLoading && coLocationData.length === 0 && <p className="text-sm text-gray-500">No co-location data.</p>}
+              {isLoading && <p className="text-sm text-gray-500">🔄 Loading data...</p>}
+              {!isLoading && coLocationData.length === 0 && <p className="text-sm text-gray-500">📵 No co-location data.</p>}
               {coLocationData.map((item, index) => (
                 <div key={index}>
-                  <p className="text-sm font-medium text-gray-600 mb-1">{item.pair}: <span className="font-bold text-purple-600">{item.frequency}</span></p>
+                  <p className="text-sm font-medium text-gray-600 mb-1">
+                    {item.pair}: <span className="font-bold text-purple-600">{item.frequency}</span>
+                  </p>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div className="bg-purple-500 h-full rounded-full" style={{ width: item.frequency }}></div>
                   </div>
@@ -344,17 +301,32 @@ export default function DashboardThree() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-md rounded-lg">
-            <CardHeader className="pb-3 pt-4 px-5 bg-gray-50 border-b border-gray-200">
+          {/* Tracking Intensity */}
+          <Card className="bg-white shadow-lg">
+            <CardHeader className="pb-3 pt-4 px-5 bg-gray-50 border-b">
               <CardTitle className="text-lg font-semibold text-gray-700 flex items-center">
-                <MapPin className="h-5 w-5 mr-2 text-green-500" /> Tracking Intensity
+                🎯 Tracking Intensity
               </CardTitle>
             </CardHeader>
             <CardContent className="p-5">
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                <div className="bg-green-500 h-full rounded-full" style={{ width: '78%' }}></div>
+                <div className="bg-green-500 h-full rounded-full" style={{ width: '83%' }}></div>
               </div>
-              <p className="text-xs text-gray-500">High correlation between device movements detected.</p>
+              <p className="text-xs text-gray-500">📈 High correlation between device movements detected</p>
+            </CardContent>
+          </Card>
+
+          {/* Behavioral Predictions */}
+          <Card className="bg-white shadow-lg">
+            <CardHeader className="pb-3 pt-4 px-5 bg-gray-50 border-b">
+              <CardTitle className="text-lg font-semibold text-gray-700 flex items-center">
+                🧠 Behavioral Predictions
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-5 space-y-2">
+              <p className="text-sm text-gray-600">🎯 Predict next likely location</p>
+              <p className="text-sm text-gray-600">⏰ Estimate arrival times</p>
+              <p className="text-sm text-gray-600">📊 Correlation with academic performance</p>
             </CardContent>
           </Card>
         </div>
@@ -363,7 +335,7 @@ export default function DashboardThree() {
       <footer className="mt-10 py-4 px-6 bg-red-100 border-t-2 border-red-300 rounded-lg shadow-md">
         <p className="text-center text-sm font-medium text-red-700">
           <AlertTriangle className="inline h-5 w-5 mr-1.5" />
-          WARNING: This is a simulated surveillance demonstration. No actual persistent tracking or cross-session data linkage occurs.
+          ⚠️ WARNING: This is a simulated surveillance demonstration. No actual persistent tracking occurs.
         </p>
       </footer>
     </div>
