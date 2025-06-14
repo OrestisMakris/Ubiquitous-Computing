@@ -1,11 +1,10 @@
-// components/DashboardThree.js
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export default function DashboardThree() {
-  const [lastSeen, setLastSeen]   = useState([]);
-  const [cooccur, setCooccur]     = useState([]);
-  const [routine, setRoutine]     = useState([]);
+  const [lastSeen, setLastSeen] = useState([]);
+  const [cooccur, setCooccur] = useState([]);
+  const [routine, setRoutine] = useState([]);
 
   useEffect(() => {
     let mounted = true;
@@ -25,33 +24,66 @@ export default function DashboardThree() {
     return () => { mounted = false; clearInterval(iv); };
   }, []);
 
-  const renderList = data => data.map((r,i) => (
-    <div key={i} className="py-1">
-      <strong>{r.device_name}</strong> — {r.message}
-    </div>
-  )) || <p className="text-gray-500">— κανένα δεδομένο —</p>;
+  // merge all patterns & group by device_name
+  const grouped = [...lastSeen.map(p => ({...p, pattern_type: 'last_seen'})),
+                   ...cooccur.map(p => ({...p, pattern_type: 'cooccur'})),
+                   ...routine.map(p => ({...p, pattern_type: 'routine'}))]
+    .reduce((acc, { device_name, pattern_type, message }) => {
+      if (!acc[device_name]) {
+        acc[device_name] = { device_name, last_seen: [], cooccur: [], routine: [] };
+      }
+      acc[device_name][pattern_type].push(message);
+      return acc;
+    }, {});
 
   return (
-    <div className="space-y-8">
+    <div>
       <header className="text-center py-4">
-        <h2 className="text-3xl font-bold">Ο Μεγάλος Αδελφός</h2>
-        <p className="text-sm text-red-600">(High Surveillance Mode – simulated)</p>
+        <h2 className="text-3xl font-bold">Active Surveillance Profiles</h2>
       </header>
 
-      <Card>
-        <CardHeader><CardTitle>Ιστορικό Τελευταίας Εμφάνισης</CardTitle></CardHeader>
-        <CardContent>{renderList(lastSeen)}</CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>Συν-Εμφανίσεις</CardTitle></CardHeader>
-        <CardContent>{renderList(cooccur)}</CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>Υποτιθέμενα Πρότυπα</CardTitle></CardHeader>
-        <CardContent>{renderList(routine)}</CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Object.values(grouped).map((dev, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <CardTitle>
+                <strong className="text-blue-600">{dev.device_name}</strong>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div>
+                <h4 className="font-semibold">Movement Patterns</h4>
+                {dev.last_seen.length > 0
+                  ? dev.last_seen.map((m,j) => (
+                      <div key={j} className="flex items-center py-1">
+                        <span>📍</span>
+                        <span className="ml-2">{m}</span>
+                      </div>
+                    ))
+                  : <p className="text-gray-500">— none —</p>
+                }
+              </div>
+              <div className="mt-4">
+                <h4 className="font-semibold">Social Insights</h4>
+                {dev.cooccur.length > 0
+                  ? dev.cooccur.map((m,j) => (
+                      <div key={j} className="flex items-center py-1">
+                        <span>👥</span>
+                        <span className="ml-2">{m}</span>
+                      </div>
+                    ))
+                  : <p className="text-gray-500">— none —</p>
+                }
+                {dev.routine.length > 0 && dev.routine.map((m,j) => (
+                  <div key={j} className="flex items-center py-1">
+                    <span>⏱️</span>
+                    <span className="ml-2">{m}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
-}

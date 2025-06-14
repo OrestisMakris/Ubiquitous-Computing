@@ -29,6 +29,11 @@ CLASS_TIMES = [
 
 def random_time():
     return (datetime.now() - timedelta(minutes=random.randint(1, 600))).strftime("%H:%M")
+GREEK_NAMES = [
+    "Γιώργος","Μαρία","Αλέξανδρος","Ελένη","Δημήτρης",
+    "Κατερίνα","Νίκος","Άννα","Σπύρος","Χριστίνα"
+]
+DEVICE_BRANDS = ["iPhone","Samsung","HTC","Pixel","OnePlus","Airpods", "MacBook", "Dell", "Lenovo", "HP", "Asus"]
 
 def seed_synthetic():
     db = mysql.connector.connect(**DB_CONF)
@@ -42,24 +47,10 @@ def seed_synthetic():
     to_upsert = []
 
     for p in all_pseuds:
-        # pick a fake public name
-        fake_name = f"Device_{p[:4]}"  
+        # pick brand + Greek personal name
+        fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
-        # last_seen near a building + time
-        loc = random.choice(BUILDINGS)
-        msg1 = f"Last spotted at {loc} around {random_time()}."
-
-        # co-occurrence with jab
-        msg2 = random.choice(DEVICE_JABS).format(name=fake_name)
-
-        # routine: mention class time or long stay
-        if random.random() < 0.5:
-            ct = random.choice(CLASS_TIMES)
-            msg3 = f"Seen {ct} near {random.choice(BUILDINGS)}."
-        else:
-            loc2 = random.choice(BUILDINGS)
-            hrs = random.randint(1, 5)
-            msg3 = f"Spent about {hrs}h in {loc2} yesterday."
+        # …existing code for msg1/msg2/msg3…
 
         for typ, msg in [('last_seen', msg1), ('cooccur', msg2), ('routine', msg3)]:
             to_upsert.append((p, fake_name, typ, msg, now))
