@@ -111,14 +111,20 @@ export default function DashboardOne() {
                   {clsDist.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
-                </Pie>
+            </Pie>
                 <PieTip />
               </PieChart>
             </PieResp>
           </CardContent>
         </Card>
       </div>
-
+    <Card className="mx-auto max-w-lg">
+  <CardContent>
+    <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
+      🔒 Privacy Notice: All data is anonymized and aggregated. No individual tracking.
+    </p>
+  </CardContent>
+</Card>
       <footer className="text-center text-sm text-gray-400">
         © 2025 | CEID_NE576 — Pervasive Computing Lab Ex. 2024/25<br/>
         👤 Ορέστης Αντώνης Μακρής (AM 1084516)
