@@ -38,13 +38,11 @@ export default function DashboardThree() {
   }, {});
   const allDevices = Object.values(grouped);
 
-  // pick top 3 real + 17 fake, drop any “Unknown”
   const real = allDevices
-    .filter(d => d.device_name.startsWith('[Real]') && !d.device_name.includes('(Unknown)'))
-    .slice(0, 3);
+    .filter(d => d.device_name.startsWith('[Real]') && !d.device_name.includes('(Unknown)'));
   const fake = allDevices
     .filter(d => !d.device_name.startsWith('[Real]') && !d.device_name.includes('(Unknown)'))
-    .slice(0, 17);
+    .slice(0, 20 - real.length);
   const visible = [...real, ...fake];
 
   return (
