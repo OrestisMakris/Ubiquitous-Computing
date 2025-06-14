@@ -74,6 +74,7 @@ export default function DashboardTwo() {
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
+        {/* ... header content ... */}
         <p className="text-4xl text-[#0017a5] font-bold">
           🕵️‍♂️ Dashboard Παρατηρητής Μοτίβων
         </p>
@@ -82,9 +83,8 @@ export default function DashboardTwo() {
         </p>
       </header>
 
-      {/* Adjusted grid to md:grid-cols-3 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* 1. Devices Currently Visible (remains first) */}
+        {/* 1. Devices Currently Visible (First column) */}
         <Card>
           <CardHeader>
             <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
@@ -159,60 +159,7 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
 
-        {/* 2. Proximity Clusters Card (now second) */}
-        <Card>
-          <CardHeader>
-            <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center">
-            {/* ... content for proximity clusters ... */}
-            <div className="flex items-center justify-center w-full py-6">
-              <svg
-                width={256}
-                height={256}
-                viewBox="0 0 256 256"
-                className="mx-auto"
-              >
-                <circle cx="128" cy="128" r="120" fill="#C7D2FE" />
-                <circle
-                  cx="128"
-                  cy="128"
-                  r={CENTER_DOT_DIAMETER / 2}
-                  fill="red"
-                />
-                {devices
-                  .filter(d => typeof d.rssi === "number")
-                  .map((d, i, arr) => {
-                    const range = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
-                    const clamped = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
-                    const norm = (clamped - RSSI_EDGE_PLOT) / range;
-                    const maxR = 120 - BUBBLE_DIAMETER / 2;
-                    const dist = (1 - norm) * maxR;
-                    const angle = ((360 / arr.length) * i + 45) * (Math.PI / 180);
-                    const x = 128 + dist * Math.cos(angle);
-                    const y = 128 + dist * Math.sin(angle);
-
-                    return (
-                      <circle
-                        key={d.pseudonym}
-                        cx={x}
-                        cy={y}
-                        r={BUBBLE_DIAMETER / 2}
-                        fill="rgb(0, 9, 78)"
-                        stroke="#fff"
-                        strokeWidth="1"
-                      />
-                    );
-                  })}
-              </svg>
-            </div>
-            <p className="text-center text-xs text-gray-500 mt-1">
-              Closer to center = stronger signal
-            </p>
-          </CardContent>
-        </Card>
-        
-        {/* 3. Session Overview Card (now third, to the right of Proximity) */}
+        {/* 2. Session Overview Card (Second column) */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium">Session Overview</CardTitle>
@@ -232,7 +179,60 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
         
-        {/* Recent Detection Timeline Card - remains spanning full width below */}
+        {/* 3. Proximity Clusters Card (Third column, SVG made smaller) */}
+        <Card>
+          <CardHeader>
+            <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center">
+            <div className="flex items-center justify-center w-full py-6">
+              <svg
+                width={200} {/* <-- Reduced width */}
+                height={200} {/* <-- Reduced height */}
+                viewBox="0 0 256 256" // ViewBox remains the same for consistent internal coordinates
+                className="mx-auto"
+              >
+                <circle cx="128" cy="128" r="120" fill="#C7D2FE" />
+                <circle
+                  cx="128"
+                  cy="128"
+                  r={CENTER_DOT_DIAMETER / 2} // This is 4 if CENTER_DOT_DIAMETER is 8
+                  fill="red"
+                />
+                {devices
+                  .filter(d => typeof d.rssi === "number")
+                  .map((d, i, arr) => {
+                    const range = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
+                    const clamped = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
+                    const norm = (clamped - RSSI_EDGE_PLOT) / range;
+                    // maxR should be based on the viewBox radius (120) minus bubble radius
+                    const maxR = 120 - (BUBBLE_DIAMETER / 2); // BUBBLE_DIAMETER is 16, so radius is 8
+                    const dist = (1 - norm) * maxR;
+                    const angle = ((360 / arr.length) * i + 45) * (Math.PI / 180);
+                    const x = 128 + dist * Math.cos(angle);
+                    const y = 128 + dist * Math.sin(angle);
+
+                    return (
+                      <circle
+                        key={d.pseudonym}
+                        cx={x}
+                        cy={y}
+                        r={BUBBLE_DIAMETER / 2} // This is 8
+                        fill="rgb(0, 9, 78)"
+                        stroke="#fff"
+                        strokeWidth="1"
+                      />
+                    );
+                  })}
+              </svg>
+            </div>
+            <p className="text-center text-xs text-gray-500 mt-1">
+              Closer to center = stronger signal
+            </p>
+          </CardContent>
+        </Card>
+        
+        {/* Recent Detection Timeline Card - spans full width below */}
         <Card className="md:col-span-3">
             {/* ... content for timeline ... */}
             <CardHeader>
