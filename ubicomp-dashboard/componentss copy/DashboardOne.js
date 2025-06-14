@@ -37,25 +37,11 @@ export default function DashboardOne() {
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        {/* BIG, EXTRA-BOLD, DROP-SHADOW, ROBOTO, UB.COMPUTING BLUE */}
-        <h1
-          className="
-            text-6xl        /* base size */
-            md:text-7xl     /* larger on medium+ screens */
-            lg:text-8xl     /* even larger on large+ screens */
-            font-extrabold  /* heavy weight */
-            text-ubiquitous-computing
-            drop-shadow-lg
-          "
-        >
-          📡 UbiComp Live Presence Dashboard
-        </h1>
-        {/* English translation below */}
-        <p className="mt-1 text-lg italic text-gray-500">
-          (Ubiquitous Computing Live Presence Dashboard)
+        <p className="text-4xl text-[#0017a5]">
+          (📡 UbiComp Live Presence Dashboard)
         </p>
         <p className="mt-2 text-sm text-gray-600">
-          CEID_NE576 — Pervasive Computing Laboratory Exercise 2024/25<br/>
+          CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25<br/>
           Prof. Andreas Komninos — Authors: Orestis Antonis Makris
         </p>
       </header>
