@@ -8,7 +8,7 @@ import {
 
 const RSSI_CENTER_PLOT = -30; // Strongest signal (closest to center)
 const RSSI_EDGE_PLOT = -90;   // Weakest signal (at the edge of the plot area)
-const BUBBLE_DIAMETER = 50;         // smaller, less “dynamic” size
+const BUBBLE_DIAMETER = 20;         // smaller, less “dynamic” size
 const CENTER_DOT_DIAMETER = 8;      // a bit smaller center marker
 
 export default function DashboardTwo() {
@@ -153,12 +153,19 @@ export default function DashboardTwo() {
   <CardHeader>
     <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
   </CardHeader>
-  <CardContent>
-    <div className="w-full flex justify-center py-4">
-      <svg width={256} height={256} viewBox="0 0 256 256">
-        {/* outer circle background: a slightly darker blue */}
+  {/* make CardContent a flex‐column centered container */}
+  <CardContent className="flex flex-col items-center">
+    {/* svg wrapper */}
+    <div className="flex items-center justify-center w-full py-6">
+      <svg
+        width={256}
+        height={256}
+        viewBox="0 0 256 256"
+        className="mx-auto"
+      >
+        {/* outer circle */}
         <circle cx="128" cy="128" r="120" fill="#C7D2FE" />
-        {/* center marker: vivid red, smaller */}
+        {/* center dot */}
         <circle
           cx="128"
           cy="128"
@@ -169,8 +176,7 @@ export default function DashboardTwo() {
           .filter(d => typeof d.rssi === "number")
           .map((d, i, arr) => {
             const range = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
-            const clamped = Math.max(RSSI_EDGE_PLOT,
-                              Math.min(RSSI_CENTER_PLOT, d.rssi));
+            const clamped = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
             const norm = (clamped - RSSI_EDGE_PLOT) / range;
             const maxR = 120 - BUBBLE_DIAMETER / 2;
             const dist = (1 - norm) * maxR;
@@ -184,7 +190,7 @@ export default function DashboardTwo() {
                 cx={x}
                 cy={y}
                 r={BUBBLE_DIAMETER / 2}
-                fill="rgb(0, 9, 78)"  // deep navy
+                fill="rgb(0, 9, 78)"
                 stroke="#fff"
                 strokeWidth="1"
               />
