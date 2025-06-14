@@ -8,7 +8,7 @@ import {
 
 const RSSI_CENTER_PLOT = -30; // Strongest signal (closest to center)
 const RSSI_EDGE_PLOT = -90;   // Weakest signal (at the edge of the plot area)
-const BUBBLE_DIAMETER = 16;         // smaller, less “dynamic” size
+const BUBBLE_DIAMETER = 50;         // smaller, less “dynamic” size
 const CENTER_DOT_DIAMETER = 8;      // a bit smaller center marker
 
 export default function DashboardTwo() {
