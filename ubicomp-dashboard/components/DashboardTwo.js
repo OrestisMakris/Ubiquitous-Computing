@@ -1,276 +1,189 @@
+// components/DashboardTwo.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Wifi, MapPin, Clock, BarChart2, AlertTriangle } from 'lucide-react';
+
+const PRIMARY = '#0017a5';
 
 const formatDuration = (seconds) => {
   if (seconds < 60) return `${seconds}s`;
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  if (remainingSeconds === 0) return `${minutes} min`;
-  return `${minutes}m ${remainingSeconds}s`;
+  return remainingSeconds === 0 ? `${minutes}m` : `${minutes}m ${remainingSeconds}s`;
 };
 
 const ProximityClusters = ({ groups }) => {
   const { near = [], mid = [], far = [] } = groups;
+  const rings = [40, 60, 80]; // concentric ring radii in %
 
-  // Combine all devices with their group for positioning
-  const allDevicesInCluster = [
+  const all = [
     ...near.map(name => ({ name, group: 'near' })),
     ...mid.map(name => ({ name, group: 'mid' })),
     ...far.map(name => ({ name, group: 'far' })),
-  ].slice(0, 10); // Limit displayed devices for clarity
+  ].slice(0, 15);
 
-  const getPosition = (index, totalInGroup, groupName) => {
-    const angleStep = (Math.PI * 2) / Math.max(1, totalInGroup);
-    const angle = index * angleStep + (groupName === 'mid' ? angleStep / 2 : 0); // Offset mid for better distribution
-
-    let radiusPercentage;
-    if (groupName === 'near') radiusPercentage = 20 + Math.random() * 10; // 20-30%
-    else if (groupName === 'mid') radiusPercentage = 40 + Math.random() * 10; // 40-50%
-    else radiusPercentage = 60 + Math.random() * 10; // 60-70%
-
-    // Ensure dots are well within the circle
-    radiusPercentage = Math.min(radiusPercentage, 40); // Max 40% from center to keep inside a 80% diameter view
-
-    const x = 50 + radiusPercentage * Math.cos(angle);
-    const y = 50 + radiusPercentage * Math.sin(angle);
-    return { x: `${x}%`, y: `${y}%` };
+  const getPos = (i, count, radius) => {
+    const angle = (i / count) * 2 * Math.PI;
+    return {
+      left: `${50 + radius * Math.cos(angle)}%`,
+      top:  `${50 + radius * Math.sin(angle)}%`
+    };
   };
 
   return (
     <div className="relative w-full h-72 flex items-center justify-center">
-      <div className="absolute w-[90%] h-[90%] bg-emerald-50 rounded-full shadow-inner"></div>
-      <div className="absolute text-xs text-emerald-700 font-medium">Scanner</div>
-      {allDevicesInCluster.map((device, i) => {
-        // Distribute devices more evenly if they were all in one group
-        const totalForPos = allDevicesInCluster.length;
-        const effectiveIndex = i;
-        let effectiveGroup = device.group;
-
-        // If too many devices, simplify grouping for visual effect
-        if (totalForPos > 5) {
-            if (i < Math.floor(totalForPos * 0.3)) effectiveGroup = 'near';
-            else if (i < Math.floor(totalForPos * 0.7)) effectiveGroup = 'mid';
-            else effectiveGroup = 'far';
-        }
-
-        const { x, y } = getPosition(effectiveIndex, totalForPos, effectiveGroup);
+      {/* Concentric rings */}
+      {rings.map((r, i) => (
+        <div key={i} className="absolute rounded-full border border-gray-300" style={{ width: `${r}%`, height: `${r}%`, transform: 'translate(-50%, -50%)' }} />
+      ))}
+      <div className="absolute text-sm font-semibold" style={{ color: PRIMARY }}>SCANNER</div>
+      {all.map((d, i) => {
+        const radius = rings[d.group === 'near' ? 0 : d.group === 'mid' ? 1 : 2] / 2;
+        const pos = getPos(i, all.length, radius);
         return (
-          <div
-            key={`${device.group}-${device.name}-${i}`}
-            title={device.name}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
-            style={{ left: x, top: y }}
-          >
-            <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-md"></div>
-            <span className="mt-1 text-[10px] text-emerald-700 bg-white/70 px-1 rounded backdrop-blur-sm whitespace-nowrap">
-              {device.name.substring(0, 12) + (device.name.length > 12 ? '...' : '')}
+          <div key={`${d.group}-${d.name}-${i}`} title={d.name}
+               className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+               style={pos}>
+            <div className="w-5 h-5 bg-emerald-500 rounded-full" />
+            <span className="mt-1 text-xs" style={{ background: 'white', padding: '1px 4px', borderRadius: '4px' }}>
+              {d.name.length > 10 ? d.name.slice(0, 10) + '…' : d.name}
             </span>
           </div>
         );
       })}
-      <p className="absolute bottom-3 text-xs text-gray-500">Closer to center = Closer to scanner</p>
     </div>
   );
 };
 
 const ActivityTimelineChart = ({ events }) => {
   const now = Date.now();
-  const fifteenMinutesAgo = now - 15 * 60 * 1000;
-  const binCount = 5;
-  const binSize = (15 * 60 * 1000) / binCount;
-  const bins = Array(binCount).fill(null).map((_, i) => ({
-    label: i === binCount - 1 ? "Now" : `-${15 - (i * 3) - 3}m`, // Adjusted label for clarity
+  const windowMs = 15 * 60 * 1000;
+  const bins = 5;
+  const size = windowMs / bins;
+  const data = Array.from({ length: bins }).map((_, i) => ({
     count: 0,
-    startTime: fifteenMinutesAgo + i * binSize,
-    endTime: fifteenMinutesAgo + (i + 1) * binSize,
+    label: i === bins - 1 ? 'Now' : `-${15 - i * 3}m`,
+    start: now - windowMs + i * size,
+    end:   now - windowMs + (i + 1) * size
   }));
-  bins[0].label = "-15m"; // Ensure first label is -15m
 
-
-  events.forEach(event => {
-    for (const bin of bins) {
-      if (event.timestamp >= bin.startTime && event.timestamp < bin.endTime) {
-        bin.count++;
-        break;
-      }
-    }
+  events.forEach(({ timestamp }) => {
+    const idx = Math.min(bins - 1, Math.floor((timestamp - (now - windowMs)) / size));
+    if (idx >= 0) data[idx].count++;
   });
-
-  const maxCount = Math.max(1, ...bins.map(b => b.count));
+  const max = Math.max(...data.map(d => d.count), 1);
 
   return (
-    <div className="h-48 flex items-end justify-around p-4 bg-slate-100 rounded-lg">
-      {bins.map((bin, i) => (
-        <div key={i} className="flex flex-col items-center h-full justify-end w-[18%]">
-          <div
-            title={`${bin.count} detections`}
-            className="w-full bg-indigo-500 hover:bg-indigo-600 rounded-t-md transition-all duration-300"
-            style={{ height: `${(bin.count / maxCount) * 90}%` }}
-          ></div>
-          <span className="text-xs text-gray-500 mt-2">{bin.label}</span>
+    <div className="h-48 flex items-end justify-around p-4 bg-white rounded-lg">
+      {data.map((d, i) => (
+        <div key={i} className="flex flex-col items-center w-1/6">
+          <div title={`${d.count} detections`} className="w-full rounded-t"
+               style={{ height: `${(d.count / max) * 100}%`, background: PRIMARY }} />
+          <span className="text-xs mt-1 text-gray-600">{d.label}</span>
         </div>
       ))}
+      <p className="absolute top-2 left-4 text-sm text-gray-500">
+        Recent Detection Timeline: number of device detections per 3‑minute interval over the last 15 minutes.
+      </p>
     </div>
   );
 };
 
 export default function DashboardTwo() {
-  const [currentDevices, setCurrentDevices] = useState([]);
-  const [proximityGroups, setProximityGroups] = useState({ near: [], mid: [], far: [] });
-  const [deviceEvents, setDeviceEvents] = useState([]);
-  const seenDevicesRef = useRef(new Set());
-  const [welcomeMessages, setWelcomeMessages] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [groups, setGroups] = useState({});
+  const [events, setEvents] = useState([]);
+  const [metrics, setMetrics] = useState({ unique: 0, maxDuration: 0 });
 
   useEffect(() => {
     let mounted = true;
-    async function fetchAllData() {
+    async function load() {
       try {
-        // Simulate API delay for loading states if needed
-        // await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const [currentRes, groupsRes, eventsRes] = await Promise.all([
-          fetch('/api/current-devices').then(r => r.ok ? r.json() : { devices: [] }),
-          fetch('/api/rssi-current-groups').then(r => r.ok ? r.json() : { near: [], mid: [], far: [] }),
-          fetch('/api/device-events').then(r => r.ok ? r.json() : []),
+        const [cur, grp, evt] = await Promise.all([
+          fetch('/api/current-devices').then(r => r.json()),
+          fetch('/api/rssi-current-groups').then(r => r.json()),
+          fetch('/api/device-events').then(r => r.json()),
         ]);
-
         if (!mounted) return;
-
-        const newWelcomes = [];
-        const updatedCurrentDevices = currentRes.devices.map(d => {
-          let isNew = false;
-          if (!seenDevicesRef.current.has(d.pseudonym)) {
-            seenDevicesRef.current.add(d.pseudonym);
-            isNew = true;
-            const welcomeMsg = `Καλωσήρθες ${d.name}!`;
-            newWelcomes.push({ id: d.pseudonym + Date.now(), text: welcomeMsg });
-          }
-          return { ...d, isNew };
-        });
-
-        if (newWelcomes.length > 0) {
-          setWelcomeMessages(prev => [...newWelcomes, ...prev].slice(0, 3)); // Show latest 3, new ones on top
-          newWelcomes.forEach(msg => {
-            setTimeout(() => {
-              if (mounted) {
-                setWelcomeMessages(prev => prev.filter(m => m.id !== msg.id));
-              }
-            }, 7000);
-          });
-        }
-
-        setCurrentDevices(updatedCurrentDevices);
-        setProximityGroups(groupsRes);
-        setDeviceEvents(eventsRes);
-
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-      }
+        setDevices(cur.devices);
+        setGroups(grp);
+        setEvents(evt.events);
+        setMetrics({ unique: cur.totalUnique, maxDuration: cur.maxDuration });
+      } catch (e) { console.error(e); }
     }
-
-    fetchAllData();
-    const intervalId = setInterval(fetchAllData, 5000);
-    return () => {
-      mounted = false;
-      clearInterval(intervalId);
-    };
+    load();
+    const id = setInterval(load, 5000);
+    return () => { mounted=false; clearInterval(id); };
   }, []);
 
-  const totalUniqueDevicesInSession = seenDevicesRef.current.size;
-  const longestPresentDuration = currentDevices.length > 0
-    ? Math.max(0, ...currentDevices.map(d => d.duration))
-    : 0;
-
   return (
-    <div className="p-4 md:p-6 space-y-6 bg-slate-50 min-h-screen font-sans">
-      {welcomeMessages.length > 0 && (
-        <div className="fixed top-20 right-4 space-y-2 z-50 w-64">
-          {welcomeMessages.map(msg => (
-            <div key={msg.id} className="p-3 bg-blue-600 text-white rounded-lg shadow-xl text-sm animate-fadeInRight">
-              {msg.text}
-            </div>
-          ))}
-        </div>
-      )}
-      
-      <header className="text-center pb-4 border-b border-gray-200">
-        <h1 className="text-3xl font-semibold text-gray-700">Ο Παρατηρητής Μοτίβων</h1>
-        <p className="text-sm text-gray-500">(Session-based, short‑term visibility)</p>
-        <p className="text-xs text-gray-400 mt-1">Temporary Visibility Zone</p>
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+      <header>
+        <Card>
+          <CardHeader style={{ background: PRIMARY, color: 'white' }}>
+            <CardTitle className="text-2xl">Ο Παρατηρητής Μοτίβων</CardTitle>
+            <p className="text-sm opacity-80">Session-based, short‑term visibility</p>
+          </CardHeader>
+        </Card>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-lg bg-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-700">Συσκευές Παρούσες Τώρα</CardTitle>
-            <Wifi className="h-5 w-5 text-blue-500" />
+        {/* Current Devices */}
+        <Card>
+          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
+            <CardTitle className="text-lg">Συσκευές Παρούσες Τώρα</CardTitle>
+            <Wifi color={PRIMARY} />
           </CardHeader>
-          <CardContent className="space-y-2 max-h-96 overflow-y-auto py-3 px-4">
-            {currentDevices.length > 0 ? currentDevices.map(d => (
-              <div key={d.pseudonym} className="flex justify-between items-center p-3 bg-slate-50 hover:bg-slate-100 rounded-lg shadow-sm transition-all">
-                <span className={`font-medium text-sm ${d.isNew ? 'text-green-600' : 'text-gray-700'}`}>
-                  {d.name}
-                  {d.isNew && <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Νέα!</span>}
-                </span>
+          <CardContent className="max-h-80 overflow-y-auto">
+            {devices.length ? devices.map(d => (
+              <div key={d.pseudonym} className="flex justify-between p-2 hover:bg-gray-100 rounded">
+                <span className="font-medium text-sm">{d.name}</span>
                 <span className="text-xs text-gray-500">{formatDuration(d.duration)}</span>
               </div>
-            )) : <p className="text-gray-500 py-10 text-center">Καμία συσκευή ορατή αυτή τη στιγμή.</p>}
+            )) : <p className="text-center py-10 text-gray-500">No visible devices.</p>}
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg bg-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-700">Ομαδοποίηση κατά Εγγύτητα</CardTitle>
-            <MapPin className="h-5 w-5 text-red-500" />
+        {/* Proximity Groups */}
+        <Card>
+          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
+            <CardTitle className="text-lg">Ομαδοποίηση κατά Εγγύτητα</CardTitle>
+            <MapPin color={PRIMARY} />
           </CardHeader>
           <CardContent>
-            <ProximityClusters groups={proximityGroups} />
+            <ProximityClusters groups={groups} />
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg bg-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-700">Χρονογράφημα Δραστηριότητας</CardTitle>
-            <Clock className="h-5 w-5 text-purple-600" />
+        {/* Recent Detection Timeline */}
+        <Card>
+          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
+            <CardTitle className="text-lg">Recent Detection Timeline</CardTitle>
+            <Clock color={PRIMARY} />
           </CardHeader>
           <CardContent>
-            {deviceEvents.length > 0 ? <ActivityTimelineChart events={deviceEvents} /> : <p className="text-gray-500 py-10 text-center h-48 flex items-center justify-center">Δεν υπάρχουν πρόσφατα γεγονότα ανίχνευσης.</p>}
+            {events.length > 0 ? <ActivityTimelineChart events={events} /> :
+              <p className="text-center py-10 text-gray-500">No recent events.</p>}
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg bg-white">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-medium text-gray-700">Επισκόπηση Συνεδρίας</CardTitle>
-            <BarChart2 className="h-5 w-5 text-amber-500" />
+        {/* Session Overview */}
+        <Card>
+          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
+            <CardTitle className="text-lg">Επισκόπηση Συνεδρίας</CardTitle>
+            <BarChart2 color={PRIMARY} />
           </CardHeader>
-          <CardContent className="space-y-3 pt-5">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">Συνολικές Μοναδικές Συσκευές:</p>
-              <p className="text-xl font-semibold text-gray-800">{totalUniqueDevicesInSession}</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">Μεγαλύτερη Διάρκεια Παρουσίας:</p>
-              <p className="text-xl font-semibold text-gray-800">{formatDuration(longestPresentDuration)}</p>
-            </div>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between"><span>Συνολικές Μοναδικές Συσκευές:</span><span className="font-semibold">{metrics.unique}</span></div>
+            <div className="flex justify-between"><span>Μεγαλύτερη Διάρκεια Παρουσίας:</span><span className="font-semibold">{formatDuration(metrics.maxDuration)}</span></div>
           </CardContent>
         </Card>
       </div>
 
-      <footer className="text-center pt-6 mt-4 border-t border-gray-200">
-        <p className="text-xs text-gray-500 flex items-center justify-center">
-          <AlertTriangle className="h-4 w-4 mr-2 text-orange-500" />
-          Σημείωση: Τα ονόματα των συσκευών είναι προσωρινά ορατά. Αυτή η συνεδρία θα γίνει επαναφορά σύντομα.
-        </p>
+      <footer className="text-center text-xs text-gray-500">
+        <AlertTriangle color="orange" className="inline mr-1" />
+        Σημείωση: Αυτή η συνεδρία θα γίνει επαναφορά σύντομα.
       </footer>
-      <style jsx global>{`
-        @keyframes fadeInRight {
-          from { opacity: 0; transform: translateX(20px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        .animate-fadeInRight { animation: fadeInRight 0.3s ease-out forwards; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
-      `}</style>
     </div>
   );
 }
