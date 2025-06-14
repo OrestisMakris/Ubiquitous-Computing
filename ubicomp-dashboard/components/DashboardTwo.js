@@ -101,7 +101,7 @@ export default function DashboardTwo() {
                           fontSize: '1.5rem',    // text-2xl
                           lineHeight: '2rem',    // text-2xl
                           fontWeight: '700',     // font-bold
-                          color: '#000000',       // text-black
+                          color: 'rgb(0, 19, 159)',       // text-black
                         }}
                       >
                         {d.name}
@@ -111,7 +111,7 @@ export default function DashboardTwo() {
                       style={{
                         fontSize: '1.5rem',    // text-2xl
                         lineHeight: '2rem',    // text-2xl
-                        color: '#000000',       // text-black
+                        color: 'rgb(0, 107, 5)',       // text-black
                         fontWeight: '600',     // font-semibold
                       }}
                     >
