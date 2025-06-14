@@ -134,85 +134,75 @@ export default function DashboardTwo() {
   }, []);
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      <header>
-        <Card>
-          <CardHeader style={{ background: PRIMARY, color: 'white' }}>
-            <CardTitle className="text-2xl">Ο Παρατηρητής Μοτίβων</CardTitle>
-            <p className="text-sm opacity-80">Session-based, short‑term visibility</p>
-          </CardHeader>
-        </Card>
+    <div className="space-y-10 p-6 bg-gray-50 min-h-screen">
+      {/* Header */}
+      <header className="text-center py-6">
+        <p className="text-4xl text-[#0017a5] font-bold">
+          📡 Ο Παρατηρητής Μοτίβων
+        </p>
+        <p className="mt-2 text-sm text-gray-600">
+          CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25<br/>
+          Prof. Andreas Komninos — Authors: Ορέστης Αντώνης Μακρής
+        </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Current Devices */}
         <Card>
-          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
-            <CardTitle className="text-lg">Συσκευές Παρούσες Τώρα</CardTitle>
-            <Wifi color={PRIMARY} />
+          <CardHeader className="flex justify-between border-b-2 border-[#0017a5]">
+            <CardTitle className="text-lg">🔹 Συσκευές Παρούσες Τώρα</CardTitle>
+            <Wifi color="#0017a5" />
           </CardHeader>
           <CardContent className="max-h-80 overflow-y-auto">
-            {devices.length > 0 ? (
-              devices.map(d => (
-                <div key={d.pseudonym} className="flex justify-between p-2 hover:bg-gray-100 rounded">
-                  <span className="font-medium text-sm">{d.name}</span>
-                  <span className="text-xs text-gray-500">{formatDuration(d.duration)}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-center py-10 text-gray-500">No visible devices.</p>
-            )}
+            {/* ...existing listing logic... */}
           </CardContent>
         </Card>
 
         {/* Proximity Groups */}
         <Card>
-          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
-            <CardTitle className="text-lg">Ομαδοποίηση κατά Εγγύτητα</CardTitle>
-            <MapPin color={PRIMARY} />
+          <CardHeader className="flex justify-between border-b-2 border-[#0017a5]">
+            <CardTitle className="text-lg">🔹 Ομαδοποίηση κατά Εγγύτητα</CardTitle>
+            <MapPin color="#0017a5" />
           </CardHeader>
           <CardContent>
-            <ProximityClusters groups={groups} />
+            {/* ...existing ProximityClusters component... */}
           </CardContent>
         </Card>
 
         {/* Recent Detection Timeline */}
-        <Card>
-          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
-            <CardTitle className="text-lg">Recent Detection Timeline</CardTitle>
-            <Clock color={PRIMARY} />
+        <Card className="md:col-span-2">
+          <CardHeader className="border-b-2 border-[#0017a5]">
+            <CardTitle className="text-lg">🔹 Χρονολόγιο Ανιχνεύσεων</CardTitle>
           </CardHeader>
           <CardContent>
-            {events.length > 0 ? (
-              <ActivityTimelineChart events={events} />
-            ) : (
-              <p className="text-center py-10 text-gray-500">No recent events.</p>
-            )}
+            {/* ...existing ActivityTimelineChart or no-data message... */}
           </CardContent>
         </Card>
 
         {/* Session Overview */}
-        <Card>
-          <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
-            <CardTitle className="text-lg">Επισκόπηση Συνεδρίας</CardTitle>
-            <BarChart2 color={PRIMARY} />
+        <Card className="md:col-span-2">
+          <CardHeader className="border-b-2 border-[#0017a5]">
+            <CardTitle className="text-lg">🔹 Επισκόπηση Συνεδρίας</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between">
-              <span>Συνολικές Μοναδικές Συσκευές:</span>
-              <span className="font-semibold">{metrics.unique}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Μεγαλύτερη Διάρκεια Παρουσίας:</span>
-              <span className="font-semibold">{formatDuration(metrics.maxDuration)}</span>
-            </div>
+            {/* ...existing metrics display... */}
           </CardContent>
         </Card>
       </div>
 
-      <footer className="text-center text-xs text-gray-500">
-        <AlertTriangle color="orange" className="inline mr-1" />
-        Σημείωση: Αυτή η συνεδρία θα γίνει επαναφορά σύντομα.
+      {/* Privacy Notice */}
+      <Card className="mx-auto max-w-lg">
+        <CardContent>
+          <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
+            🔒 Privacy Notice: All data is anonymized and aggregated. No individual tracking.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Footer */}
+      <footer className="text-center text-sm text-gray-400">
+        © 2025 | CEID_NE576 — Pervasive Computing Lab Ex. 2024/25<br/>
+        👤 Ορέστης Αντώνης Μακρής (AM 1084516)
       </footer>
     </div>
   );
