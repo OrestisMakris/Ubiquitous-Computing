@@ -41,17 +41,9 @@ export default function DashboardTwo() {
     return acc;
   }, { near: [], mid: [], far: [] });
 
-  return (
+ return (
     <div className="space-y-10">
-      <header className="text-center py-6">
-        <p className="text-4xl text-[#0017a5] font-bold">
-          🕵️‍♂️ Dashboard Παρατηρητής Μοτίβων
-        </p>
-        <p className="mt-2 text-sm text-gray-600">
-          Παρατηρεί προσωρινά δημόσια ονόματα συσκευών χωρίς μακροχρόνιο ιστορικό
-        </p>
-      </header>
-
+      {/* …header… */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 1. Devices Currently Visible */}
         <Card>
@@ -59,26 +51,37 @@ export default function DashboardTwo() {
             <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {devices.map(d => {
-                const label = d.duration < 60
-                  ? `${d.duration}s`
-                  : `${Math.floor(d.duration / 60)}′`;
+                // format as mm′ ss″ or ss s
+                const mins = Math.floor(d.duration / 60);
+                const secs = d.duration % 60;
+                const label = mins > 0
+                  ? `${mins}′ ${secs}″`
+                  : `${secs}s`;
+
                 return (
-                  <li key={d.pseudonym} className="flex justify-between">
-                    <span>
-                      {d.name}
+                  <li
+                    key={d.pseudonym}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="flex items-center space-x-2">
                       {d.isNew && (
-                        <span className="ml-2 px-1 bg-blue-100 text-blue-800 rounded text-xs">
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs font-bold">
                           Νέα!
                         </span>
                       )}
-                    </span>
-                    <span className="text-gray-500">{label}</span>
+                      <span className="text-lg font-semibold text-gray-800">
+                        {d.name}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-500">{label}</span>
                   </li>
                 );
               })}
-              {devices.length === 0 && <li>Κανένα σήμα προς το παρόν</li>}
+              {devices.length === 0 && (
+                <li className="text-gray-500">Κανένα σήμα προς το παρόν</li>
+              )}
             </ul>
           </CardContent>
         </Card>
