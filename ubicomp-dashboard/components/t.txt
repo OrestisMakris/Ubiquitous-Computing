@@ -1,5 +1,4 @@
-
--- Sample Data with Greek CEID @ University of Patras Context
+-- Ensure this file is saved with UTF-8 encoding
 INSERT INTO fake_device_profiles (
     profile_name, device_name_trigger, display_device_name,
     movement_pattern_1, movement_pattern_2, movement_pattern_3, movement_pattern_4,
@@ -53,10 +52,16 @@ INSERT INTO fake_device_profiles (
     '🔍 Συμπεριφορική Σημείωση: Όταν έχει καλό καιρό, η ''Redmi_Katerina'' εξαφανίζεται. Προτεραιότητα στην έξοδο, ε;', 
     FALSE, 'active', NULL
 ), (
-    'Generic_Watched_Device_CEID', NULL, 'Μια Παρακολουθούμενη Συσκευή στο CEID', 
-    '🚩 Αυτή τη στιγμή υπό έντονη παρακολούθηση εντός του δικτύου του CEID.', 
-    '🕒 Τα μοτίβα δραστηριότητας καταγράφονται και αναλύονται συνεχώς.',
-    '🏅 Οι συνδέσεις και οι ρουτίνες εξετάζονται εξονυχιστικά.', 
-    '🔍 Περαιτέρω συμπεράσματα αναμένονται. Δεν μπορείς να κρυφτείς.',
-    FALSE, 'generic', NULL
+    'Generic_Watched_Device_CEID', -- profile_name
+    NULL,                          -- device_name_trigger
+    'Μια Παρακολουθούμενη Συσκευή στο CEID', -- display_device_name
+    '🚩 Αυτή τη στιγμή υπό έντονη παρακολούθηση εντός του δικτύου του CEID.', -- movement_pattern_1
+    '🕒 Τα μοτίβα δραστηριότητας καταγράφονται και αναλύονται συνεχώς.', -- movement_pattern_2
+    NULL,                          -- movement_pattern_3 (Corrected: was missing)
+    NULL,                          -- movement_pattern_4 (Corrected: was missing)
+    '🏅 Οι συνδέσεις και οι ρουτίνες εξετάζονται εξονυχιστικά.', -- social_insight_1
+    '🔍 Περαιτέρω συμπεράσματα αναμένονται. Δεν μπορείς να κρυφτείς.', -- social_insight_2
+    FALSE,                         -- is_high_concern
+    'generic',                     -- profile_type
+    NULL                           -- provocative_note
 );
