@@ -13,6 +13,10 @@ const DashboardTwo = dynamic(() => import('@/components/DashboardTwo'), {
   ssr: false,
 })
 
+const DashboardThree = dynamic(() => import('@/components/DashboardThree'), {
+  ssr: false,
+})
+
 export default function AllDashboards() {
   const [tab, setTab] = useState('d1')
 
@@ -37,7 +41,7 @@ export default function AllDashboards() {
 
         {/* Tab 3 */}
         <TabsContent value="d3">
-          {/* TODO: insert your category distribution component here */}
+          {tab === 'd3' && <DashboardThree />}
         </TabsContent>
       </Tabs>
     </div>
