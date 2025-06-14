@@ -91,7 +91,6 @@ export default function DashboardTwo() {
     const interval = setInterval(fetchAll, 5000);
     return () => clearInterval(interval);
   }, []);
-
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
@@ -103,12 +102,23 @@ export default function DashboardTwo() {
         </p>
       </header>
 
-      {/* Welcome Section for New Phones */}
+      {/* Welcome Section for New Phones - Updated Styling */}
       {newlyWelcomedPhones.length > 0 && (
         <div className="my-4 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm text-center">
           {newlyWelcomedPhones.map(phone => (
-            <p key={phone.pseudonym} className="text-lg text-blue-700 font-medium">
-              👋 Καλωσήρθες {phone.name}!
+            <p key={phone.pseudonym} className="text-lg text-blue-700"> {/* Adjusted base styling */}
+              <strong className="font-bold">👋 Καλωσήρθες</strong>{' '} {/* Bold "Καλωσήρθες" */}
+              <span
+                style={{
+                  fontSize: '1.5rem',
+                  lineHeight: '2rem',
+                  fontWeight: '700',
+                  color: 'rgb(0, 9, 76)', // Applied custom style
+                }}
+              >
+                {phone.name}
+              </span>
+              !
             </p>
           ))}
         </div>
@@ -116,6 +126,7 @@ export default function DashboardTwo() {
 
         {/* Main card grid: 2 columns on medium screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        {/* ... (rest of the cards: Devices Currently Visible, Proximity, Session Overview, Timeline) ... */}
         {/* Card 1: Devices Currently Visible (Row 1, Col 1) */}
         <Card>
           <CardHeader>
