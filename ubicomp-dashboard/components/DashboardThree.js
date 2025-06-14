@@ -24,7 +24,7 @@ export default function DashboardThree() {
     return () => { mounted = false; clearInterval(iv); };
   }, []);
 
-  // merge all patterns & group by device_name
+  // group messages by device_name
   const grouped = [...lastSeen.map(p => ({...p, pattern_type: 'last_seen'})),
                    ...cooccur.map(p => ({...p, pattern_type: 'cooccur'})),
                    ...routine.map(p => ({...p, pattern_type: 'routine'}))]
@@ -36,6 +36,12 @@ export default function DashboardThree() {
       return acc;
     }, {});
 
+  // take top 3 real, then up to 17 fakes
+  const allDevices = Object.values(grouped);
+  const realDevices = allDevices.filter(d => d.device_name.startsWith('[Real]')).slice(0,3);
+  const fakeDevices = allDevices.filter(d => !d.device_name.startsWith('[Real]')).slice(0,17);
+  const displayDevices = [...realDevices, ...fakeDevices];
+
   return (
     <div>
       <header className="text-center py-4">
@@ -43,7 +49,7 @@ export default function DashboardThree() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Object.values(grouped).map((dev, i) => (
+        {displayDevices.map((dev, i) => (
           <Card key={i}>
             <CardHeader>
               <CardTitle>
@@ -56,8 +62,7 @@ export default function DashboardThree() {
                 {dev.last_seen.length > 0
                   ? dev.last_seen.map((m,j) => (
                       <div key={j} className="flex items-center py-1">
-                        <span>📍</span>
-                        <span className="ml-2">{m}</span>
+                        <span>📍</span><span className="ml-2">{m}</span>
                       </div>
                     ))
                   : <p className="text-gray-500">— none —</p>
@@ -65,19 +70,14 @@ export default function DashboardThree() {
               </div>
               <div className="mt-4">
                 <h4 className="font-semibold">Social Insights</h4>
-                {dev.cooccur.length > 0
-                  ? dev.cooccur.map((m,j) => (
-                      <div key={j} className="flex items-center py-1">
-                        <span>👥</span>
-                        <span className="ml-2">{m}</span>
-                      </div>
-                    ))
-                  : <p className="text-gray-500">— none —</p>
-                }
-                {dev.routine.length > 0 && dev.routine.map((m,j) => (
+                {dev.cooccur.map((m,j) => (
                   <div key={j} className="flex items-center py-1">
-                    <span>⏱️</span>
-                    <span className="ml-2">{m}</span>
+                    <span>👥</span><span className="ml-2">{m}</span>
+                  </div>
+                ))}
+                {dev.routine.map((m,j) => (
+                  <div key={j} className="flex items-center py-1">
+                    <span>⏱️</span><span className="ml-2">{m}</span>
                   </div>
                 ))}
               </div>
@@ -86,4 +86,5 @@ export default function DashboardThree() {
         ))}
       </div>
     </div>
-  );}
+  );
+}
