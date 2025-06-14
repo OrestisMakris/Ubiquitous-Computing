@@ -151,7 +151,7 @@ export default function DashboardTwo() {
 
 <Card>
   <CardHeader>
-    <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
+    <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα (Closer to center = stronger signal)</CardTitle>
   </CardHeader>
   {/* make CardContent a flex‐column centered container */}
   <CardContent className="flex flex-col items-center">
@@ -198,9 +198,6 @@ export default function DashboardTwo() {
           })}
       </svg>
     </div>
-    <p className="text-center text-xs text-gray-500">
-      Closer to center = stronger signal
-    </p>
   </CardContent>
 </Card>
         {/* 3. Recent Detection Timeline (Bar Chart) */}
