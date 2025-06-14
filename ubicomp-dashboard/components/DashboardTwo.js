@@ -134,62 +134,67 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
 
- <Card>
+        <Card>
           <CardHeader>
             <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative w-full aspect-square max-w-xs mx-auto"> {/* Made it square and constrained max width */}
-              {/* Outer filled circle for the plot area */}
-              <div
-                className="absolute inset-0 bg-green-100 rounded-full" // Light green filled circle
-                style={{
-                  // Ensuring the circle doesn't get too small if the card is narrow
-                  minWidth: '150px',
-                  minHeight: '150px',
-                }}
-              />
-              {devices.map((d, i) => {
-                // 1. Normalize RSSI to a 0-1 range (0 for weakest at edge, 1 for strongest at center)
-                const rssiRange = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
-                let normalizedRssi = 0;
-                if (rssiRange !== 0) {
-                  normalizedRssi = (Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi)) - RSSI_EDGE_PLOT) / rssiRange;
-                }
-                // Clamp between 0 and 1
-                normalizedRssi = Math.max(0, Math.min(1, normalizedRssi));
+            {/* Plot Container - This is now the light green circle */}
+            <div
+              className="relative w-full aspect-square max-w-xs mx-auto bg-green-100 rounded-full"
+              style={{
+                minWidth: '150px', // Ensure a minimum size for the plot area
+              }}
+            >
+              {devices
+                .filter(device => typeof device.rssi === 'number' && !isNaN(device.rssi))
+                .map((d, i, filteredArray) => {
+                  // 1. Normalize RSSI to a 0-1 range (0 for weakest at edge, 1 for strongest at center)
+                  const rssiRange = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT; // e.g., -30 - (-90) = 60
+                  let normalizedRssi = 0; // Default to edge if rssiRange is somehow 0 (should not happen with current consts)
+                  
+                  if (rssiRange !== 0) {
+                    // Clamp d.rssi to the defined range before normalization
+                    const clampedRssi = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
+                    normalizedRssi = (clampedRssi - RSSI_EDGE_PLOT) / rssiRange;
+                  }
+                  // normalizedRssi is now 0 (device at RSSI_EDGE_PLOT) to 1 (device at RSSI_CENTER_PLOT)
 
-                // 2. Calculate radial distance (percentage from center)
-                // Stronger signal (normalizedRssi closer to 1) means smaller radialDistance
-                const radialDistancePercent = (1 - normalizedRssi) * PLOT_AREA_RADIUS_PERCENT;
+                  // 2. Calculate radial distance (percentage from center)
+                  // Stronger signal (normalizedRssi closer to 1) means smaller radialDistance from plot edge perspective
+                  // So, (1 - normalizedRssi) maps 1 (center) to 0 distance, and 0 (edge) to full PLOT_AREA_RADIUS_PERCENT distance.
+                  const radialDistancePercent = (1 - normalizedRssi) * PLOT_AREA_RADIUS_PERCENT;
 
-                // 3. Distribute bubbles by angle
-                const angleDegrees = (devices.length > 0 ? (360 / devices.length) * i : 0) + 45; // Offset angle slightly
-                const angleRadians = (angleDegrees * Math.PI) / 180;
+                  // 3. Distribute bubbles by angle
+                  const angleDegrees = (filteredArray.length > 0 ? (360 / filteredArray.length) * i : 0) + 45; // Offset angle slightly
+                  const angleRadians = (angleDegrees * Math.PI) / 180;
 
-                // 4. Calculate X and Y percentage positions for the bubble's center
-                const xPct = 50 + radialDistancePercent * Math.cos(angleRadians);
-                const yPct = 50 + radialDistancePercent * Math.sin(angleRadians);
+                  // 4. Calculate X and Y percentage positions for the bubble's center
+                  const xPct = 50 + radialDistancePercent * Math.cos(angleRadians);
+                  const yPct = 50 + radialDistancePercent * Math.sin(angleRadians);
 
-                return (
-                  <div
-                    key={d.pseudonym}
-                    title={`${d.name} (${d.rssi} dBm)`}
-                    className="absolute bg-green-500 rounded-full" // Darker green bubble
-                    style={{
-                      width: `${BUBBLE_DIAMETER}px`,   // Corrected to use BUBBLE_DIAMETER
-                      height: `${BUBBLE_DIAMETER}px`,  // Corrected to use BUBBLE_DIAMETER
-                      left: `${xPct}%`,
-                      top: `${yPct}%`,
-                      transform: 'translate(-50%, -50%)', // Center the bubble on its coordinates
-                      transition: 'left 0.5s ease-out, top 0.5s ease-out', // Smooth transition
-                    }}
-                  />
-                );
+                  return (
+                    <div
+                      key={d.pseudonym}
+                      title={`${d.name} (${d.rssi} dBm)`}
+                      className="absolute bg-green-500 rounded-full" // Darker green bubble
+                      style={{
+                        width: `${BUBBLE_DIAMETER}px`,
+                        height: `${BUBBLE_DIAMETER}px`,
+                        left: `${xPct}%`,
+                        top: `${yPct}%`,
+                        transform: 'translate(-50%, -50%)', // Center the bubble on its coordinates
+                        transition: 'left 0.5s ease-out, top 0.5s ease-out', // Smooth transition
+                      }}
+                    />
+                  );
               })}
-              {devices.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-gray-400 italic">No devices</p>
+              {/* Message for no devices or no valid signal data */}
+              {devices.filter(device => typeof device.rssi === 'number' && !isNaN(device.rssi)).length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center p-4"> {/* Added padding */}
+                  <p className="text-gray-500 italic text-center"> {/* Centered text */}
+                    {devices.length > 0 ? "No devices with valid signal data to display." : "No devices detected."}
+                  </p>
                 </div>
               )}
             </div>
