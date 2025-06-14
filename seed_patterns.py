@@ -20,12 +20,7 @@ DEVICE_JABS = [
     "Funny: '{name}' vanishes during exam weeks.",
     "‘{name}’ clocks more hours in the Library than students do.",
 ]
-CLASS_TIMES = [
-    "after the 10 AM lecture",
-    "during the 2 PM seminar",
-    "right before the 8 AM lab",
-    "around the 5 PM workshop",
-]
+
 MOVEMENT_TEMPLATES = [
     "sporadic library visits",
     "inconsistent campus presence",
@@ -74,7 +69,7 @@ def seed_synthetic():
 
     cur.execute("SELECT DISTINCT pseudonym FROM device_sessions")
     all_pseuds = [r['pseudonym'] for r in cur.fetchall()]
-    all_pseuds = random.sample(all_pseuds, min(len(all_pseuds), 20))
+    all_pseuds = random.sample(all_pseuds, min(len(all_pseuds), 500))
 
     now = datetime.now().replace(microsecond=0)
     to_upsert = []
@@ -83,10 +78,14 @@ def seed_synthetic():
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
         # generate 2–4 movement msgs
         for m in random.sample(MOVEMENT_TEMPLATES, random.randint(2,4)):
-            to_upsert.append((p, fake_name, 'last_seen', f"📍 {m}.", now))
+            to_upsert.append((p, fake_name, 'last_seen', f"{m}.", now))
         # generate 2–4 social msgs
         for s in random.sample(SOCIAL_TEMPLATES, random.randint(2,4)):
-            to_upsert.append((p, fake_name, 'cooccur', f"👥 {s}.", now))
+            to_upsert.append((p, fake_name, 'cooccur', f"{s}.", now))
+
+        if random.random() < 0.1:
+            jab = random.choice(DEVICE_JABS).format(name=fake_name)
+            to_upsert.append((p, fake_name, 'cooccur', f"{jab}", now))
 
         for _ in range(random.randint(1,2)):
             ct = random.choice(CLASS_TIMES)
