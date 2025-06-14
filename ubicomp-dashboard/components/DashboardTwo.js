@@ -17,10 +17,26 @@ const RSSI_EDGE_PLOT   = -90;
 const BUBBLE_DIAMETER = 16; 
 const CENTER_DOT_DIAMETER = 8; 
 
+// Helper function to identify likely phone devices
+const PHONE_KEYWORDS = [
+  'iphone', 'galaxy', 'pixel', 'xperia', 'oneplus', 'moto', 
+  'redmi', 'poco', 'oppo', 'vivo', 'realme', 'nokia', 'android', 'ios',
+  'phone', 'mobile', 'smartphone' 
+];
+
+function isLikelyPhone(deviceName) {
+  if (!deviceName || typeof deviceName !== 'string') {
+    return false;
+  }
+  const lowerDeviceName = deviceName.toLowerCase();
+  return PHONE_KEYWORDS.some(keyword => lowerDeviceName.includes(keyword));
+}
+
 export default function DashboardTwo() {
   const [devices, setDevices] = useState([])
   const [hist, setHist]       = useState([])
   const [sessionOverviewData, setSessionOverviewData] = useState({ totalUnique: 0, longestPresent: 0 });
+  const [newlyWelcomedPhones, setNewlyWelcomedPhones] = useState([]); // State for new phones
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -31,6 +47,12 @@ export default function DashboardTwo() {
         ]);
         const visDevices = Array.isArray(visRes.devices) ? visRes.devices : [];
         setDevices(visDevices);
+
+        // Filter for new phone devices to welcome
+        const newPhonesDetected = visDevices.filter(
+          d => d.isNew && isLikelyPhone(d.name)
+        );
+        setNewlyWelcomedPhones(newPhonesDetected);
 
         const totalUnique = visDevices.length;
         const longestPresentSec = visDevices.length > 0 ? Math.max(0, ...visDevices.map(d => d.duration)) : 0;
@@ -58,6 +80,7 @@ export default function DashboardTwo() {
       } catch (err) {
         console.error('DashboardTwo fetch error:', err);
         setDevices([]);
+        setNewlyWelcomedPhones([]); // Clear on error
         setSessionOverviewData({ totalUnique: 0, longestPresent: 0 }); 
         const labels = ['-15′','-12′','-10′','-7′','-5′','-2′']; 
         setHist(labels.map(t => ({ time: t, count: 0 })));
@@ -79,6 +102,17 @@ export default function DashboardTwo() {
           Παρατηρεί προσωρινά δημόσια ονόματα συσκευών χωρίς μακροχρόνιο ιστορικό
         </p>
       </header>
+
+      {/* Welcome Section for New Phones */}
+      {newlyWelcomedPhones.length > 0 && (
+        <div className="my-4 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm text-center">
+          {newlyWelcomedPhones.map(phone => (
+            <p key={phone.pseudonym} className="text-lg text-blue-700 font-medium">
+              👋 Καλωσήρθες {phone.name}!
+            </p>
+          ))}
+        </div>
+      )}
 
         {/* Main card grid: 2 columns on medium screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -208,7 +242,6 @@ export default function DashboardTwo() {
         {/* Card 3: Session Overview (Row 2, Col 1) */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            {/* Standard CardTitle styling */}
             <CardTitle className="text-base font-medium">Session Overview</CardTitle>
             <Wifi className="h-5 w-5 text-gray-400" />
           </CardHeader>
