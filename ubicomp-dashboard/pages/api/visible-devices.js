@@ -1,41 +1,30 @@
 import { pool } from '@/lib/db';
 
 export default async function handler(req, res) {
-  const RECENT_SEC = 20; // How recent for a device to be "currently visible"
-  const NEW_SEC = 15 * 60; // Threshold for a device to be considered "New!" based on its absolute first appearance
+  const RECENT_SEC = 20; // Window for "currently visible"
+  const NEW_WINDOW_SEC = 15 * 60; // 15-minute window to check for prior presence for "New!" flag
+  const MAX_DURATION_LOOKBACK_SEC = 2 * 60 * 60; // 2-hour lookback for calculating session duration
 
   const [rows] = await pool.query(
     `
     WITH
-      -- Devices currently visible (seen in the last RECENT_SEC seconds)
       current_visible_devices AS (
         SELECT
           pseudonym,
           device_name AS name,
           MAX(signal_strength) AS rssi,
-          MAX(UNIX_TIMESTAMP(last_seen)) AS current_last_ts -- Last time seen in the current visibility window
+          MAX(UNIX_TIMESTAMP(last_seen)) AS current_last_ts
         FROM device_sessions
         WHERE last_seen >= DATE_SUB(NOW(), INTERVAL ? SECOND) -- RECENT_SEC
         GROUP BY pseudonym, device_name
       ),
-      -- For devices currently visible, find their first appearance in the last NEW_SEC window
-      -- This helps determine the duration of their current "streak" of visibility
-      session_start_time AS (
+      session_start_for_duration AS (
         SELECT
           cvd.pseudonym,
-          MIN(UNIX_TIMESTAMP(ds.last_seen)) AS session_first_ts
+          MIN(UNIX_TIMESTAMP(ds.last_seen)) AS first_ts_for_duration_calc
         FROM device_sessions ds
         JOIN current_visible_devices cvd ON ds.pseudonym = cvd.pseudonym
-        WHERE ds.last_seen >= DATE_SUB(NOW(), INTERVAL ? SECOND) -- NEW_SEC
-        GROUP BY cvd.pseudonym
-      ),
-      -- For devices currently visible, find their absolute first appearance ever in the database
-      overall_start_time AS (
-        SELECT
-          cvd.pseudonym,
-          MIN(UNIX_TIMESTAMP(ds.last_seen)) AS overall_first_ts
-        FROM device_sessions ds
-        JOIN current_visible_devices cvd ON ds.pseudonym = cvd.pseudonym
+        WHERE ds.last_seen >= DATE_SUB(NOW(), INTERVAL ? SECOND) -- MAX_DURATION_LOOKBACK_SEC
         GROUP BY cvd.pseudonym
       )
     SELECT
@@ -43,23 +32,31 @@ export default async function handler(req, res) {
       cvd.name,
       cvd.rssi,
       cvd.current_last_ts,
-      COALESCE(sst.session_first_ts, cvd.current_last_ts) AS session_first_ts, -- Handle cases where device might be new in overall_start_time but not have extensive history in session_start_time
-      ost.overall_first_ts
+      COALESCE(ssfd.first_ts_for_duration_calc, cvd.current_last_ts) AS first_ts_for_duration,
+      (
+        SELECT NOT EXISTS (
+          SELECT 1
+          FROM device_sessions ds_new_check
+          WHERE ds_new_check.pseudonym = cvd.pseudonym
+            AND ds_new_check.last_seen >= DATE_SUB(NOW(), INTERVAL (? + ?) SECOND) -- Start of 15-min window before RECENT_SEC
+            AND ds_new_check.last_seen < DATE_SUB(NOW(), INTERVAL ? SECOND)     -- End of 15-min window before RECENT_SEC
+        )
+      ) AS is_genuinely_new
     FROM current_visible_devices cvd
-    LEFT JOIN session_start_time sst ON cvd.pseudonym = sst.pseudonym
-    LEFT JOIN overall_start_time ost ON cvd.pseudonym = ost.pseudonym
+    LEFT JOIN session_start_for_duration ssfd ON cvd.pseudonym = ssfd.pseudonym
     ORDER BY cvd.name ASC
   `,
-    [RECENT_SEC, NEW_SEC]
+    [
+      RECENT_SEC,                 // For current_visible_devices
+      MAX_DURATION_LOOKBACK_SEC,  // For session_start_for_duration
+      RECENT_SEC,                 // For is_genuinely_new subquery (part of lower bound)
+      NEW_WINDOW_SEC,             // For is_genuinely_new subquery (part of lower bound)
+      RECENT_SEC                  // For is_genuinely_new subquery (upper bound)
+    ]
   );
 
-  const now_ts = Math.floor(Date.now() / 1000);
   const devices = rows.map((r) => {
-    // Duration of the current session/streak (capped at NEW_SEC)
-    const sessionLen = r.current_last_ts - r.session_first_ts;
-
-    // Is the device truly new? (Its very first recorded appearance was within NEW_SEC)
-    const isNew = r.overall_first_ts ? r.overall_first_ts >= now_ts - NEW_SEC : false;
+    const sessionLen = r.current_last_ts - r.first_ts_for_duration;
 
     const group =
       r.rssi > -50
@@ -73,7 +70,7 @@ export default async function handler(req, res) {
       name: r.name,
       rssi: r.rssi,
       duration: Math.max(0, sessionLen), // Ensure duration is not negative
-      isNew,
+      isNew: !!r.is_genuinely_new, // Convert SQL boolean (0 or 1) to JS boolean
       group,
     };
   });
