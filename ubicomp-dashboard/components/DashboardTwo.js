@@ -7,10 +7,10 @@ import {
 // Constants for the proximity plot
 const RSSI_CENTER_PLOT = -30; // Strongest signal (closest to center)
 const RSSI_EDGE_PLOT = -90;   // Weakest signal (at the edge of the plot area)
-const RSSI_RANGE_PLOT = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
+// const RSSI_RANGE_PLOT = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT; // This is calculated inline, so not strictly needed as a separate const
 const BUBBLE_DIAMETER = 16; // pixels
-const BUBBLE_RADIUS = BUBBLE_DIAMETER / 2;
-
+// const BUBBLE_RADIUS = BUBBLE_DIAMETER / 2; // Not directly used, can be removed if not needed elsewhere
+const PLOT_AREA_RADIUS_PERCENT = 45; // Max distance from center as % of container half-width for bubble placement
 
 export default function DashboardTwo() {
   const [devices, setDevices] = useState([]);
@@ -177,8 +177,8 @@ export default function DashboardTwo() {
                     title={`${d.name} (${d.rssi} dBm)`}
                     className="absolute bg-green-500 rounded-full" // Darker green bubble
                     style={{
-                      width: `${BUBBLE_DIAMETER_PX}px`,
-                      height: `${BUBBLE_DIAMETER_PX}px`,
+                      width: `${BUBBLE_DIAMETER}px`,   // Corrected to use BUBBLE_DIAMETER
+                      height: `${BUBBLE_DIAMETER}px`,  // Corrected to use BUBBLE_DIAMETER
                       left: `${xPct}%`,
                       top: `${yPct}%`,
                       transform: 'translate(-50%, -50%)', // Center the bubble on its coordinates
