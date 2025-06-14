@@ -2,18 +2,10 @@ import React, { createContext, useContext } from 'react'
 
 const TabsContext = createContext({
   value: null,
-  onChange: (_: string) => {},
+  onChange: (_) => {}, // Corrected: removed type annotation
 })
 
-export function Tabs({
-  value,
-  onValueChange,
-  children,
-}: {
-  value: string
-  onValueChange: (newVal: string) => void
-  children: React.ReactNode
-}) {
+export function Tabs({ value, onValueChange, children }) { // Corrected: removed type annotations
   return (
     <TabsContext.Provider value={{ value, onChange: onValueChange }}>
       <div>{children}</div>
@@ -21,17 +13,11 @@ export function Tabs({
   )
 }
 
-export function TabsList({ children }: { children: React.ReactNode }) {
+export function TabsList({ children }) { // Corrected: removed type annotation
   return <div className="flex space-x-2">{children}</div>
 }
 
-export function TabsTrigger({
-  value,
-  children,
-}: {
-  value: string
-  children: React.ReactNode
-}) {
+export function TabsTrigger({ value, children }) { // Corrected: removed type annotations
   const { onChange, value: active } = useContext(TabsContext)
   const isActive = active === value
   return (
@@ -49,13 +35,7 @@ export function TabsTrigger({
   )
 }
 
-export function TabsContent({
-  value,
-  children,
-}: {
-  value: string
-  children: React.ReactNode
-}) {
+export function TabsContent({ value, children }) { // Corrected: removed type annotations
   const { value: active } = useContext(TabsContext)
   if (active !== value) return null
   return <div>{children}</div>
