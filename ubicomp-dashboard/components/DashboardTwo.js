@@ -80,7 +80,7 @@ export default function DashboardTwo() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {/* 1. Devices Currently Visible (First column) */}
         <Card>
           <CardHeader>
