@@ -80,8 +80,9 @@ export default function DashboardTwo() {
         </p>
       </header>
 
+        {/* Main card grid: 2 columns on medium screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-        {/* 1. Devices Currently Visible (First column) */}
+        {/* Card 1: Devices Currently Visible (Row 1, Col 1) */}
         <Card>
           <CardHeader>
             <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
@@ -155,30 +156,9 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
 
-        {/* 2. Session Overview Card (Second column) */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Session Overview</CardTitle>
-            <Wifi className="h-5 w-5 text-gray-400" />
-          </CardHeader>
-          <CardContent className="space-y-3 pt-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-700">Total Unique Devices:</p>
-              <p className="text-xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-700">Longest Present:</p>
-              <p className="text-xl font-bold text-amber-600">
-                {sessionOverviewData.longestPresent} min
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* 3. Proximity Clusters Card (Third column) */}
+        {/* Card 2: Proximity Clusters (Row 1, Col 2) */}
         <Card>
           <CardHeader>
-            {/* Updated title to match user's file */}
             <CardTitle>📶 Proximity Closer to center = stronger signal</CardTitle> 
           </CardHeader>
           <CardContent className="flex flex-col items-center">
@@ -222,12 +202,32 @@ export default function DashboardTwo() {
                   })}
               </svg>
             </div>
-            {/* Removed the <p> tag from here as it's now part of the CardTitle */}
           </CardContent>
         </Card>
         
-        {/* Recent Detection Timeline Card - spans full width below */}
-        <Card className="md:col-span-3">
+        {/* Card 3: Session Overview (Row 2, Col 1) */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            {/* Standard CardTitle styling */}
+            <CardTitle className="text-base font-medium">Session Overview</CardTitle>
+            <Wifi className="h-5 w-5 text-gray-400" />
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-700">Total Unique Devices:</p>
+              <p className="text-xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-700">Longest Present:</p>
+              <p className="text-xl font-bold text-amber-600">
+                {sessionOverviewData.longestPresent} min
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Card 4: Recent Detection Timeline (Spans 2 columns on the next row) */}
+        <Card className="md:col-span-2">
             <CardHeader>
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
