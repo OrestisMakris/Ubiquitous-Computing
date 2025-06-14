@@ -1,37 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Eye, AlertTriangle, Users } from 'lucide-react'; // Target and Brain removed
-
 const ProfileTag = ({ profileType, isHighConcern }) => {
   let bgColor = 'bg-gray-200';
   let textColor = 'text-gray-700';
-  let text = profileType.replace('_', ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  // Improved text formatting for profileType
+  let text = profileType.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 
-
-  if (profileType === 'real_phone_synthetic') {
-    bgColor = 'bg-green-200';
-    textColor = 'text-green-800';
+  if (profileType === 'Real Phone Synthetic') { // Match the formatted text
+    bgColor = 'bg-green-100'; // Lighter green
+    textColor = 'text-green-700';
     text = `📱 ${text}`;
   } else if (isHighConcern) {
-    bgColor = 'bg-yellow-400';
-    textColor = 'text-yellow-900';
+    bgColor = 'bg-yellow-100'; // Lighter yellow
+    textColor = 'text-yellow-700';
     text = `⚠️ ${text}`;
-  } else if (profileType === 'absence') {
-    bgColor = 'bg-red-400';
-    textColor = 'text-red-900';
-  } else if (profileType === 'generic') {
-    bgColor = 'bg-blue-200';
+  } else if (profileType === 'Absence') { // Match the formatted text
+    bgColor = 'bg-red-100'; // Lighter red
+    textColor = 'text-red-700';
+    // No emoji here, it's in the provocative note
+  } else if (profileType === 'Generic') { // Match the formatted text
+    bgColor = 'bg-blue-100'; // Lighter blue
     textColor = 'text-blue-700';
   }
 
-
   return (
-    <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${bgColor} ${textColor} whitespace-nowrap`}>
+    <span className={`px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${bgColor} ${textColor} whitespace-nowrap shadow-sm`}>
       {text}
     </span>
   );
 };
 
+// ... (keep existing syntheticMovementPatterns, syntheticTimeDetails, etc., and getRandomElement) ...
+// Ensure these arrays are defined as in the previous version.
 const syntheticMovementPatterns = [
   "🚩 Κινείται γρήγορα μεταξύ κτιρίων.",
   "🚩 Εντοπίστηκε κοντά σε σημείο ενδιαφέροντος.",
@@ -77,7 +78,8 @@ export default function DashboardThree() {
   const [isLoading, setIsLoading] = useState(true);
   const MAX_PROFILES_TO_DISPLAY = 7;
 
-
+  // ... (useEffect hook for fetchAndProcessData - keep it exactly as in the previous response) ...
+  // For brevity, I'm not repeating the full useEffect. Ensure it's the one from the previous step.
   useEffect(() => {
     const fetchAndProcessData = async () => {
       setIsLoading(true);
@@ -91,10 +93,10 @@ export default function DashboardThree() {
         const confirmedPhones = allVisibleDevices.filter(
           d => d.major_class && d.major_class.toLowerCase() === 'phone'
         );
-        const confirmedPhoneNames = confirmedPhones.map(p => p.name);
+        // const confirmedPhoneNames = confirmedPhones.map(p => p.name); // Not directly used later, but good for debugging
 
         // 2. Fetch base surveillance profiles from API
-        const profilesRes = await fetch('/api/surveillance-profiles-sus', { // Ensure this is your correct API endpoint
+        const profilesRes = await fetch('/api/surveillance-profiles-sus', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ visibleDeviceNames: allVisibleDevices.map(d => d.name) }),
@@ -114,20 +116,19 @@ export default function DashboardThree() {
               id: `real-sync-${phone.name}-${Date.now()}`,
               profile_name: `${phone.name}_RealSynthetic`,
               device_name_trigger: phone.name,
-              display_device_name: phone.name, // Use the real name
+              display_device_name: phone.name,
               movement_pattern_1: getRandomElement(syntheticMovementPatterns),
               movement_pattern_2: getRandomElement(syntheticTimeDetails),
               movement_pattern_3: getRandomElement(syntheticLocationDetails),
               movement_pattern_4: Math.random() < 0.5 ? getRandomElement(syntheticLocationDetails) : null,
               social_insight_1: getRandomElement(syntheticSocialInsights),
               social_insight_2: Math.random() < 0.5 ? getRandomElement(syntheticBehavioralNotes) : null,
-              is_high_concern: Math.random() < 0.2, // 20% chance
+              is_high_concern: Math.random() < 0.2,
               profile_type: 'real_phone_synthetic',
               provocative_note: `📱 Το ${phone.name} μόλις εντοπίστηκε. Ενεργοποιήθηκε ειδικό πρωτόκολλο παρακολούθησης.`,
-              isNewActualDevice: phone.isNew // From visible-devices API
+              isNewActualDevice: phone.isNew
             });
           } else {
-            // If an API profile exists for this phone, ensure its isNewActualDevice is set
             const existingApiProfile = apiProfiles.find(p => p.device_name_trigger === phone.name || p.display_device_name === phone.name);
             if (existingApiProfile) {
                 existingApiProfile.isNewActualDevice = phone.isNew;
@@ -137,26 +138,23 @@ export default function DashboardThree() {
         
         let combinedProfiles = [...apiProfiles, ...generatedSyntheticProfilesForRealPhones];
 
-        // Deduplicate again after merging, prioritizing real_phone_synthetic
         const finalUniqueProfilesList = [];
         const seenDisplayNamesForFinal = new Set();
         const seenAbsenceProfileNamesForFinal = new Set();
 
-        // Prioritize real_phone_synthetic
         for (const p of combinedProfiles.filter(prof => prof.profile_type === 'real_phone_synthetic')) {
             if (!seenDisplayNamesForFinal.has(p.display_device_name)) {
                 finalUniqueProfilesList.push(p);
                 seenDisplayNamesForFinal.add(p.display_device_name);
             }
         }
-        // Then other types
         for (const p of combinedProfiles.filter(prof => prof.profile_type !== 'real_phone_synthetic')) {
              if (p.profile_type === 'absence') {
                 if (!seenAbsenceProfileNamesForFinal.has(p.profile_name)) {
                     finalUniqueProfilesList.push(p);
                     seenAbsenceProfileNamesForFinal.add(p.profile_name);
                 }
-            } else { // active or generic
+            } else { 
                 if (!seenDisplayNamesForFinal.has(p.display_device_name)) {
                     finalUniqueProfilesList.push(p);
                     seenDisplayNamesForFinal.add(p.display_device_name);
@@ -164,7 +162,6 @@ export default function DashboardThree() {
             }
         }
         
-        // Sort: real_phone_synthetic, then absence, then high_concern, then by name
         finalUniqueProfilesList.sort((a, b) => {
             if (a.profile_type === 'real_phone_synthetic' && b.profile_type !== 'real_phone_synthetic') return -1;
             if (b.profile_type === 'real_phone_synthetic' && a.profile_type !== 'real_phone_synthetic') return 1;
@@ -175,7 +172,6 @@ export default function DashboardThree() {
             return (a.display_device_name || a.profile_name).localeCompare(b.display_device_name || b.profile_name);
         });
 
-        // Limit the number of profiles displayed, ensuring real_phone_synthetic are prioritized
         let displayableProfiles = [];
         const realPhoneSyntheticProfiles = finalUniqueProfilesList.filter(p => p.profile_type === 'real_phone_synthetic');
         const otherProfiles = finalUniqueProfilesList.filter(p => p.profile_type !== 'real_phone_synthetic');
@@ -186,27 +182,28 @@ export default function DashboardThree() {
         }
         displayableProfiles = displayableProfiles.slice(0, MAX_PROFILES_TO_DISPLAY);
 
-
         setSurveillanceProfiles(displayableProfiles);
 
-        // 4. Generate Co-location Data (simple version)
         const activeProfileNames = displayableProfiles
           .filter(p => p.profile_type !== 'absence' && p.display_device_name)
           .map(p => p.display_device_name);
         
         const newCoLocationData = [];
         if (activeProfileNames.length >= 2) {
-          for (let i = 0; i < Math.min(3, activeProfileNames.length / 2) ; i++) { // Generate up to 3 pairs
-            let name1 = activeProfileNames[Math.floor(Math.random() * activeProfileNames.length)];
-            let name2 = activeProfileNames[Math.floor(Math.random() * activeProfileNames.length)];
-            while (name2 === name1 && activeProfileNames.length > 1) { // Ensure different names if possible
-              name2 = activeProfileNames[Math.floor(Math.random() * activeProfileNames.length)];
+          const usedPairs = new Set();
+          for (let i = 0; i < Math.min(3, Math.floor(activeProfileNames.length / 1.5)) ; i++) { 
+            let name1Index = Math.floor(Math.random() * activeProfileNames.length);
+            let name2Index = Math.floor(Math.random() * activeProfileNames.length);
+            while (name2Index === name1Index && activeProfileNames.length > 1) { 
+              name2Index = Math.floor(Math.random() * activeProfileNames.length);
             }
-            if (name1 !== name2) {
+            const pairKey = [activeProfileNames[name1Index], activeProfileNames[name2Index]].sort().join('+');
+            if (activeProfileNames[name1Index] !== activeProfileNames[name2Index] && !usedPairs.has(pairKey)) {
                  newCoLocationData.push({
-                    pair: `${name1} + ${name2}`,
-                    frequency: `${Math.floor(Math.random() * 70) + 30}%` // Random 30-99%
+                    pair: `${activeProfileNames[name1Index]} + ${activeProfileNames[name2Index]}`,
+                    frequency: `${Math.floor(Math.random() * 70) + 30}%` 
                 });
+                usedPairs.add(pairKey);
             }
           }
         }
@@ -222,78 +219,83 @@ export default function DashboardThree() {
     };
 
     fetchAndProcessData();
-    const interval = setInterval(fetchAndProcessData, 15000); // Refresh every 15 seconds
+    const interval = setInterval(fetchAndProcessData, 15000);
     return () => clearInterval(interval);
   }, []);
 
+
   return (
-    <div className="p-4 md:p-6 lg:p-8 bg-gray-100 min-h-screen">
-      <header className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800">The Watcher</h1>
-        <p className="text-md text-gray-600 mt-1">Dynamic Device Surveillance Feed</p>
+    <div className="p-4 sm:p-6 md:p-8 bg-slate-50 min-h-screen font-sans"> {/* Lighter bg, font-sans */}
+      <header className="text-center mb-10">
+        <h1 className="text-4xl sm:text-5xl font-bold text-slate-800">The Watcher</h1>
+        <p className="text-lg text-slate-600 mt-2">Dynamic Device Surveillance Feed</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-0">
-          <Card className="shadow-xl rounded-lg">
-            <CardHeader className="bg-gray-800 text-white rounded-t-lg">
-              <div className="flex items-center text-2xl font-semibold">
-                <Eye className="h-7 w-7 mr-3" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="lg:col-span-2">
+          <Card className="shadow-xl rounded-xl overflow-hidden bg-white"> {/* More rounded, bg-white */}
+            <CardHeader className="bg-slate-700 text-white p-5 sm:p-6"> {/* Darker header, more padding */}
+              <div className="flex items-center text-2xl sm:text-3xl font-semibold">
+                <Eye className="h-7 w-7 sm:h-8 sm:w-8 mr-3 flex-shrink-0" />
                 Surveillance Feed
               </div>
             </CardHeader>
-            <CardContent className="p-0 max-h-[calc(100vh-250px)] overflow-y-auto"> {/* Scrollable content */}
-              {isLoading && <p className="p-6 text-gray-500">Φόρτωση δεδομένων παρακολούθησης...</p>}
+            <CardContent className="p-0 max-h-[calc(100vh-280px)] overflow-y-auto">
+              {isLoading && <p className="p-8 text-slate-500 text-lg">Φόρτωση δεδομένων παρακολούθησης...</p>}
               {!isLoading && surveillanceProfiles.length === 0 && (
-                <p className="p-6 text-gray-600">Δεν υπάρχουν ενεργά προφίλ παρακολούθησης για εμφάνιση. Το σύστημα παρακολουθεί...</p>
+                <p className="p-8 text-slate-600 text-lg">Δεν υπάρχουν ενεργά προφίλ παρακολούθησης για εμφάνιση. Το σύστημα παρακολουθεί...</p>
               )}
-              <ul className="divide-y divide-gray-300">
+              <ul className="divide-y divide-slate-200"> {/* Lighter divider */}
                 {surveillanceProfiles.map((profile) => {
-                  let itemClasses = "p-4 hover:bg-gray-50 transition-colors duration-150";
-                  if (profile.profile_type === 'real_phone_synthetic') itemClasses += " bg-green-50 border-l-4 border-green-400";
-                  else if (profile.is_high_concern) itemClasses += " bg-yellow-50 border-l-4 border-yellow-400";
-                  else if (profile.profile_type === 'absence') itemClasses += " bg-red-50 border-l-4 border-red-400";
+                  let itemClasses = "p-5 sm:p-6 hover:bg-slate-50 transition-colors duration-150";
+                  // Border colors made slightly darker for better visibility on light backgrounds
+                  if (profile.profile_type === 'real_phone_synthetic') itemClasses += " border-l-4 border-green-500"; // Darker green
+                  else if (profile.is_high_concern) itemClasses += " border-l-4 border-yellow-500"; // Darker yellow
+                  else if (profile.profile_type === 'absence') itemClasses += " border-l-4 border-red-500"; // Darker red
                   
                   return (
                     <li key={profile.id || profile.profile_name} className={itemClasses}>
-                      <div className="flex justify-between items-start mb-2"> {/* items-start for better tag alignment */}
-                        <div className="flex items-center space-x-3">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4">
+                        <div className="flex items-center space-x-3 mb-2 sm:mb-0">
                           {profile.isNewActualDevice && (
                             <span
-                              className="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-xs font-bold shadow-sm"
+                              className="px-2.5 py-1 bg-red-100 text-red-600 rounded-md text-xs sm:text-sm font-bold shadow"
                             >
                               Νέα!
                             </span>
                           )}
-                          <span style={{ fontSize: '1.15rem', lineHeight: '1.6rem', fontWeight: '700', color: 'rgb(0, 19, 159)' }}>
+                          <span className="text-xl sm:text-2xl font-semibold text-slate-800 break-all">
                             {profile.display_device_name}
                           </span>
                         </div>
                         <ProfileTag profileType={profile.profile_type} isHighConcern={profile.is_high_concern} />
                       </div>
 
-                      <div className="ml-1 text-sm text-gray-700 space-y-1">
+                      <div className="ml-1 space-y-2 text-base text-slate-700"> {/* Increased base font, more spacing */}
                         {(profile.profile_type !== 'absence') && (
                           <>
-                            <p className="font-semibold text-gray-600">Movement Patterns:</p>
-                            {profile.movement_pattern_1 && <p className="pl-2"> {profile.movement_pattern_1}</p>}
-                            {profile.movement_pattern_2 && <p className="pl-2"> {profile.movement_pattern_2}</p>}
-                            {profile.movement_pattern_3 && <p className="pl-2"> {profile.movement_pattern_3}</p>}
-                            {profile.movement_pattern_4 && <p className="pl-2"> {profile.movement_pattern_4}</p>}
+                            <div>
+                                <p className="font-semibold text-slate-600 mb-1">Movement Patterns:</p>
+                                {profile.movement_pattern_1 && <p className="pl-3 text-slate-600">{profile.movement_pattern_1}</p>}
+                                {profile.movement_pattern_2 && <p className="pl-3 text-slate-600">{profile.movement_pattern_2}</p>}
+                                {profile.movement_pattern_3 && <p className="pl-3 text-slate-600">{profile.movement_pattern_3}</p>}
+                                {profile.movement_pattern_4 && <p className="pl-3 text-slate-600">{profile.movement_pattern_4}</p>}
+                            </div>
 
                             {(profile.social_insight_1 || profile.social_insight_2) && 
-                              <p className="font-semibold text-gray-600 mt-2">Social Insights:</p>
+                              <div className="mt-3">
+                                <p className="font-semibold text-slate-600 mb-1">Social Insights:</p>
+                                {profile.social_insight_1 && <p className="pl-3 text-slate-600">{profile.social_insight_1}</p>}
+                                {profile.social_insight_2 && <p className="pl-3 text-slate-600">{profile.social_insight_2}</p>}
+                              </div>
                             }
-                            {profile.social_insight_1 && <p className="pl-2"> {profile.social_insight_1}</p>}
-                            {profile.social_insight_2 && <p className="pl-2"> {profile.social_insight_2}</p>}
                           </>
                         )}
-                        {/* Provocative note display */}
-                        {profile.provocative_note && (profile.profile_type !== 'absence' || profile.provocative_note_final) &&
-                          <p className={`mt-2 italic ${
-                            profile.profile_type === 'real_phone_synthetic' ? 'text-green-700 font-medium' :
-                            profile.is_high_concern ? 'text-yellow-700 font-medium' : 
-                            profile.profile_type === 'absence' ? 'text-red-700 font-semibold' : 'text-purple-700'
+                        {profile.provocative_note &&
+                          <p className={`mt-3 pt-2 border-t border-slate-200 text-sm sm:text-base ${
+                            profile.profile_type === 'real_phone_synthetic' ? 'text-green-600 font-medium' :
+                            profile.is_high_concern ? 'text-yellow-600 font-medium' : 
+                            profile.profile_type === 'absence' ? 'text-red-600 font-semibold' : 'text-purple-600 font-medium' // Changed from italic to font-medium
                           }`}>
                             {profile.profile_type === 'absence' ? `⚠️ ${profile.provocative_note_final || profile.provocative_note}` : profile.provocative_note}
                           </p>
@@ -307,33 +309,32 @@ export default function DashboardThree() {
           </Card>
         </div>
 
-        {/* Right Column: Dynamic Co-location */}
-        <div className="space-y-6 lg:pt-10">
-          <Card className="bg-white shadow-md rounded-lg">
-            <CardHeader className="pb-2 pt-3 px-4">
-              <CardTitle className="text-md font-semibold text-gray-700 flex items-center">
-                <Users className="h-5 w-5 mr-2 text-purple-600" /> Dynamic Co-location Watch
+        <div className="space-y-6 md:space-y-8 lg:pt-16"> {/* More spacing, adjusted top padding */}
+          <Card className="bg-white shadow-lg rounded-xl overflow-hidden"> {/* More rounded, bg-white */}
+            <CardHeader className="pb-3 pt-4 px-5 sm:px-6 bg-slate-100 border-b border-slate-200"> {/* Lighter header */}
+              <CardTitle className="text-lg sm:text-xl font-semibold text-slate-700 flex items-center">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 mr-2.5 text-purple-500 flex-shrink-0" /> Dynamic Co-location Watch
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-4 pt-1 space-y-2">
-              {coLocationData.length === 0 && <p className="text-xs text-gray-500">No co-location data to display.</p>}
+            <CardContent className="p-5 sm:p-6 space-y-3 sm:space-y-4">
+              {isLoading && <p className="text-sm text-slate-500">Φόρτωση...</p>}
+              {!isLoading && coLocationData.length === 0 && <p className="text-sm text-slate-500">No co-location data to display.</p>}
               {coLocationData.map((item, index) => (
                 <div key={index}>
-                    <p className="text-sm font-medium text-gray-600 mb-0.5">{item.pair}: <span className="font-bold text-purple-700">{item.frequency}</span></p>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-purple-500 h-2.5 rounded-full" style={{ width: item.frequency }}></div>
+                    <p className="text-base font-medium text-slate-700 mb-1">{item.pair}: <span className="font-bold text-purple-600">{item.frequency}</span></p>
+                    <div className="w-full bg-slate-200 rounded-full h-3"> {/* Thicker bar */}
+                        <div className="bg-purple-500 h-3 rounded-full" style={{ width: item.frequency }}></div>
                     </div>
                 </div>
               ))}
             </CardContent>
           </Card>
-          {/* Other dynamic panels could be added here if needed */}
         </div>
       </div>
 
-      <footer className="mt-10 py-4 px-6 bg-red-200 border-t-2 border-red-500 rounded-md shadow">
-        <p className="text-center text-sm font-semibold text-red-800">
-          <AlertTriangle className="inline h-5 w-5 mr-1" />
+      <footer className="mt-12 py-5 px-6 bg-red-100 border-t-2 border-red-300 rounded-lg shadow-md"> {/* Lighter red, more padding */}
+        <p className="text-center text-sm sm:text-base font-medium text-red-700">
+          <AlertTriangle className="inline h-5 w-5 mr-1.5" />
           WARNING: This is a simulated surveillance demonstration. No actual persistent tracking or cross-session data linkage occurs.
         </p>
       </footer>
