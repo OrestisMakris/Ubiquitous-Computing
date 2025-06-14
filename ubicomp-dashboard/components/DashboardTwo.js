@@ -1,6 +1,6 @@
-// components/DashboardTwo.js
-import React, { useEffect, useState, useRef } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import React from 'react'
+import dynamic from 'next/dynamic'
+import { Tabs, TabsList, TabsContent } from '@/components/ui/tabs'
 
 export default function DashboardTwo() {
   const [current, setCurrent] = useState([]);         // { pseudonym,name,rssi,majorClass,duration }

@@ -1,0 +1,7 @@
+<Card className="mx-auto max-w-lg">
+  <CardContent>
+    <p className="text-center text-3xl md:text-4xl font-black text-gray-800">
+      🔒 Privacy Notice: All data is anonymized and aggregated. No individual tracking.
+    </p>
+  </CardContent>
+</Card>
