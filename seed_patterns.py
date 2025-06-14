@@ -38,6 +38,8 @@ DEVICE_BRANDS = ["iPhone","Samsung","HTC","Pixel","OnePlus","Airpods", "MacBook"
 def seed_synthetic():
     db = mysql.connector.connect(**DB_CONF)
     cur = db.cursor(dictionary=True)
+        # empty the synthetic_patterns table before seeding
+    cur.execute("TRUNCATE TABLE synthetic_patterns")
 
     # 1. fetch *all* pseudonyms ever seen
     cur.execute("SELECT DISTINCT pseudonym FROM device_sessions")
