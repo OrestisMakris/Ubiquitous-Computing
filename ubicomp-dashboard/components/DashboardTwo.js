@@ -12,49 +12,50 @@ const BUBBLE_DIAMETER = 20;         // smaller, less “dynamic” size
 const CENTER_DOT_DIAMETER = 8;      // a bit smaller center marker
 
 export default function DashboardTwo() {
-  const [devices, setDevices] = useState([]);
-  const [hist, setHist]     = useState([]);
+  const [devices, setDevices] = useState([])
+  const [hist, setHist]       = useState([])
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [vis, ev] = await Promise.all([
-          fetch('/api/visible-devices').then(r => {
-            if (!r.ok) throw new Error(`Failed to fetch visible-devices: ${r.status}`);
-            return r.json();
-          }),
-          fetch('/api/device-events').then(r => {
-            if (!r.ok) throw new Error(`Failed to fetch device-events: ${r.status}`);
-            return r.json();
-          })
-        ]);
+        // fetch visible devices and recent events in parallel
+        const [visRes, evRes] = await Promise.all([
+          fetch('/api/visible-devices').then(r => r.ok ? r.json() : Promise.reject(r.status)),
+          fetch('/api/device-events').then(r => r.ok ? r.json() : Promise.reject(r.status))
+        ])
+        const visDevices = Array.isArray(visRes.devices) ? visRes.devices : []
+        setDevices(visDevices)
 
-        console.log("Fetched visible devices:", vis.devices); // LOG 1: Check fetched devices and their RSSI
-        setDevices(vis.devices || []); // Ensure devices is always an array
-
-        // build 15-minute histogram (existing code)
-        const now = Date.now();
-        const bins = Array.from({ length: 15 }, (_, i) => ({
-          time: `${-(15 - i)}′`, count: 0
-        }));
-        if (ev.events && Array.isArray(ev.events)) {
-          ev.events.forEach(e => {
-            const diff = Math.floor((now - new Date(e.timestamp)) / 60000);
-            if (diff < 15) {
-              bins[bins.length - 1 - diff].count++;
+        // build 6‐bin histogram over last 15′
+        const now = Date.now()
+        const BIN_COUNT = 6
+        const BIN_SIZE_MIN = 15 / BIN_COUNT // 2.5 minutes
+        const labels = ['-15′','-12′','-10′','-7′','-5′','-2′']
+        const bins = labels.map(t => ({ time: t, count: 0 }))
+        if (evRes.events && Array.isArray(evRes.events)) {
+          evRes.events.forEach(e => {
+            const diffMin = (now - new Date(e.timestamp)) / 60000
+            if (diffMin < 15) {
+              const idx = Math.min(
+                BIN_COUNT - 1,
+                Math.floor(diffMin / BIN_SIZE_MIN)
+              )
+              // reverse index so oldest bin at left
+              bins[BIN_COUNT - 1 - idx].count++
             }
-          });
+          })
         }
-        setHist(bins);
-      } catch (error) {
-        console.error("Error fetching data for DashboardTwo:", error);
-        setDevices([]); // Clear devices on error
-        setHist(Array.from({ length: 15 }, (_, i) => ({ time: `${-(15 - i)}′`, count: 0 }))); // Reset hist
+        setHist(bins)
+      } catch (err) {
+        console.error('DashboardTwo fetch error:', err)
+        setDevices([])
+        setHist(labels.map(t => ({ time: t, count: 0 })))
       }
-    };
-    fetchAll();
-    const iv = setInterval(fetchAll, 5000);
-    return () => clearInterval(iv);
+    }
+
+    fetchAll()
+    const interval = setInterval(fetchAll, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   // prepare proximity groups
