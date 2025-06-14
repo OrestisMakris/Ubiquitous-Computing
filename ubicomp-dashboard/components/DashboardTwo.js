@@ -45,7 +45,7 @@ export default function DashboardTwo() {
     <div className="space-y-10">
       <header className="text-center py-6">
         <p className="text-4xl text-[#0017a5] font-bold">
-          🕵️‍♂️ Ταμπλό Επιπέδου 2: Ο Παρατηρητής Μοτίβων
+          🕵️‍♂️ Dashboard Παρατηρητής Μοτίβων
         </p>
         <p className="mt-2 text-sm text-gray-600">
           Παρατηρεί προσωρινά δημόσια ονόματα συσκευών χωρίς μακροχρόνιο ιστορικό
@@ -141,7 +141,7 @@ export default function DashboardTwo() {
         </CardContent>
       </Card>
             <footer className="text-center text-sm text-gray-400">
-        © 2025 | CEID_NE576 — Pervasive Computing Lab Ex. 2024/25<br/>
+        © 2025 | CEID_NE576 — Ubiquitous Computing Live Exercise<br/>
         👤 Ορέστης Αντώνης Μακρής (AM 1084516)
       </footer>
     </div>
