@@ -4,13 +4,13 @@ import { Wifi, MapPin } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer as BarResp
 } from 'recharts';
-// Constants for the proximity plot
+
+
 const RSSI_CENTER_PLOT = -30; // Strongest signal (closest to center)
 const RSSI_EDGE_PLOT = -90;   // Weakest signal (at the edge of the plot area)
-// const RSSI_RANGE_PLOT = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT; // This is calculated inline, so not strictly needed as a separate const
-const BUBBLE_DIAMETER = 16; // pixels
-// const BUBBLE_RADIUS = BUBBLE_DIAMETER / 2; // Not directly used, can be removed if not needed elsewhere
-const PLOT_AREA_RADIUS_PERCENT = 45; // Max distance from center as % of container half-width for bubble placement
+const BUBBLE_DIAMETER = 20; // pixels - Increased for "thicker" dots
+const PLOT_AREA_RADIUS_PERCENT = 45; // Max distance from center for bubble placement
+const CENTER_DOT_DIAMETER = 10; // pixels for the red center marker
 
 export default function DashboardTwo() {
   const [devices, setDevices] = useState([]);
@@ -18,29 +18,45 @@ export default function DashboardTwo() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const [vis, ev] = await Promise.all([
-        fetch('/api/visible-devices').then(r => r.json()),
-        fetch('/api/device-events').then(r => r.json())
-      ]);
-      setDevices(vis.devices);
+      try {
+        const [vis, ev] = await Promise.all([
+          fetch('/api/visible-devices').then(r => {
+            if (!r.ok) throw new Error(`Failed to fetch visible-devices: ${r.status}`);
+            return r.json();
+          }),
+          fetch('/api/device-events').then(r => {
+            if (!r.ok) throw new Error(`Failed to fetch device-events: ${r.status}`);
+            return r.json();
+          })
+        ]);
 
-      // build 15-minute histogram
-      const now = Date.now();
-      const bins = Array.from({ length: 15 }, (_, i) => ({
-        time: `${-(15 - i)}′`, count: 0
-      }));
-      ev.events.forEach(e => {
-        const diff = Math.floor((now - new Date(e.timestamp)) / 60000);
-        if (diff < 15) {
-          bins[bins.length - 1 - diff].count++;
+        console.log("Fetched visible devices:", vis.devices); // LOG 1: Check fetched devices and their RSSI
+        setDevices(vis.devices || []); // Ensure devices is always an array
+
+        // build 15-minute histogram (existing code)
+        const now = Date.now();
+        const bins = Array.from({ length: 15 }, (_, i) => ({
+          time: `${-(15 - i)}′`, count: 0
+        }));
+        if (ev.events && Array.isArray(ev.events)) {
+          ev.events.forEach(e => {
+            const diff = Math.floor((now - new Date(e.timestamp)) / 60000);
+            if (diff < 15) {
+              bins[bins.length - 1 - diff].count++;
+            }
+          });
         }
-      });
-      setHist(bins);
+        setHist(bins);
+      } catch (error) {
+        console.error("Error fetching data for DashboardTwo:", error);
+        setDevices([]); // Clear devices on error
+        setHist(Array.from({ length: 15 }, (_, i) => ({ time: `${-(15 - i)}′`, count: 0 }))); // Reset hist
+      }
     };
     fetchAll();
     const iv = setInterval(fetchAll, 5000);
     return () => clearInterval(iv);
-  }, []);
+  }, [])
 
   // prepare proximity groups
   const groups = devices.reduce((acc, d) => {
@@ -139,60 +155,66 @@ export default function DashboardTwo() {
             <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Plot Container - This is now the light green circle */}
             <div
-              className="relative w-full aspect-square max-w-xs mx-auto bg-green-100 rounded-full"
+              className="relative w-full aspect-square max-w-xs mx-auto bg-blue-100 rounded-full" // Light blue background
               style={{
-                minWidth: '150px', // Ensure a minimum size for the plot area
+                minWidth: '150px',
               }}
             >
+              {/* Red Center Dot */}
+              <div
+                className="absolute bg-red-500 rounded-full"
+                style={{
+                  width: `${CENTER_DOT_DIAMETER}px`,
+                  height: `${CENTER_DOT_DIAMETER}px`,
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 1, // Ensure it's visible
+                }}
+                title="Scanner Center"
+              />
+
               {devices
                 .filter(device => typeof device.rssi === 'number' && !isNaN(device.rssi))
                 .map((d, i, filteredArray) => {
-                  // 1. Normalize RSSI to a 0-1 range (0 for weakest at edge, 1 for strongest at center)
-                  const rssiRange = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT; // e.g., -30 - (-90) = 60
-                  let normalizedRssi = 0; // Default to edge if rssiRange is somehow 0 (should not happen with current consts)
+                  const rssiRange = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
+                  let normalizedRssi = 0;
                   
                   if (rssiRange !== 0) {
-                    // Clamp d.rssi to the defined range before normalization
                     const clampedRssi = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
                     normalizedRssi = (clampedRssi - RSSI_EDGE_PLOT) / rssiRange;
                   }
-                  // normalizedRssi is now 0 (device at RSSI_EDGE_PLOT) to 1 (device at RSSI_CENTER_PLOT)
-
-                  // 2. Calculate radial distance (percentage from center)
-                  // Stronger signal (normalizedRssi closer to 1) means smaller radialDistance from plot edge perspective
-                  // So, (1 - normalizedRssi) maps 1 (center) to 0 distance, and 0 (edge) to full PLOT_AREA_RADIUS_PERCENT distance.
+                  
                   const radialDistancePercent = (1 - normalizedRssi) * PLOT_AREA_RADIUS_PERCENT;
-
-                  // 3. Distribute bubbles by angle
-                  const angleDegrees = (filteredArray.length > 0 ? (360 / filteredArray.length) * i : 0) + 45; // Offset angle slightly
+                  const angleDegrees = (filteredArray.length > 0 ? (360 / filteredArray.length) * i : 0) + 45;
                   const angleRadians = (angleDegrees * Math.PI) / 180;
-
-                  // 4. Calculate X and Y percentage positions for the bubble's center
                   const xPct = 50 + radialDistancePercent * Math.cos(angleRadians);
                   const yPct = 50 + radialDistancePercent * Math.sin(angleRadians);
+
+                  // LOG 2: Check calculated values for each dot
+                  console.log(`Device: ${d.name}, RSSI: ${d.rssi}, NormRSSI: ${normalizedRssi.toFixed(2)}, RadialDist%: ${radialDistancePercent.toFixed(2)}, X%: ${xPct.toFixed(2)}, Y%: ${yPct.toFixed(2)}`);
 
                   return (
                     <div
                       key={d.pseudonym}
                       title={`${d.name} (${d.rssi} dBm)`}
-                      className="absolute bg-green-500 rounded-full" // Darker green bubble
+                      className="absolute bg-black rounded-full" // Black dots
                       style={{
                         width: `${BUBBLE_DIAMETER}px`,
                         height: `${BUBBLE_DIAMETER}px`,
                         left: `${xPct}%`,
                         top: `${yPct}%`,
-                        transform: 'translate(-50%, -50%)', // Center the bubble on its coordinates
-                        transition: 'left 0.5s ease-out, top 0.5s ease-out', // Smooth transition
+                        transform: 'translate(-50%, -50%)',
+                        transition: 'left 0.5s ease-out, top 0.5s ease-out',
+                        zIndex: 2, // Above center dot, below other UI if any
                       }}
                     />
                   );
               })}
-              {/* Message for no devices or no valid signal data */}
               {devices.filter(device => typeof device.rssi === 'number' && !isNaN(device.rssi)).length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center p-4"> {/* Added padding */}
-                  <p className="text-gray-500 italic text-center"> {/* Centered text */}
+                <div className="absolute inset-0 flex items-center justify-center p-4">
+                  <p className="text-gray-500 italic text-center">
                     {devices.length > 0 ? "No devices with valid signal data to display." : "No devices detected."}
                   </p>
                 </div>
@@ -203,7 +225,6 @@ export default function DashboardTwo() {
             </p>
           </CardContent>
         </Card>
-
         {/* 3. Recent Detection Timeline (Bar Chart) */}
     <Card className="md:col-span-2">
     <CardHeader>
