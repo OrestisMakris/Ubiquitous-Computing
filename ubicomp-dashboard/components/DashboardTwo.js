@@ -8,9 +8,8 @@ import {
 
 const RSSI_CENTER_PLOT = -30; // Strongest signal (closest to center)
 const RSSI_EDGE_PLOT = -90;   // Weakest signal (at the edge of the plot area)
-const BUBBLE_DIAMETER = 20; // pixels - Increased for "thicker" dots
-const PLOT_AREA_RADIUS_PERCENT = 45; // Max distance from center for bubble placement
-const CENTER_DOT_DIAMETER = 10; // pixels for the red center marker
+const BUBBLE_DIAMETER = 16;         // smaller, less “dynamic” size
+const CENTER_DOT_DIAMETER = 8;      // a bit smaller center marker
 
 export default function DashboardTwo() {
   const [devices, setDevices] = useState([]);
@@ -134,7 +133,7 @@ export default function DashboardTwo() {
                       style={{
                         fontSize: '1.5rem',    // text-2xl
                         lineHeight: '2rem',    // text-2xl
-                        color: 'rgb(0, 107, 5)',       // text-black
+                        color: 'rgb(64, 0, 107)',       // text-black
                         fontWeight: '600',     // font-semibold
                       }}
                     >
@@ -156,38 +155,37 @@ export default function DashboardTwo() {
   </CardHeader>
   <CardContent>
     <div className="w-full flex justify-center py-4">
-      <svg
-        width={256}
-        height={256}
-        viewBox="0 0 256 256"
-      >
-        {/* outer circle background (light blue) */}
-        <circle cx="128" cy="128" r="120" fill="#DBEAFE" />
-        {/* center marker (red) */}
-        <circle cx="128" cy="128" r="6" fill="red" />
+      <svg width={256} height={256} viewBox="0 0 256 256">
+        {/* outer circle background: a slightly darker blue */}
+        <circle cx="128" cy="128" r="120" fill="#C7D2FE" />
+        {/* center marker: vivid red, smaller */}
+        <circle
+          cx="128"
+          cy="128"
+          r={CENTER_DOT_DIAMETER / 2}
+          fill="red"
+        />
         {devices
           .filter(d => typeof d.rssi === "number")
           .map((d, i, arr) => {
-            // normalize RSSI
-            const range = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT; 
-            const clamped = Math.max(RSSI_EDGE_PLOT, Math.min(RSSI_CENTER_PLOT, d.rssi));
-            const norm = (clamped - RSSI_EDGE_PLOT) / range; // 0…1
-            // radial distance in px
+            const range = RSSI_CENTER_PLOT - RSSI_EDGE_PLOT;
+            const clamped = Math.max(RSSI_EDGE_PLOT,
+                              Math.min(RSSI_CENTER_PLOT, d.rssi));
+            const norm = (clamped - RSSI_EDGE_PLOT) / range;
             const maxR = 120 - BUBBLE_DIAMETER / 2;
             const dist = (1 - norm) * maxR;
-            // angle
-            const angle = ((360 / arr.length) * i + 45) * (Math.PI/180);
+            const angle = ((360 / arr.length) * i + 45) * (Math.PI / 180);
             const x = 128 + dist * Math.cos(angle);
             const y = 128 + dist * Math.sin(angle);
-            console.log(d.name, d.rssi, norm.toFixed(2), x.toFixed(0), y.toFixed(0));
+
             return (
               <circle
                 key={d.pseudonym}
                 cx={x}
                 cy={y}
-                r={BUBBLE_DIAMETER/2}
-                fill="black"
-                stroke="white"
+                r={BUBBLE_DIAMETER / 2}
+                fill="rgb(0, 9, 78)"  // deep navy
+                stroke="#fff"
                 strokeWidth="1"
               />
             );
