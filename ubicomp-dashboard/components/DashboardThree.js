@@ -56,7 +56,7 @@ export default function DashboardThree() {
         // We send ALL visible device names to the API.
         // The API returns profiles potentially triggered by any of these devices.
         // Frontend filtering (step 4) shows only phone-related or absence profiles.
-        const profilesRes = await fetch('/api/surveillance-profiles', {
+        const profilesRes = await fetch('/api/surveillance-profiles-sus', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ visibleDeviceNames: allVisibleDevices.map(d => d.name) }),
