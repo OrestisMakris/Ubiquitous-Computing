@@ -66,11 +66,10 @@ export default function DashboardTwo() {
                 if (totalMinutes > 0) {
                   label = `${totalMinutes} min`;
                 } else if (d.duration > 0) {
-                  label = "<1 min"; // Show <1 min if duration is > 0 but < 60s
+                  label = "<1 min";
                 } else {
-                  label = "0 min"; // Or handle 0 duration specifically if needed
+                  label = "0 min";
                 }
-
 
                 return (
                   <li
@@ -79,16 +78,16 @@ export default function DashboardTwo() {
                   >
                     <div className="flex items-center space-x-3">
                       {d.isNew && (
-                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-base font-bold shadow-sm"> {/* Νέα!: Red, Bold */}
+                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-base font-extrabold shadow-sm"> {/* Νέα!: Red, Even Bolder */}
                           Νέα!
                         </span>
                       )}
-                      <span className="text-2xl font-bold text-[#0017a5]"> {/* Device Name: Blue, Bold */}
+                      <span className="text-2xl font-bold text-black"> {/* Device Name: Black, Bold */}
                         {d.name}
                       </span>
                     </div>
                     <div className="mt-1">
-                      <span className="text-xl text-black font-semibold"> {/* Time: Black, Larger, Bold */}
+                      <span className="text-2xl text-black font-semibold"> {/* Time: Black, Larger (same as name), Bold */}
                         {label}
                       </span>
                     </div>
