@@ -33,19 +33,26 @@ export default function DashboardTwo() {
         setDevices(vis.devices || []); // Ensure devices is always an array
 
         // build 15-minute histogram (existing code)
-        const now = Date.now();
-        const bins = Array.from({ length: 15 }, (_, i) => ({
-          time: `${-(15 - i)}′`, count: 0
-        }));
-        if (ev.events && Array.isArray(ev.events)) {
-          ev.events.forEach(e => {
-            const diff = Math.floor((now - new Date(e.timestamp)) / 60000);
-            if (diff < 15) {
-              bins[bins.length - 1 - diff].count++;
+        // build 6‐bin histogram over last 15′
+        const now = Date.now()
+        const BIN_COUNT = 6
+        const BIN_SIZE_MIN = 15 / BIN_COUNT // 2.5 minutes
+        const labels = ['-15′','-12′','-10′','-7′','-5′','-2′']
+        const bins = labels.map(t => ({ time: t, count: 0 }))
+        if (evRes.events && Array.isArray(evRes.events)) {
+          evRes.events.forEach(e => {
+            const diffMin = (now - new Date(e.timestamp)) / 60000
+            if (diffMin < 15) {
+              const idx = Math.min(
+                BIN_COUNT - 1,
+                Math.floor(diffMin / BIN_SIZE_MIN)
+              )
+              // reverse index so oldest bin at left
+              bins[BIN_COUNT - 1 - idx].count++
             }
-          });
+          })
         }
-        setHist(bins);
+        setHist(bins)
       } catch (error) {
         console.error("Error fetching data for DashboardTwo:", error);
         setDevices([]); // Clear devices on error
@@ -151,7 +158,7 @@ export default function DashboardTwo() {
 
 <Card>
   <CardHeader>
-    <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα (Closer to center = stronger signal)</CardTitle>
+    <CardTitle>📶 Proximity (Closer to center = stronger signal)</CardTitle>
   </CardHeader>
   {/* make CardContent a flex‐column centered container */}
   <CardContent className="flex flex-col items-center">
@@ -199,28 +206,32 @@ export default function DashboardTwo() {
       </svg>
     </div>
   </CardContent>
+<Card className="md:col-span-2">
+  <CardHeader>
+    <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p className="mb-2 text-sm text-gray-600">
+      Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
+      συσκευών τα τελευταία ~15′. Κάθε bar είναι ένταση σήματος, όχι “νέα” συσκευή.
+    </p>
+    <BarResp width="100%" height={150}>
+      <BarChart data={hist}>
+        <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+        <YAxis hide domain={[0, 'dataMax']} />
+        <Tooltip />
+        <Bar dataKey="count" radius={[4,4,0,0]}>
+          {hist.map((entry, i) => {
+            // gradient from light to dark blue
+            const alpha = 0.3 + (i / (hist.length - 1)) * 0.7;
+            const fill = `rgba(0,23,73,${alpha.toFixed(2)})`;
+            return <Cell key={i} fill={fill} />;
+          })}
+        </Bar>
+      </BarChart>
+    </BarResp>
+  </CardContent>
 </Card>
-        {/* 3. Recent Detection Timeline (Bar Chart) */}
-    <Card className="md:col-span-2">
-    <CardHeader>
-        <CardTitle>⏱️ Χρονογράφημα Σημάτων (τελευταία ~15′)</CardTitle>
-    </CardHeader>
-    <CardContent>
-        <BarResp width="100%" height={150}>
-        <BarChart data={hist}>
-            {/* only show ticks at -15′, -10′, -5′, -2′, -1′ */}
-            <XAxis
-            dataKey="time"
-            ticks={['-15′','-10′','-5′','-2′','-1′']}
-            tick={{ fontSize: 10 }}
-            />
-            <YAxis domain={[0, 'dataMax']} hide={true} />
-            <Tooltip />
-            <Bar dataKey="count" fill="#0017a5" radius={[4, 4, 0, 0]} />
-        </BarChart>
-        </BarResp>
-    </CardContent>
-    </Card>
       </div>
 
       <Card className="mx-auto max-w-lg">
