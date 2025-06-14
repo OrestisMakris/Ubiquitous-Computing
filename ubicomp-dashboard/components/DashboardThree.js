@@ -53,7 +53,7 @@ export default function DashboardThree() {
         // The API is expected to return:
         //    - All 'absence' profiles.
         //    - 'active'/'generic' profiles whose device_name_trigger matches any of the 'allVisibleDevices' names.
-        const profilesApiRes = await fetch('/api/surveillance-profiles', {
+        const profilesApiRes = await fetch('/api/surveillance-profiles-sus', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ visibleDeviceNames: allVisibleDevices.map(d => d.name) }),
