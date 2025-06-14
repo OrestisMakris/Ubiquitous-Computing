@@ -96,11 +96,25 @@ export default function DashboardTwo() {
                           Νέα!
                         </span>
                       )}
-                      <span className="text-2xl font-bold text-black">
+                      <span
+                        style={{
+                          fontSize: '1.5rem',    // text-2xl
+                          lineHeight: '2rem',    // text-2xl
+                          fontWeight: '700',     // font-bold
+                          color: '#000000',       // text-black
+                        }}
+                      >
                         {d.name}
                       </span>
                     </div>
-                    <span className="text-2xl text-black font-semibold">
+                    <span
+                      style={{
+                        fontSize: '1.5rem',    // text-2xl
+                        lineHeight: '2rem',    // text-2xl
+                        color: '#000000',       // text-black
+                        fontWeight: '600',     // font-semibold
+                      }}
+                    >
                       {label}
                     </span>
                   </li>
