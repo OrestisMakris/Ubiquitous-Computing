@@ -1,114 +1,110 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogTrigger, DialogContent } from '@radix-ui/react-dialog';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
   PieChart, Pie, Cell, ResponsiveContainer as PieResp, Tooltip as PieTip,
   BarChart, Bar, XAxis, YAxis, Tooltip as BarTip, ResponsiveContainer as BarResp
 } from 'recharts';
 
-const COLORS = ['#151dbd', '#4f5fe8', '#8fa9ff', '#dce1ff'];
-const BAR_COLOR = '#03109e';
+const COLORS = ['#151dbd','#4f5fe8','#8fa9ff','#dce1ff'];
 
 export default function DashboardOne() {
   const [liveCount, setLive] = useState(0);
   const [dailyCount, setDaily] = useState(0);
-  const [commonClass, setCommonClass] = useState('');
+  const [nameAnalysis, setName] = useState({ commonInitial: '', topKeys: [] });
   const [rssi, setRssi] = useState([]);
   const [clsDist, setCls] = useState([]);
 
   useEffect(() => {
-    async function fetchAll() {
-      const [liveRes, dailyRes, classRes, rsRes, clsRes] = await Promise.all([
+    const fetchAll = async () => {
+      const [live, daily, name, rs, cls] = await Promise.all([
         fetch('/api/live-count').then(r => r.json()),
         fetch('/api/daily-unique').then(r => r.json()),
         fetch('/api/name-analysis').then(r => r.json()),
         fetch('/api/rssi-histogram').then(r => r.json()),
         fetch('/api/class-distribution').then(r => r.json()),
       ]);
-      setLive(liveRes.liveCount);
-      setDaily(dailyRes.dailyCount);
-      setCommonClass(classRes.commonClass);
-      setRssi(rsRes);
-      setCls(clsRes);
-    }
+      setLive(live.liveCount);
+      setDaily(daily.dailyCount);
+      setName(name);
+      setRssi(rs);
+      setCls(cls);
+    };
     fetchAll();
     const iv = setInterval(fetchAll, 10000);
     return () => clearInterval(iv);
   }, []);
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-b from-gray-50 to-gray-100 font-sans">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">📡 Live Presence Dashboard</h1>
-          <p className="mt-2 text-lg text-gray-600">CEID NE576 — O. Makris</p>
-        </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="px-5 py-3 bg-white/80 backdrop-blur-md rounded-full shadow-md hover:shadow-lg transition-all">
-              About
-            </button>
-          </DialogTrigger>
-          <DialogContent className="bg-white/80 backdrop-blur-md rounded-3xl p-8 w-full max-w-lg shadow-lg">
-            <h2 className="text-3xl font-semibold mb-4">About This Dashboard</h2>
-            <p className="text-gray-700 text-base">Apple-inspired glassy UI with Tailwind, SF Pro typography, and subtle animations.</p>
-          </DialogContent>
-        </Dialog>
+    <div className="space-y-10">
+      <header className="text-center py-4">
+        <h1 className="text-3xl font-semibold">📡 UbiComp Live Presence Dashboard</h1>
+        <p className="text-sm text-gray-500">CEID_NE576 — Καθ. Πολυζωγοπούλου — Ομάδα: Ορέστης Μακρής</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card className="animate-pulse p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl">📶 Now Present</CardTitle>
+            <CardTitle>👥 Πλήθος Παρόντων Τώρα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-6xl font-light text-gray-900">{liveCount}</p>
+            <p className="text-4xl">{liveCount}</p>
           </CardContent>
         </Card>
 
-        <Card className="animate-pulse p-6">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl">🔤 Unique Today</CardTitle>
+            <CardTitle>📆 Μοναδικοί Επισκέπτες Σήμερα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-6xl font-light text-gray-900">{dailyCount}</p>
+            <p className="text-4xl">{dailyCount}</p>
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2 p-6">
+        <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-xl">Device Category Analysis</CardTitle>
+            <CardTitle className="text-2xl">🔤 Ανάλυση Ονομάτων</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg text-gray-800">Most Common: <strong>{commonClass}</strong></p>
+            <p>📛 Πιο συχνό αρχικό όνομα: <strong>{nameAnalysis.commonInitial}</strong></p>
+            <p>⌨️ Δημοφιλή πλήκτρα-χαρακτήρες: <strong>{nameAnalysis.topKeys.join(', ')}</strong></p>
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2 p-6">
+        <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-xl">📶 RSSI Distribution</CardTitle>
+            <CardTitle>📶 Κατανομή RSSI</CardTitle>
           </CardHeader>
           <CardContent>
-            <BarResp width="100%" height={240}>
-              <BarChart data={rssi} className="rounded-xl overflow-hidden">
-                <XAxis dataKey="range" tick={{ fontFamily: 'SF Pro Display', fontSize: 14 }} />
-                <YAxis tick={{ fontFamily: 'SF Pro Display', fontSize: 14 }} />
+            <BarResp width="100%" height={200}>
+              <BarChart data={rssi}>
+                <XAxis dataKey="range" />
+                <YAxis />
                 <BarTip />
-                <Bar dataKey="count" fill={BAR_COLOR} radius={[8, 8, 0, 0]} />
+                <Bar dataKey="count" fill="#151dbd" radius={[8, 8, 0, 0]} />
               </BarChart>
             </BarResp>
           </CardContent>
         </Card>
 
-        <Card className="p-6">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Category Distribution</CardTitle>
+            <CardTitle>🏷️ Κατανομή Κατηγοριών</CardTitle>
           </CardHeader>
           <CardContent>
-            <PieResp width="100%" height={240}>
+            <PieResp width="100%" height={200}>
               <PieChart>
-                <Pie data={clsDist} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value" paddingAngle={5}>
-                  {clsDist.map((e, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                <Pie
+                  data={clsDist}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={80}
+                  dataKey="value"
+                  paddingAngle={5}
+                >
+                  {clsDist.map((e, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
                 </Pie>
                 <PieTip />
               </PieChart>
@@ -117,8 +113,8 @@ export default function DashboardOne() {
         </Card>
       </div>
 
-      <footer className="text-center text-gray-500 mt-12 text-base">
-        © 2025 | CEID NE576 — Orestis Makris
+      <footer className="text-center text-sm text-gray-400">
+        © 2025 | CEID_NE576 — Ορέστης Μακρής
       </footer>
     </div>
   );
