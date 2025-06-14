@@ -111,30 +111,39 @@ export default function DashboardTwo() {
         </Card>
 
         {/* 3. Recent Detection Timeline (Bar Chart) */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>⏱️ Χρονογράφημα Σημάτων (τελευταία ~15′)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <BarResp width="100%" height={150}>
-              <BarChart data={hist}>
-                <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-                <YAxis domain={[0, 'dataMax']} hide={true} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#0017a5" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </BarResp>
-          </CardContent>
-        </Card>
+    <Card className="md:col-span-2">
+    <CardHeader>
+        <CardTitle>⏱️ Χρονογράφημα Σημάτων (τελευταία ~15′)</CardTitle>
+    </CardHeader>
+    <CardContent>
+        <BarResp width="100%" height={150}>
+        <BarChart data={hist}>
+            {/* only show ticks at -15′, -10′, -5′, -2′, -1′ */}
+            <XAxis
+            dataKey="time"
+            ticks={['-15′','-10′','-5′','-2′','-1′']}
+            tick={{ fontSize: 10 }}
+            />
+            <YAxis domain={[0, 'dataMax']} hide={true} />
+            <Tooltip />
+            <Bar dataKey="count" fill="#0017a5" radius={[4, 4, 0, 0]} />
+        </BarChart>
+        </BarResp>
+    </CardContent>
+    </Card>
       </div>
 
       <Card className="mx-auto max-w-lg">
         <CardContent>
-          <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
             🔒 Δεν διατηρούμε μακροχρόνιο ιστορικό. Όλα τα ονόματα εμφανίζονται για λίγα δευτερόλεπτα μόνο.
           </p>
         </CardContent>
       </Card>
+            <footer className="text-center text-sm text-gray-400">
+        © 2025 | CEID_NE576 — Pervasive Computing Lab Ex. 2024/25<br/>
+        👤 Ορέστης Αντώνης Μακρής (AM 1084516)
+      </footer>
     </div>
   );
 }
