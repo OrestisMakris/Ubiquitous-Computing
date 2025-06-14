@@ -74,19 +74,33 @@ export default function DashboardTwo() {
                 return (
                   <li
                     key={d.pseudonym}
-                    className="py-4 flex justify-between items-center" // Flex container for same line layout
+                    className="py-4 flex justify-between items-center"
                   >
-                    <div className="flex items-center space-x-3"> {/* Left part: Badge and Name */}
+                    <div className="flex items-center space-x-3">
                       {d.isNew && (
-                        <span className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-base font-bold shadow-sm"> {/* Νέα!: Red, Bold */}
+                        <span
+                          style={{
+                            paddingLeft: '0.75rem', // px-3
+                            paddingRight: '0.75rem', // px-3
+                            paddingTop: '0.25rem', // py-1
+                            paddingBottom: '0.25rem', // py-1
+                            backgroundColor: '#fee2e2', // bg-red-100 (approximate hex for red-100)
+                            color: '#dc2626', // text-red-600 (approximate hex for red-600)
+                            borderRadius: '0.5rem', // rounded-lg
+                            fontSize: '1rem', // text-base (assuming 1rem is your base)
+                            lineHeight: '1.5rem', // text-base (assuming 1.5rem line height for base)
+                            fontWeight: '700', // font-bold
+                            boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)', // shadow-sm (approximate)
+                          }}
+                        >
                           Νέα!
                         </span>
                       )}
-                      <span className="text-2xl font-bold text-black"> {/* Device Name: Black, Bold */}
+                      <span className="text-2xl font-bold text-black">
                         {d.name}
                       </span>
                     </div>
-                    <span className="text-2xl text-black font-semibold"> {/* Right part: Time */}
+                    <span className="text-2xl text-black font-semibold">
                       {label}
                     </span>
                   </li>
