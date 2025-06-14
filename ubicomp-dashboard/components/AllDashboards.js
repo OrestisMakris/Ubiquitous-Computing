@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import DashboardOne from '@/components/DashboardOne';
+import Dashboard2 from '@/components/DashboardTwo';
 
 export default function AllDashboards() {
   return (
@@ -15,9 +16,7 @@ export default function AllDashboards() {
         <TabsContent value="d1">
           <DashboardOne />
         </TabsContent>
-        <TabsContent value="d2">
-          {/* TODO: insert your RSSI chart component here */}
-        </TabsContent>
+        <TabsContent value="d2"><Dashboard2 /></TabsContent>
         <TabsContent value="d3">
           {/* TODO: insert your category distribution component here */}
         </TabsContent>
