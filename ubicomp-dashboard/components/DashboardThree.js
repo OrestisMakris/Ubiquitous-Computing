@@ -2,20 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Eye, AlertTriangle, Target, Users, Brain } from 'lucide-react';
 
-// Phone identification helper (copied from DashboardTwo for consistency)
-const PHONE_KEYWORDS = [
-  'iphone', 'galaxy', 'pixel', 'xperia', 'oneplus', 'moto', 
-  'redmi', 'poco', 'oppo', 'vivo', 'realme', 'nokia', 'android', 'ios',
-  'phone', 'mobile', 'smartphone' 
-];
-
-function isLikelyPhone(deviceName) {
-  if (!deviceName || typeof deviceName !== 'string') {
-    return false;
-  }
-  const lowerDeviceName = deviceName.toLowerCase();
-  return PHONE_KEYWORDS.some(keyword => lowerDeviceName.includes(keyword));
-}
+// PHONE_KEYWORDS array and isLikelyPhone function are REMOVED
 
 const ProfileTag = ({ profileType, isHighConcern }) => {
   let bgColor = 'bg-gray-200';
@@ -50,25 +37,28 @@ export default function DashboardThree() {
     const fetchProfiles = async () => {
       setIsLoading(true);
       try {
-        // 1. Fetch all visible devices
+        // 1. Fetch all visible devices (assuming they include 'major_class' and 'isNew')
         const visibleDevicesRes = await fetch('/api/visible-devices');
-        if (!visibleDevicesRes.ok) throw new Error('Failed to fetch visible devices');
+        if (!visibleDevicesRes.ok) throw new Error(`Failed to fetch visible devices: ${visibleDevicesRes.statusText}`);
         const visibleDevicesData = await visibleDevicesRes.json();
         const allVisibleDevices = Array.isArray(visibleDevicesData.devices) ? visibleDevicesData.devices : [];
 
-        // 2. Filter for phones and identify new ones
-        const visiblePhones = allVisibleDevices.filter(d => isLikelyPhone(d.name));
-        const visiblePhoneNames = visiblePhones.map(p => p.name);
-        const newVisiblePhoneNames = new Set(visiblePhones.filter(p => p.isNew).map(p => p.name));
+        // 2. Identify confirmed phones and new confirmed phones using 'major_class'
+        const confirmedPhones = allVisibleDevices.filter(
+          d => d.major_class && d.major_class.toLowerCase() === 'phone'
+        );
+        const confirmedPhoneNames = confirmedPhones.map(p => p.name);
+        const newConfirmedPhoneNames = new Set(
+          confirmedPhones.filter(p => p.isNew).map(p => p.name)
+        );
 
-        // 3. Fetch surveillance profiles based on visible phone names
-        // Also include non-phone specific absence profiles by sending a broader request or handling in API
-        // For now, API will filter based on what it receives + add all absence profiles
+        // 3. Fetch surveillance profiles.
+        // We send ALL visible device names to the API.
+        // The API returns profiles potentially triggered by any of these devices.
+        // Frontend filtering (step 4) shows only phone-related or absence profiles.
         const profilesRes = await fetch('/api/surveillance-profiles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          // Send all visible names, API can decide to show non-phone absence profiles
-          // Or send only phone names if strict phone-only view for active profiles is desired
           body: JSON.stringify({ visibleDeviceNames: allVisibleDevices.map(d => d.name) }),
         });
         if (!profilesRes.ok) throw new Error(`Failed to fetch surveillance profiles: ${profilesRes.statusText}`);
@@ -76,24 +66,30 @@ export default function DashboardThree() {
         
         let fetchedProfiles = Array.isArray(profilesData.profiles) ? profilesData.profiles : [];
 
-        // 4. Enrich profiles with 'isNewActualDevice' and filter for phone-related or general absence
+        // 4. Enrich profiles and filter based on confirmed phones
         const enrichedAndFilteredProfiles = fetchedProfiles.map(p => {
-          const isTriggeredByPhone = visiblePhoneNames.includes(p.device_name_trigger) ||
-                                   (p.device_name_trigger && p.device_name_trigger.endsWith('%') && visiblePhoneNames.some(name => name.toLowerCase().startsWith(p.device_name_trigger.slice(0, -1).toLowerCase())));
-          const isDisplayedPhone = isLikelyPhone(p.display_device_name);
+          let triggeredByAConfirmedPhone = false;
+          if (p.device_name_trigger) {
+            if (p.device_name_trigger.endsWith('%')) {
+              const triggerPrefix = p.device_name_trigger.slice(0, -1).toLowerCase();
+              triggeredByAConfirmedPhone = confirmedPhoneNames.some(
+                phoneName => phoneName.toLowerCase().startsWith(triggerPrefix)
+              );
+            } else {
+              triggeredByAConfirmedPhone = confirmedPhoneNames.includes(p.device_name_trigger);
+            }
+          }
+          
+          // Determine if the "Νέα!" badge should be shown for this profile
+          const isNewForBadge = newConfirmedPhoneNames.has(p.display_device_name) || 
+                                (p.device_name_trigger && newConfirmedPhoneNames.has(p.device_name_trigger));
 
           return {
             ...p,
-            isNewActualDevice: newVisiblePhoneNames.has(p.display_device_name) || (p.device_name_trigger && newVisiblePhoneNames.has(p.device_name_trigger)),
-            // Determine if this profile should be shown:
-            // - It's an absence profile (these are general alerts)
-            // - OR its display_device_name is a phone
-            // - OR it was triggered by a phone device name
-            // - OR it's a generic profile meant for any device (if we want to show these for phones)
-            showProfile: p.profile_type === 'absence' || isDisplayedPhone || isTriggeredByPhone || (p.profile_type === 'generic' && isTriggeredByPhone)
+            isNewActualDevice: isNewForBadge,
+            showProfile: p.profile_type === 'absence' || triggeredByAConfirmedPhone
           };
         }).filter(p => p.showProfile);
-
 
         setSurveillanceProfiles(enrichedAndFilteredProfiles);
 
@@ -106,7 +102,7 @@ export default function DashboardThree() {
     };
 
     fetchProfiles();
-    const interval = setInterval(fetchProfiles, 10000); // Refresh every 10 seconds
+    const interval = setInterval(fetchProfiles, 10000); 
     return () => clearInterval(interval);
   }, []);
 
@@ -118,7 +114,7 @@ export default function DashboardThree() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-0"> {/* Changed space-y-6 to space-y-0 */}
+        <div className="lg:col-span-2 space-y-0">
           <Card className="shadow-xl rounded-lg">
             <CardHeader className="bg-gray-800 text-white rounded-t-lg">
               <div className="flex items-center text-2xl font-semibold">
@@ -126,10 +122,10 @@ export default function DashboardThree() {
                 Active Surveillance Profiles
               </div>
             </CardHeader>
-            <CardContent className="p-0"> {/* Removed padding from CardContent */}
+            <CardContent className="p-0">
               {isLoading && <p className="p-6 text-gray-500">Φόρτωση δεδομένων παρακολούθησης...</p>}
               {!isLoading && surveillanceProfiles.length === 0 && (
-                <p className="p-6 text-gray-600">Δεν υπάρχουν ενεργά προφίλ παρακολούθησης για εμφάνιση. Το σύστημα παρακολουθεί...</p>
+                <p className="p-6 text-gray-600">Δεν υπάρχουν ενεργά προφίλ παρακολούθησης για εμφάνιση (σχετικά με τηλέφωνα). Το σύστημα παρακολουθεί...</p>
               )}
               <ul className="divide-y divide-gray-300">
                 {surveillanceProfiles.map((profile) => {
@@ -164,26 +160,28 @@ export default function DashboardThree() {
                         {(profile.profile_type !== 'absence') && (
                           <>
                             <p className="font-semibold text-gray-600">Movement Patterns:</p>
-                            {profile.movement_pattern_1 && <p className="pl-2">{profile.movement_pattern_1}</p>}
-                            {profile.movement_pattern_2 && <p className="pl-2">{profile.movement_pattern_2}</p>}
-                            {profile.movement_pattern_3 && <p className="pl-2">{profile.movement_pattern_3}</p>}
-                            {profile.movement_pattern_4 && <p className="pl-2">{profile.movement_pattern_4}</p>}
+                            {profile.movement_pattern_1 && <p className="pl-2">🚩 {profile.movement_pattern_1}</p>}
+                            {profile.movement_pattern_2 && <p className="pl-2">🕒 {profile.movement_pattern_2}</p>}
+                            {profile.movement_pattern_3 && <p className="pl-2">📍 {profile.movement_pattern_3}</p>}
+                            {profile.movement_pattern_4 && <p className="pl-2">📍 {profile.movement_pattern_4}</p>}
 
                             {(profile.social_insight_1 || profile.social_insight_2) && 
                               <p className="font-semibold text-gray-600 mt-2">Social Insights:</p>
                             }
-                            {profile.social_insight_1 && <p className="pl-2">{profile.social_insight_1}</p>}
-                            {profile.social_insight_2 && <p className="pl-2">{profile.social_insight_2}</p>}
+                            {profile.social_insight_1 && <p className="pl-2">🏅 {profile.social_insight_1}</p>}
+                            {profile.social_insight_2 && <p className="pl-2">🔍 {profile.social_insight_2}</p>}
                           </>
                         )}
-                        {/* Provocative note for active/generic, or the main text for absence */}
                         {profile.provocative_note && (profile.profile_type !== 'absence' || !profile.provocative_note_final) &&
                           <p className={`mt-2 italic ${profile.is_high_concern ? 'text-yellow-700 font-medium' : 'text-purple-700'}`}>
                             {profile.provocative_note}
                           </p>
                         }
-                        {profile.profile_type === 'absence' && profile.provocative_note_final &&
-                           <p className="mt-2 font-semibold text-red-700">{profile.provocative_note_final}</p>
+                        {profile.profile_type === 'absence' && profile.provocative_note_final && // This was for the old API structure
+                           <p className="mt-2 font-semibold text-red-700">⚠️ {profile.provocative_note}</p> // For absence, provocative_note is the main message
+                        }
+                         {profile.profile_type === 'absence' && !profile.provocative_note_final && profile.provocative_note && // Fallback if provocative_note_final is not there
+                           <p className="mt-2 font-semibold text-red-700">⚠️ {profile.provocative_note}</p>
                         }
                       </div>
                     </li>
