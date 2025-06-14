@@ -40,13 +40,16 @@ export default function DashboardOne() {
   return (
     <div className="min-h-screen p-4 md:p-6 lg:p-8 bg-gradient-to-br from-slate-50 to-sky-100 font-sans text-slate-800">
       <header className="text-center py-6 mb-6 md:mb-10">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900">
-          📡 UbiComp Live Presence Dashboard
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-wide text-[#010F4F]">
+          📡 UbiComp Live Presence
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-slate-600">
-          CEID_NE576 — Pervasive Computing Laboratory Exercise 2024/25<br/>
-          Καθ. Andreas Komninos — Ομάδα: Ορέστης Αντώνης Μακρής (AM&nbsp;1084516)
+        <p className="mt-3 max-w-xl mx-auto text-sm sm:text-base text-[#010F4F] font-semibold">
+          Real-time visibility & actionable analytics for pervasive computing environments.
         </p>
+        <div className="mt-4 space-y-1 text-gray-600 text-xs sm:text-sm">
+          <p>CEID_NE576 — Pervasive Computing Laboratory Exercise 2024/25</p>
+          <p>Καθ. Andreas Komninos — Ομάδα: Ορέστης Αντώνης Μακρής (AM 1084516)</p>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -93,7 +96,7 @@ export default function DashboardOne() {
               <BarChart data={rssi} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
                 <XAxis dataKey="range" tick={{ fontSize: 12, fill: '#475569' }} />
                 <YAxis tick={{ fontSize: 12, fill: '#475569' }} />
-                <BarTip cursor={{ fill: 'rgba(0,0,0,0.05)' }} />
+                <BarTip cursor={{ fill: 'rgb(9, 38, 163)' }} />
                 <Bar dataKey="count" fill={BAR_CHART_FILL_COLOR} radius={[6, 6, 0, 0]} />
               </BarChart>
             </BarResp>
@@ -127,10 +130,8 @@ export default function DashboardOne() {
           </CardContent>
         </Card>
       </div>
-
-      <footer className="text-center text-xs sm:text-sm text-slate-500 mt-10 md:mt-16 py-6 border-t border-slate-300/60">
-        ©&nbsp;{new Date().getFullYear()}&nbsp;|&nbsp;CEID_NE576 —&nbsp;Pervasive Computing Lab Ex.&nbsp;2024/25<br/>
-        👤&nbsp;Ορέστης&nbsp;Αντώνης&nbsp;Μακρής&nbsp;(AM&nbsp;1084516)
+      <footer className="text-center text-sm sm:text-base text-[#010F4F] font-bold uppercase tracking-wider mt-10 md:mt-16 py-6 border-t border-slate-300/60">
+        © {new Date().getFullYear()} UbiComp • University of Patras • Designed by Orestis Makris
       </footer>
     </div>
   );
