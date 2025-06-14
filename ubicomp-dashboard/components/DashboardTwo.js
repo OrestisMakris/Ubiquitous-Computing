@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Wifi } from 'lucide-react'; // MapPin might not be needed if not used elsewhere
+import { Wifi } from 'lucide-react';
 
 import {
   BarChart,
@@ -12,15 +12,14 @@ import {
   ResponsiveContainer as BarResp
 } from 'recharts';
  
-const RSSI_CENTER_PLOT = -30; // Strongest signal (closest to center)
-const RSSI_EDGE_PLOT   = -90; // Weakest signal (at the edge of the plot area)
-const BUBBLE_DIAMETER = 16; // Updated from previous step
-const CENTER_DOT_DIAMETER = 8; // Updated from previous step
+const RSSI_CENTER_PLOT = -30; 
+const RSSI_EDGE_PLOT   = -90; 
+const BUBBLE_DIAMETER = 16; 
+const CENTER_DOT_DIAMETER = 8; 
 
 export default function DashboardTwo() {
   const [devices, setDevices] = useState([])
   const [hist, setHist]       = useState([])
-  // State for the new Session Overview card
   const [sessionOverviewData, setSessionOverviewData] = useState({ totalUnique: 0, longestPresent: 0 });
 
   useEffect(() => {
@@ -33,16 +32,14 @@ export default function DashboardTwo() {
         const visDevices = Array.isArray(visRes.devices) ? visRes.devices : [];
         setDevices(visDevices);
 
-        // Calculate data for Session Overview
         const totalUnique = visDevices.length;
         const longestPresentSec = visDevices.length > 0 ? Math.max(0, ...visDevices.map(d => d.duration)) : 0;
         const longestPresentMin = Math.floor(longestPresentSec / 60);
         setSessionOverviewData({ totalUnique, longestPresent: longestPresentMin });
 
-        // build 6‐bin histogram (existing code)
         const now = Date.now();
         const BIN_COUNT = 6;
-        const BIN_SIZE_MIN = 15 / BIN_COUNT; // 2.5 minutes
+        const BIN_SIZE_MIN = 15 / BIN_COUNT; 
         const labels = ['-15′','-12′','-10′','-7′','-5′','-2′'];
         const bins = labels.map(t => ({ time: t, count: 0 }));
         if (evRes.events && Array.isArray(evRes.events)) {
@@ -61,8 +58,8 @@ export default function DashboardTwo() {
       } catch (err) {
         console.error('DashboardTwo fetch error:', err);
         setDevices([]);
-        setSessionOverviewData({ totalUnique: 0, longestPresent: 0 }); // Reset on error
-        const labels = ['-15′','-12′','-10′','-7′','-5′','-2′']; // ensure labels is defined for error case
+        setSessionOverviewData({ totalUnique: 0, longestPresent: 0 }); 
+        const labels = ['-15′','-12′','-10′','-7′','-5′','-2′']; 
         setHist(labels.map(t => ({ time: t, count: 0 })));
       }
     };
@@ -71,10 +68,10 @@ export default function DashboardTwo() {
     const interval = setInterval(fetchAll, 5000);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        {/* ... header content ... */}
         <p className="text-4xl text-[#0017a5] font-bold">
           🕵️‍♂️ Dashboard Παρατηρητής Μοτίβων
         </p>
@@ -90,7 +87,6 @@ export default function DashboardTwo() {
             <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* ... content for devices visible ... */}
             <ul className="divide-y divide-gray-200">
               {devices.map(d => {
                 const totalMinutes = Math.floor(d.duration / 60);
@@ -178,16 +174,19 @@ export default function DashboardTwo() {
             </div>
           </CardContent>
         </Card>
+        
+        {/* 3. Proximity Clusters Card (Third column) */}
         <Card>
           <CardHeader>
-            <CardTitle>📶 Proximity Closer to center = stronger signal</CardTitle>
+            {/* Updated title to match user's file */}
+            <CardTitle>📶 Proximity Closer to center = stronger signal</CardTitle> 
           </CardHeader>
           <CardContent className="flex flex-col items-center">
             <div className="flex items-center justify-center w-full py-6">
               <svg
-                width={200}   // Removed comment
-                height={200}  // Removed comment
-                viewBox="0 0 256 256" // ViewBox remains the same for consistent internal coordinates
+                width={200}
+                height={200}
+                viewBox="0 0 256 256" 
                 className="mx-auto"
               >
                 <circle cx="128" cy="128" r="120" fill="#C7D2FE" />
@@ -223,10 +222,12 @@ export default function DashboardTwo() {
                   })}
               </svg>
             </div>
+            {/* Removed the <p> tag from here as it's now part of the CardTitle */}
           </CardContent>
         </Card>
+        
+        {/* Recent Detection Timeline Card - spans full width below */}
         <Card className="md:col-span-3">
-            {/* ... content for timeline ... */}
             <CardHeader>
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
@@ -256,7 +257,6 @@ export default function DashboardTwo() {
       </div>
 
       <Card className="mx-auto max-w-lg">
-        {/* ... content for privacy message ... */}
         <CardContent className="pt-6">
             <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
             🔒 Δεν διατηρούμε μακροχρόνιο ιστορικό. Όλα τα ονόματα εμφανίζονται για λίγα δευτερόλεπτα μόνο.
@@ -264,7 +264,6 @@ export default function DashboardTwo() {
         </CardContent>
       </Card>
             <footer className="text-center text-sm text-gray-400">
-        {/* ... footer content ... */}
         ©&nbsp;2025&nbsp;|&nbsp;CEID_NE576 —&nbsp;Ubiquitous Computing Live Exercise<br/>
         👤&nbsp;Ορέστης&nbsp;Αντώνης&nbsp;Μακρής&nbsp;(AM&nbsp;1084516)
       </footer>
