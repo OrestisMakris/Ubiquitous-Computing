@@ -1,3 +1,8 @@
+/*
+  Corrected JSX syntax errors and brace mismatches in DashboardTwo component
+*/
+
+// components/DashboardTwo.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Wifi, MapPin, Clock, BarChart2, AlertTriangle } from 'lucide-react';
@@ -31,18 +36,28 @@ const ProximityClusters = ({ groups }) => {
   return (
     <div className="relative w-full h-72 flex items-center justify-center">
       {rings.map((r, idx) => (
-        <div key={idx} className="absolute rounded-full border border-gray-300" style={{ width: `${r}%`, height: `${r}%`, transform: 'translate(-50%, -50%)' }} />
+        <div
+          key={idx}
+          className="absolute rounded-full border border-gray-300"
+          style={{ width: `${r}%`, height: `${r}%`, transform: 'translate(-50%, -50%)' }}
+        />
       ))}
       <div className="absolute text-sm font-semibold" style={{ color: PRIMARY }}>SCANNER</div>
       {all.map((d, i) => {
         const radius = rings[d.group === 'near' ? 0 : d.group === 'mid' ? 1 : 2] / 2;
         const pos = getPos(i, all.length, radius);
         return (
-          <div key={`${d.group}-${d.name}-${i}`} title={d.name}
-               className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
-               style={pos}>
+          <div
+            key={`${d.group}-${d.name}-${i}`}
+            title={d.name}
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+            style={pos}
+          >
             <div className="w-5 h-5 bg-emerald-500 rounded-full shadow-md" />
-            <span className="mt-1 text-xs" style={{ background: 'white', padding: '1px 4px', borderRadius: '4px' }}>
+            <span
+              className="mt-1 text-xs"
+              style={{ background: 'white', padding: '1px 4px', borderRadius: '4px' }}
+            >
               {d.name.length > 10 ? `${d.name.slice(0, 10)}…` : d.name}
             </span>
           </div>
@@ -61,7 +76,7 @@ const ActivityTimelineChart = ({ events }) => {
     count: 0,
     label: i === bins - 1 ? 'Now' : `-${15 - i * 3}m`,
     start: now - windowMs + i * size,
-    end:   now - windowMs + (i + 1) * size
+    end:   now - windowMs + (i + 1) * size,
   }));
 
   events.forEach(({ timestamp }) => {
@@ -74,8 +89,11 @@ const ActivityTimelineChart = ({ events }) => {
     <div className="h-48 flex items-end justify-around p-4 bg-white rounded-lg relative">
       {data.map((d, i) => (
         <div key={i} className="flex flex-col items-center w-1/6">
-          <div title={`${d.count} detections`} className="w-full rounded-t"
-               style={{ height: `${(d.count / max) * 100}%`, background: PRIMARY }} />
+          <div
+            title={`${d.count} detections`}
+            className="w-full rounded-t"
+            style={{ height: `${(d.count / max) * 100}%`, background: PRIMARY }}
+          />
           <span className="text-xs mt-1 text-gray-600">{d.label}</span>
         </div>
       ))}
@@ -134,12 +152,16 @@ export default function DashboardTwo() {
             <Wifi color={PRIMARY} />
           </CardHeader>
           <CardContent className="max-h-80 overflow-y-auto">
-            {devices.length ? devices.map(d => (
-              <div key={d.pseudonym} className="flex justify-between p-2 hover:bg-gray-100 rounded">
-                <span className="font-medium text-sm">{d.name}</span>
-                <span className="text-xs text-gray-500">{formatDuration(d.duration)}</span>
-              }</div>
-            )) : <p className="text-center py-10 text-gray-500">No visible devices.</p>}
+            {devices.length > 0 ? (
+              devices.map(d => (
+                <div key={d.pseudonym} className="flex justify-between p-2 hover:bg-gray-100 rounded">
+                  <span className="font-medium text-sm">{d.name}</span>
+                  <span className="text-xs text-gray-500">{formatDuration(d.duration)}</span>
+                </div>
+              ))
+            ) : (
+              <p className="text-center py-10 text-gray-500">No visible devices.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -149,7 +171,9 @@ export default function DashboardTwo() {
             <CardTitle className="text-lg">Ομαδοποίηση κατά Εγγύτητα</CardTitle>
             <MapPin color={PRIMARY} />
           </CardHeader>
-          <CardContent><ProximityClusters groups={groups} /></CardContent>
+          <CardContent>
+            <ProximityClusters groups={groups} />
+          </CardContent>
         </Card>
 
         {/* Recent Detection Timeline */}
@@ -157,9 +181,13 @@ export default function DashboardTwo() {
           <CardHeader className="flex justify-between" style={{ borderBottom: `2px solid ${PRIMARY}` }}>
             <CardTitle className="text-lg">Recent Detection Timeline</CardTitle>
             <Clock color={PRIMARY} />
-          }</CardHeader>
+          </CardHeader>
           <CardContent>
-            {events.length ? <ActivityTimelineChart events={events} /> : <p className="text-center py-10 text-gray-500">No recent events.</p>}
+            {events.length > 0 ? (
+              <ActivityTimelineChart events={events} />
+            ) : (
+              <p className="text-center py-10 text-gray-500">No recent events.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -170,15 +198,24 @@ export default function DashboardTwo() {
             <BarChart2 color={PRIMARY} />
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between"><span>Συνολικές Μοναδικές Συσκευές:</span><span className="font-semibold">{metrics.unique}</span></div>
-            <div className="flex justify-between"><span>Μεγαλύτερη Διάρκεια Παρουσίας:</span><span className="font-semibold">{formatDuration(metrics.maxDuration)}</span></div>
+            <div className="flex justify-between">
+              <span>Συνολικές Μοναδικές Συσκευές:</span>
+              <span className="font-semibold">{metrics.unique}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Μεγαλύτερη Διάρκεια Παρουσίας:</span>
+              <span className="font-semibold">{formatDuration(metrics.maxDuration)}</span>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       <footer className="text-center text-xs text-gray-500">
-        <AlertTriangle color="orange" className="inline mr-1" />Σημείωση: Αυτή η συνεδρία θα γίνει επαναφορά σύντομα.
+        <AlertTriangle color="orange" className="inline mr-1" />
+        Σημείωση: Αυτή η συνεδρία θα γίνει επαναφορά σύντομα.
       </footer>
     </div>
   );
 }
+
+// API routes remain unchanged, as they were previously corrected for JS duration logic.
