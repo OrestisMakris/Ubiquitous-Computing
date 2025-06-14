@@ -71,15 +71,6 @@ export default function DashboardTwo() {
     const interval = setInterval(fetchAll, 5000);
     return () => clearInterval(interval);
   }, []);
-
-  // prepare proximity groups (if still needed, otherwise can be removed if not used)
-  // const groups = devices.reduce((acc, d) => {
-  //   if (!acc[d.group]) acc[d.group] = []; // Ensure group array exists
-  //   acc[d.group].push(d);
-  //   return acc;
-  // }, { near: [], mid: [], far: [] });
-
-
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
@@ -93,12 +84,13 @@ export default function DashboardTwo() {
 
       {/* Adjusted grid to md:grid-cols-3 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* 1. Devices Currently Visible */}
+        {/* 1. Devices Currently Visible (remains first) */}
         <Card>
           <CardHeader>
             <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
           </CardHeader>
           <CardContent>
+            {/* ... content for devices visible ... */}
             <ul className="divide-y divide-gray-200">
               {devices.map(d => {
                 const totalMinutes = Math.floor(d.duration / 60);
@@ -167,33 +159,13 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
 
-        {/* === NEW Session Overview Card === */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Session Overview</CardTitle>
-            <Wifi className="h-5 w-5 text-gray-400" /> {/* Icon color adjusted */}
-          </CardHeader>
-          <CardContent className="space-y-3 pt-4"> {/* Adjusted padding */}
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-700">Total Unique Devices:</p>
-              <p className="text-xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-700">Longest Present:</p>
-              <p className="text-xl font-bold text-amber-600">
-                {sessionOverviewData.longestPresent} min
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        {/* === END NEW Session Overview Card === */}
-
-        {/* Proximity Clusters Card */}
+        {/* 2. Proximity Clusters Card (now second) */}
         <Card>
           <CardHeader>
-            <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle> {/* Title updated to Greek */}
+            <CardTitle>📶 Ομαδοποίηση Κατ’ Εγγύτητα</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center">
+            {/* ... content for proximity clusters ... */}
             <div className="flex items-center justify-center w-full py-6">
               <svg
                 width={256}
@@ -234,14 +206,35 @@ export default function DashboardTwo() {
                   })}
               </svg>
             </div>
-            <p className="text-center text-xs text-gray-500 mt-1"> {/* Adjusted margin */}
+            <p className="text-center text-xs text-gray-500 mt-1">
               Closer to center = stronger signal
             </p>
           </CardContent>
         </Card>
         
-        {/* Recent Detection Timeline Card - adjusted to md:col-span-3 */}
+        {/* 3. Session Overview Card (now third, to the right of Proximity) */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base font-medium">Session Overview</CardTitle>
+            <Wifi className="h-5 w-5 text-gray-400" />
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-700">Total Unique Devices:</p>
+              <p className="text-xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-700">Longest Present:</p>
+              <p className="text-xl font-bold text-amber-600">
+                {sessionOverviewData.longestPresent} min
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Recent Detection Timeline Card - remains spanning full width below */}
         <Card className="md:col-span-3">
+            {/* ... content for timeline ... */}
             <CardHeader>
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
@@ -258,11 +251,10 @@ export default function DashboardTwo() {
                 <Tooltip />
                 <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                     {hist.map((entry, i) => {
-                    // Ensure hist.length is not 1 to avoid division by zero if only one bin
                     const alphaDenominator = hist.length > 1 ? hist.length - 1 : 1;
                     const alpha = 0.3 + (i / alphaDenominator) * 0.7;
                     const fill = `rgba(0,23,73,${alpha.toFixed(2)})`;
-                    return <Cell key={`cell-${i}`} fill={fill} />; // Added unique key prefix
+                    return <Cell key={`cell-${i}`} fill={fill} />;
                     })}
                 </Bar>
                 </BarChart>
@@ -272,13 +264,15 @@ export default function DashboardTwo() {
       </div>
 
       <Card className="mx-auto max-w-lg">
-        <CardContent className="pt-6"> {/* Added padding top to CardContent */}
+        {/* ... content for privacy message ... */}
+        <CardContent className="pt-6">
             <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
             🔒 Δεν διατηρούμε μακροχρόνιο ιστορικό. Όλα τα ονόματα εμφανίζονται για λίγα δευτερόλεπτα μόνο.
           </p>
         </CardContent>
       </Card>
             <footer className="text-center text-sm text-gray-400">
+        {/* ... footer content ... */}
         ©&nbsp;2025&nbsp;|&nbsp;CEID_NE576 —&nbsp;Ubiquitous Computing Live Exercise<br/>
         👤&nbsp;Ορέστης&nbsp;Αντώνης&nbsp;Μακρής&nbsp;(AM&nbsp;1084516)
       </footer>
