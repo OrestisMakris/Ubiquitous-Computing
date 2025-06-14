@@ -90,7 +90,7 @@ def seed_synthetic():
         for _ in range(random.randint(1,2)):
             ct = random.choice(CLASS_TIMES)
             bld = random.choice(BUILDINGS)
-            to_upsert.append((p, fake_name, 'routine', f"⏱️ Typically active {ct} in the {bld}.", now))
+            to_upsert.append((p, fake_name, 'routine', f"⏱Typically active {ct} in the {bld}.", now))
 
     sql = """
       INSERT INTO synthetic_patterns
