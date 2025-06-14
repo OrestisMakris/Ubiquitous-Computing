@@ -6,7 +6,6 @@ export default function DashboardThree() {
   const [cooccur,  setCooccur]  = useState([]);
   const [routine,  setRoutine]  = useState([]);
 
-  // fetch & refresh every 10s
   useEffect(() => {
     let mounted = true;
     async function fetchAll() {
@@ -25,25 +24,48 @@ export default function DashboardThree() {
     return () => { mounted = false; clearInterval(iv); };
   }, []);
 
-  // group patterns
-  const allPatterns = [
-    ...lastSeen.map(p => ({ ...p, pattern_type: 'last_seen' })),
-    ...cooccur .map(p => ({ ...p, pattern_type: 'cooccur'   })),
-    ...routine .map(p => ({ ...p, pattern_type: 'routine'   }))
+  // group everything by device_name
+  const patterns = [
+    ...cooccur .map(p => ({ ...p, type: 'cooccur'   })),
+    ...routine .map(p => ({ ...p, type: 'routine'   }))
   ];
-  const grouped = allPatterns.reduce((acc, { device_name, pattern_type, message }) => {
-    acc[device_name] = acc[device_name] || { device_name, last_seen: [], cooccur: [], routine: [] };
-    acc[device_name][pattern_type].push(message);
+  const grouped = patterns.reduce((acc, { pseudonym, device_name, type, message }) => {
+    if (!acc[device_name]) {
+      acc[device_name] = {
+        device_name,
+        last_seen:    [],   // real lines
+        cooccur:      [],
+        routine:      []
+      };
+    }
+    acc[device_name][type].push(message);
     return acc;
   }, {});
+
+  // inject real lastSeen messages
+  lastSeen.forEach(r => {
+    if (!grouped[r.device_name]) {
+      grouped[r.device_name] = {
+        device_name: r.device_name,
+        last_seen:   [],
+        cooccur:     [],
+        routine:     []
+      };
+    }
+    // put the real “📍 Last Seen” at the top
+    grouped[r.device_name].last_seen.unshift(r.message);
+  });
+
   const allDevices = Object.values(grouped);
 
-  const real = allDevices
-    .filter(d => d.device_name.startsWith('[Real]') && !d.device_name.includes('(Unknown)'));
-  const fake = allDevices
-    .filter(d => !d.device_name.startsWith('[Real]') && !d.device_name.includes('(Unknown)'))
-    .slice(0, 20 - real.length);
-  const visible = [...real, ...fake];
+  // split real vs fake by presence in lastSeen
+  const realNames = new Set(lastSeen.map(r => r.device_name));
+  const realDevices = allDevices.filter(d => realNames.has(d.device_name));
+  const fakeDevices = allDevices
+    .filter(d => !realNames.has(d.device_name))
+    .slice(0, 20 - realDevices.length);
+
+  const visible = [...realDevices, ...fakeDevices];
 
   return (
     <div>
