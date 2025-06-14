@@ -93,7 +93,7 @@ export default function DashboardOne() {
               <BarChart data={rssi} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
                 <XAxis dataKey="range" tick={{ fontSize: 12, fill: '#475569' }} />
                 <YAxis tick={{ fontSize: 12, fill: '#475569' }} />
-                <BarTip cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }} />
+                <BarTip cursor={{ fill: 'rgba(0,0,0,0.05)' }} />
                 <Bar dataKey="count" fill={BAR_CHART_FILL_COLOR} radius={[6, 6, 0, 0]} />
               </BarChart>
             </BarResp>
