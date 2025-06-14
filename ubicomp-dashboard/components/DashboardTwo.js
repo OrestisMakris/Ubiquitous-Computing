@@ -74,11 +74,11 @@ export default function DashboardTwo() {
                 return (
                   <li
                     key={d.pseudonym}
-                    className="py-4"
+                    className="py-4 flex justify-between items-center" // Flex container for same line layout
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3"> {/* Left part: Badge and Name */}
                       {d.isNew && (
-                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-base font-extrabold shadow-sm"> {/* Νέα!: Red, Even Bolder */}
+                        <span className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-base font-bold shadow-sm"> {/* Νέα!: Red, Bold */}
                           Νέα!
                         </span>
                       )}
@@ -86,11 +86,9 @@ export default function DashboardTwo() {
                         {d.name}
                       </span>
                     </div>
-                    <div className="mt-1">
-                      <span className="text-2xl text-black font-semibold"> {/* Time: Black, Larger (same as name), Bold */}
-                        {label}
-                      </span>
-                    </div>
+                    <span className="text-2xl text-black font-semibold"> {/* Right part: Time */}
+                      {label}
+                    </span>
                   </li>
                 );
               })}
