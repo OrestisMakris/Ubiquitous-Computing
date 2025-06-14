@@ -1,40 +1,17 @@
-// filepath: c:\Users\orest\OneDrive - University of Patras\Documents\GitHub\Ubiquitous-Computing\ubicomp-dashboard\componentss\ui\card.js
 import React from 'react';
 
-export function Card({ children, className = '', ...props }) {
-  return (
-    <div
-      className={`bg-white/70 backdrop-blur-md rounded-2xl shadow-lg p-5 m-1 transition-all duration-300 ease-in-out hover:shadow-xl ${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
+export function Card({ children, ...props }) {
+  return <div style={{ border: '1px solid #ccc', borderRadius: 6, padding: 16, margin: 8 }} {...props}>{children}</div>;
 }
 
-export function CardHeader({ children, className = '', ...props }) {
-  return (
-    <div className={`pb-3 mb-3 border-b border-gray-200/80 ${className}`} {...props}>
-      {children}
-    </div>
-  );
+export function CardHeader({ children, ...props }) {
+  return <div style={{ fontWeight: 'bold', marginBottom: 8 }} {...props}>{children}</div>;
 }
 
-export function CardTitle({ children, className = '', ...props }) {
-  return (
-    <h2
-      className={`text-lg font-semibold text-gray-800 ${className}`}
-      {...props}
-    >
-      {children}
-    </h2>
-  );
+export function CardTitle({ children, ...props }) {
+  return <h2 style={{ margin: 0, fontSize: '1.25rem' }} {...props}>{children}</h2>;
 }
 
-export function CardContent({ children, className = '', ...props }) {
-  return (
-    <div className={`text-gray-700 ${className}`} {...props}>
-      {children}
-    </div>
-  );
+export function CardContent({ children, ...props }) {
+  return <div {...props}>{children}</div>;
 }
