@@ -80,8 +80,9 @@ export default function DashboardTwo() {
         </p>
       </header>
 
+        {/* Changed to md:grid-cols-2 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-        {/* 1. Devices Currently Visible (First column) */}
+        {/* 1. Devices Currently Visible */}
         <Card>
           <CardHeader>
             <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
@@ -155,10 +156,29 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
 
-        {/* 2. Session Overview Card (Second column) */}
+        {/* 2. Session Overview Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Session Overview</CardTitle>
+            {/* Applied requested inline styles to CardTitle */}
+            <CardTitle 
+              className="text-base" // Removed font-medium to let style dictate
+              style={{
+                paddingLeft: '0.75rem',
+                paddingRight: '0.75rem',
+                paddingTop: '0.25rem',
+                paddingBottom: '0.25rem',
+                backgroundColor: '#fee2e2', // Example: light red background
+                color: '#dc2626',           // Example: red text color
+                borderRadius: '0.5rem',
+                fontSize: '1rem',           // Matching "Νέα!" badge
+                lineHeight: '1.5rem',       // Matching "Νέα!" badge
+                fontWeight: '700',          // Matching "Νέα!" badge
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                display: 'inline-block' // To make padding and background work like a badge
+              }}
+            >
+              Session Overview
+            </CardTitle>
             <Wifi className="h-5 w-5 text-gray-400" />
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
@@ -175,10 +195,9 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
         
-        {/* 3. Proximity Clusters Card (Third column) */}
+        {/* 3. Proximity Clusters Card - will be on the next row, first column */}
         <Card>
           <CardHeader>
-            {/* Updated title to match user's file */}
             <CardTitle>📶 Proximity Closer to center = stronger signal</CardTitle> 
           </CardHeader>
           <CardContent className="flex flex-col items-center">
@@ -222,12 +241,11 @@ export default function DashboardTwo() {
                   })}
               </svg>
             </div>
-            {/* Removed the <p> tag from here as it's now part of the CardTitle */}
           </CardContent>
         </Card>
         
-        {/* Recent Detection Timeline Card - spans full width below */}
-        <Card className="md:col-span-3">
+        {/* Recent Detection Timeline Card - Changed to md:col-span-2 */}
+        <Card className="md:col-span-2">
             <CardHeader>
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
@@ -269,4 +287,3 @@ export default function DashboardTwo() {
       </footer>
     </div>
   );
-}
