@@ -4,7 +4,10 @@ import { Eye, AlertTriangle, Target, Users, Brain, MapPin, Clock, Club, Search, 
 
 // Helper to render pattern if it exists
 const DetailItem = ({ icon: Icon, text, iconClassName = "text-gray-500" }) => {
-  if (!text) return null;
+  if (!text) { // If text is falsy (null, undefined, empty string)
+    return null; // Render nothing
+  }
+  // If text exists, render the item
   return (
     <div className="flex items-start text-sm text-gray-600 mb-1">
       <Icon className={`h-4 w-4 mr-2 mt-0.5 flex-shrink-0 ${iconClassName}`} />
@@ -12,7 +15,6 @@ const DetailItem = ({ icon: Icon, text, iconClassName = "text-gray-500" }) => {
     </div>
   );
 };
-
 
 export default function DashboardThree() {
   const [surveillanceProfiles, setSurveillanceProfiles] = useState([]);
