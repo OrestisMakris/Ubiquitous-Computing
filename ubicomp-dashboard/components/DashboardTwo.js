@@ -1,13 +1,12 @@
-import React from 'react'
 import dynamic from 'next/dynamic'
 import { Tabs, TabsList, TabsContent } from '@/components/ui/tabs'
 import React, { useState, useEffect, useRef } from 'react'; 
 
 export default function DashboardTwo() {
-  const [current, setCurrent] = useState([]);     
-  const [groups, setGroups] = useState({ near:[],mid:[],far:[] });
-  const [events, setEvents]   = useState([]);        
-  const seenRef = useRef(new Set());                 
+  const [current, setCurrent] = useState([]);
+  const [groups, setGroups] = useState({ near: [], mid: [], far: [] });
+  const [events, setEvents] = useState([]);
+  const seenRef = useRef(new Set());
 
   useEffect(() => {
     let mounted = true;
