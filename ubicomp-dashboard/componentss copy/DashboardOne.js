@@ -36,36 +36,43 @@ export default function DashboardOne() {
 
   return (
     <div className="space-y-10">
-      <header className="text-center py-4">
-        <h1 className="text-3xl font-semibold">📡 UbiComp Live Presence Dashboard</h1>
-        <p className="text-sm text-gray-500">
+      <header className="text-center py-6">
+        {/* BIG, EXTRA-BOLD, DROP-SHADOW, ROBOTO, UB.COMPUTING BLUE */}
+        <h1 className="text-5xl font-extrabold text-ubiquitous-computing drop-shadow-lg">
+          📡 UbiComp Live Presence Dashboard
+        </h1>
+        {/* English translation below */}
+        <p className="mt-1 text-lg italic text-gray-500">
+          (English: Ubiquitous Computing Live Presence Dashboard)
+        </p>
+        <p className="mt-2 text-sm text-gray-600">
           CEID_NE576 — Pervasive Computing Laboratory Exercise 2024/25<br/>
-          Καθ. Andreas Komninos — Ομάδα: Ορέστης Αντώνης Μακρής (AM 1084516)
+          Καθ. Andreas Komninos — Ομάδα: Ορέστης Αντώνης Μακρής (AM 1084516)
         </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Πλήθος Παρόντων Τώρα</CardTitle>
+            <CardTitle>🔹Πλήθος Παρόντων Τώρα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl">{liveCount}</p>
+            <p className="text-4xl text-[#0017a5]">{liveCount}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Μοναδικοί Επισκέπτες Σήμερα</CardTitle>
+            <CardTitle> 🔹Μοναδικοί Επισκέπτες Σήμερα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl">{dailyCount}</p>
+            <p className="text-4xl text-[#0017a5]">{dailyCount}</p>
           </CardContent>
         </Card>
 
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-2xl">Ανάλυση Ονομάτων Συσκευών</CardTitle>
+            <CardTitle className="text-2xl">🔹Ανάλυση Ονομάτων Συσκευών</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
@@ -76,15 +83,15 @@ export default function DashboardOne() {
 
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Κατανομή RSSI</CardTitle>
+            <CardTitle>📊 Κατανομή RSSI</CardTitle>
           </CardHeader>
           <CardContent>
             <BarResp width="100%" height={200}>
               <BarChart data={rssi}>
                 <XAxis dataKey="range" />
-                <YAxis />
+                <YAxis domain={[0, 'dataMax']} />
                 <BarTip />
-                <Bar dataKey="count" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="count" radius={[8, 8, 0, 0]} fill="#0017a5" />
               </BarChart>
             </BarResp>
           </CardContent>
