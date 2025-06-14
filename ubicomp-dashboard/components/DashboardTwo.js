@@ -287,3 +287,4 @@ export default function DashboardTwo() {
       </footer>
     </div>
   );
+}
