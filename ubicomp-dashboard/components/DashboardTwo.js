@@ -55,45 +55,48 @@ export default function DashboardTwo() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 1. Devices Currently Visible */}
        <Card>
-            <CardHeader>
-                <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <ul className="space-y-4">
-                {devices.map(d => {
-                    // compute label: mm′ ss″, or '<1s' if zero
-                    const mins = Math.floor(d.duration / 60);
-                    const secs = d.duration % 60;
-                    let label;
-                    if (mins > 0) label = `${mins}′ ${secs}″`;
-                    else if (secs > 0) label = `${secs}s`;
-                    else label = '<1s';
+          <CardHeader>
+            <CardTitle>📱 Συσκευές σε Προβολή Τώρα</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="divide-y divide-gray-200"> {/* Added dividers for better separation */}
+              {devices.map(d => {
+                const mins = Math.floor(d.duration / 60);
+                const secs = d.duration % 60;
+                let label;
+                if (mins > 0) label = `${mins}′ ${secs}″`;
+                else if (secs > 0) label = `${secs}s`;
+                else label = '<1s';
 
-                    return (
-                    <li
-                        key={d.pseudonym}
-                        className="flex justify-between items-center"
-                    >
-                        <div className="flex items-center space-x-3">
-                        {d.isNew && (
-                            <span className="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-md text-sm font-bold">
-                            Νέα!
-                            </span>
-                        )}
-                        <span className="text-xl font-extrabold text-[#0017a5]">
-                            {d.name}
+                return (
+                  <li
+                    key={d.pseudonym}
+                    className="py-4" // Added padding for each list item
+                  >
+                    <div className="flex items-center space-x-3"> {/* Container for Badge and Name */}
+                      {d.isNew && (
+                        <span className="px-3 py-1 bg-blue-600 text-white rounded-lg text-base font-bold shadow-sm"> {/* Νέα!: Bigger, Blue, Bold */}
+                          Νέα!
                         </span>
-                        </div>
-                        <span className="text-sm text-gray-500">{label}</span>
-                    </li>
-                    );
-                })}
-                {devices.length === 0 && (
-                    <li className="text-gray-400 italic">Κανένα σήμα προς το παρόν</li>
-                )}
-                </ul>
-            </CardContent>
-            </Card>
+                      )}
+                      <span className="text-2xl font-bold text-gray-800"> {/* Device Name: Bigger, Bold */}
+                        {d.name}
+                      </span>
+                    </div>
+                    <div className="mt-1"> {/* Time on the next line */}
+                      <span className="text-lg text-gray-600 font-medium"> {/* Time: More visible, larger, medium gray */}
+                        {label}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+              {devices.length === 0 && (
+                <li className="py-4 text-gray-500 italic">Κανένα σήμα προς το παρόν</li>
+              )}
+            </ul>
+          </CardContent>
+        </Card>
 
         {/* 2. Proximity Clusters (Bubble Plot) */}
         <Card>
