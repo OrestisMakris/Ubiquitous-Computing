@@ -72,7 +72,7 @@ def seed_synthetic():
     #     all_pseuds_from_db.extend(dummy_pseuds)
         
     # We'll let the frontend cap at 20, seed all available or a reasonable number
-    all_pseuds = random.sample(all_pseuds_from_db, min(len(all_pseuds_from_db), 50)) # Seed for more than 20 to allow variety
+    all_pseuds = random.sample(all_pseuds_from_db, min(len(all_pseuds_from_db), 200)) # Seed for more than 20 to allow variety
 
     now = datetime.now().replace(microsecond=0)
     to_upsert = []
