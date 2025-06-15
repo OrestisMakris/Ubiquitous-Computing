@@ -189,4 +189,5 @@ export default function DashboardThree() {
           </Card>
         ))}
       </div>
-    </div>
+    </div>  );
+}
