@@ -128,8 +128,7 @@ export default function DashboardThree() {
               <CardTitle className="text-xl md:text-2xl font-bold text-slate-800 truncate flex items-center">
                 <span role="img" aria-label="device" className="mr-2 text-2xl">📱</span>
                 {dev.device_name}
-                {dev.is_real_device && (
-                )}
+ 
               </CardTitle>
             </CardHeader>
             <CardContent className="p-5 text-base">
