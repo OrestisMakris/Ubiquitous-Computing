@@ -113,7 +113,10 @@ export default function DashboardThree() {
   }, [apiLastSeenData, apiCooccurData, apiRoutineData]);
 
   return (
-    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
+        <div
+    className="p-4 md:p-6 bg-gray-50 min-h-screen"
+     style={{ fontSize: '1.5em' }}    // ↑ scale all text by 1.5×
+   >
       <header className="text-center py-6 mb-8">
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 tracking-tight">
           <span role="img" aria-label="eye" className="mr-2">👁️</span>
@@ -126,7 +129,7 @@ export default function DashboardThree() {
           <Card key={dev.pseudonym} className="bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-slate-200 to-slate-300 p-4 border-b border-slate-400">
               <CardTitle className="text-xl md:text-2xl font-bold text-slate-800 truncate flex items-center">
-                <span role="img" aria-label="device" className="mr-2 text-2xl">📱</span>
+                <span role="img" aria-label="device" className="mr-2 text-2xl">🌐</span>
                 {dev.device_name}
  
               </CardTitle>
