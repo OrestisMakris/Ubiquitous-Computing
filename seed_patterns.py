@@ -1,4 +1,4 @@
-# ... (other imports and existing templates like BUILDINGS, DEVICE_BRANDS, GREEK_NAMES, MOVEMENT_TEMPLATES, SOCIAL_TEMPLATES, DEVICE_JABS, CLASS_TIMES) ...
+# ... (other imports and existing templates like BUILDINGS, DEVICE_BRANDS, GREEK_NAMES, MOVEMENT_TEMPLATES, COLOCATION_TEMPLATES, DEVICE_JABS, CLASS_TIMES) ...
 import mysql.connector
 import random
 from datetime import datetime
@@ -63,35 +63,58 @@ def seed_synthetic():
     cur.execute("SELECT DISTINCT pseudonym FROM device_sessions")
     all_pseuds_from_db = [r['pseudonym'] for r in cur.fetchall()]
     
-    # Ensure we have enough pseudonyms if DB is sparse, or cap if too many
-    # For testing, let's ensure we try to seed for at least 20-30 potential profiles
-    # if len(all_pseuds_from_db) < 30:
-    #     # Add some dummy pseudonyms if DB doesn't have many, for robust seeding
-    #     num_dummies = 30 - len(all_pseuds_from_db)
-    #     dummy_pseuds = [f"dummy_pseud_{i}" for i in range(num_dummies)]
-    #     all_pseuds_from_db.extend(dummy_pseuds)
-        
-    # We'll let the frontend cap at 20, seed all available or a reasonable number
-    all_pseuds = random.sample(all_pseuds_from_db, min(len(all_pseuds_from_db), 200)) # Seed for more than 20 to allow variety
+    # Seed for a good number of pseudonyms to allow variety if DB is sparse
+    # If DB has many, sample from them.
+    if len(all_pseuds_from_db) < 50: # Ensure a minimum pool if DB is new/empty
+        base_pseuds = all_pseuds_from_db
+        needed_dummies = 50 - len(all_pseuds_from_db)
+        dummy_pseuds = [f"dummy_pseud_seed_{i}" for i in range(needed_dummies)]
+        all_pseuds_from_db.extend(dummy_pseuds)
+
+    all_pseuds = random.sample(all_pseuds_from_db, min(len(all_pseuds_from_db), 200)) 
 
     now = datetime.now().replace(microsecond=0)
     to_upsert = []
 
+    behavioral_notes_templates = [s for s in SOCIAL_TEMPLATES if "Behavioral Note:" in s]
+    club_templates = [s for s in SOCIAL_TEMPLATES if "Clubs:" in s]
+    other_social_templates = [s for s in SOCIAL_TEMPLATES if not ("Behavioral Note:" in s or "Clubs:" in s)]
+
+
     for p_idx, p in enumerate(all_pseuds):
-        # Use a consistent fake name for each pseudonym for better testing
-        # fake_name_idx = p_idx % (len(DEVICE_BRANDS) * len(GREEK_NAMES))
-        # brand_idx = fake_name_idx // len(GREEK_NAMES)
-        # name_idx = fake_name_idx % len(GREEK_NAMES)
-        # fake_name = f"{DEVICE_BRANDS[brand_idx]}_{GREEK_NAMES[name_idx]}"
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
-
-        # Generate 2-3 movement patterns (type='last_seen')
+        # Generate 2-3 movement patterns (type='last_seen') for synthetic movement descriptions
         for m_template in random.sample(MOVEMENT_TEMPLATES, random.randint(2, 3)):
             to_upsert.append((p, fake_name, 'last_seen', m_template, now))
 
-        # Generate 1-2 social templates (type='cooccur')
-        for s_template in random.sample(SOCIAL_TEMPLATES, random.randint(1, 2)):
+        # --- Social Insights (type='cooccur') ---
+        current_social_insights_for_profile = []
+
+        # 1. Ensure at least one "Clubs:" or other non-behavioral social template
+        if club_templates or other_social_templates:
+            # Prefer club notes if available
+            chosen_base_social = random.choice(club_templates) if club_templates else random.choice(other_social_templates)
+            current_social_insights_for_profile.append(chosen_base_social)
+        
+        # 2. 40% chance for a "Behavioral Note:"
+        if behavioral_notes_templates and random.random() < 0.4:
+            chosen_behavioral = random.choice(behavioral_notes_templates)
+            if chosen_behavioral not in current_social_insights_for_profile: # Avoid duplicate if base was also behavioral
+                 current_social_insights_for_profile.append(chosen_behavioral)
+        
+        # 3. Fill up to have 1 or 2 distinct SOCIAL_TEMPLATES items if possible
+        # (This count is for SOCIAL_TEMPLATES only, co-location and jabs are separate)
+        num_distinct_social_desired = random.randint(1, 2)
+        while len(current_social_insights_for_profile) < num_distinct_social_desired and SOCIAL_TEMPLATES:
+            potential_add = random.choice(SOCIAL_TEMPLATES)
+            if potential_add not in current_social_insights_for_profile:
+                current_social_insights_for_profile.append(potential_add)
+            # Break if we can't find more unique ones easily to prevent infinite loop on small template sets
+            if len(current_social_insights_for_profile) >= len(SOCIAL_TEMPLATES): 
+                break
+        
+        for s_template in current_social_insights_for_profile:
             to_upsert.append((p, fake_name, 'cooccur', s_template, now))
         
         # Generate 1-2 co-location messages (type='cooccur')
@@ -101,8 +124,8 @@ def seed_synthetic():
             coloc_msg = random.choice(COLOCATION_TEMPLATES).format(other_device=other_device_name, location=location)
             to_upsert.append((p, fake_name, 'cooccur', coloc_msg, now))
 
-        # 10% chance to add a DEVICE_JABS (type='cooccur')
-        if random.random() < 0.1:
+        # 30% chance to add a DEVICE_JABS (type='cooccur')
+        if DEVICE_JABS and random.random() < 0.3:
             jab = random.choice(DEVICE_JABS).format(name=fake_name)
             to_upsert.append((p, fake_name, 'cooccur', jab, now))
 
