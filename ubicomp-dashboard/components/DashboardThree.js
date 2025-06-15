@@ -115,7 +115,7 @@ export default function DashboardThree() {
   return (
         <div
     className="p-4 md:p-6 bg-gray-50 min-h-screen"
-     style={{ fontSize: '1.5em' }}    // ↑ scale all text by 1.5×
+     style={{ fontSize: '1.2em' }}    // ↑ scale all text by 1.5×
    >
       <header className="text-center py-6 mb-8">
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 tracking-tight">
