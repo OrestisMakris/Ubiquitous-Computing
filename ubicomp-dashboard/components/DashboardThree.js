@@ -121,7 +121,7 @@ export default function DashboardThree() {
           <span role="img" aria-label="eye" className="ml-2">👁️</span>
         </h1>
       </header>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+      <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
         {processedProfiles.map((dev) => (
           <Card key={dev.pseudonym} className="bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-slate-200 to-slate-300 p-4 border-b border-slate-400">
