@@ -1,4 +1,3 @@
-# ... (other imports and existing templates like BUILDINGS, DEVICE_BRANDS, GREEK_NAMES, MOVEMENT_TEMPLATES, COLOCATION_TEMPLATES, DEVICE_JABS, CLASS_TIMES) ...
 import mysql.connector
 import random
 from datetime import datetime
@@ -27,20 +26,23 @@ MOVEMENT_TEMPLATES = [
     "morning: Academic Zone",
     "afternoon: Courtyard"
 ]
-SOCIAL_TEMPLATES = [ # For 'cooccur'
+
+# Ensure this list is correctly defined in your file
+SOCIAL_TEMPLATES = [ # For 'cooccur' pattern_type
     "Clubs: Debate Team",
-    "Clubs: Gaming Club, Study Group",
+    "Clubs: Gaming Club, Study Group", # Corrected "ClubBehaviorals" to "Clubs"
     "Clubs: Drama Society",
     "Behavioral Note: Prioritizing fun over exam prep?",
     "Behavioral Note: Potential work-life balance struggles",
     "Behavioral Note: Close social collaboration detected"
 ]
-COLOCATION_TEMPLATES = [ # For 'cooccur'
+
+COLOCATION_TEMPLATES = [ # For 'cooccur' pattern_type
     "Frequently co-located with {other_device} in {location}",
     "Often seen with {other_device} near {location}",
     "Regularly pairs up with {other_device} in {location}"
 ]
-DEVICE_JABS = [ # For 'cooccur'
+DEVICE_JABS = [ # For 'cooccur' pattern_type
     "We rarely see '{name}' around here—mystery device!",
     "'{name}' must be skipping all lectures…",
     "Last week, '{name}' camped out in the Cafeteria for hours.",
@@ -48,7 +50,7 @@ DEVICE_JABS = [ # For 'cooccur'
     "Funny: '{name}' vanishes during exam weeks.",
     "‘{name}’ clocks more hours in the Library than students do.",
 ]
-CLASS_TIMES = [ # For 'routine'
+CLASS_TIMES = [ # For 'routine' pattern_type
     "after the 10 AM lecture",
     "during the 2 PM seminar",
     "right before the 8 AM lab",
@@ -63,10 +65,7 @@ def seed_synthetic():
     cur.execute("SELECT DISTINCT pseudonym FROM device_sessions")
     all_pseuds_from_db = [r['pseudonym'] for r in cur.fetchall()]
     
-    # Seed for a good number of pseudonyms to allow variety if DB is sparse
-    # If DB has many, sample from them.
-    if len(all_pseuds_from_db) < 50: # Ensure a minimum pool if DB is new/empty
-        base_pseuds = all_pseuds_from_db
+    if len(all_pseuds_from_db) < 50:
         needed_dummies = 50 - len(all_pseuds_from_db)
         dummy_pseuds = [f"dummy_pseud_seed_{i}" for i in range(needed_dummies)]
         all_pseuds_from_db.extend(dummy_pseuds)
@@ -76,61 +75,62 @@ def seed_synthetic():
     now = datetime.now().replace(microsecond=0)
     to_upsert = []
 
-    behavioral_notes_templates = [s for s in SOCIAL_TEMPLATES if "Behavioral Note:" in s]
-    club_templates = [s for s in SOCIAL_TEMPLATES if "Clubs:" in s]
-    other_social_templates = [s for s in SOCIAL_TEMPLATES if not ("Behavioral Note:" in s or "Clubs:" in s)]
-
+    # Pre-filter SOCIAL_TEMPLATES for easier selection
+    club_templates = [s for s in SOCIAL_TEMPLATES if s.startswith("Clubs:")]
+    behavioral_notes_templates = [s for s in SOCIAL_TEMPLATES if s.startswith("Behavioral Note:")]
+    # Other general social templates (if any, not used in current SOCIAL_TEMPLATES example)
+    # other_specific_social = [s for s in SOCIAL_TEMPLATES if not (s.startswith("Clubs:") or s.startswith("Behavioral Note:"))]
 
     for p_idx, p in enumerate(all_pseuds):
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
-        # Generate 2-3 movement patterns (type='last_seen') for synthetic movement descriptions
+        # 1. Synthetic Movement Patterns (type='last_seen')
+        #    Each fake device gets 2-3 descriptive movement lines.
+        #    Real devices will have their actual "Last Seen: <timestamp>" prepended to these by the frontend.
         for m_template in random.sample(MOVEMENT_TEMPLATES, random.randint(2, 3)):
             to_upsert.append((p, fake_name, 'last_seen', m_template, now))
 
-        # --- Social Insights (type='cooccur') ---
-        current_social_insights_for_profile = []
+        # 2. Social Insights from SOCIAL_TEMPLATES (type='cooccur')
+        selected_social_items_for_profile = set() # Use a set to ensure uniqueness
 
-        # 1. Ensure at least one "Clubs:" or other non-behavioral social template
-        if club_templates or other_social_templates:
-            # Prefer club notes if available
-            chosen_base_social = random.choice(club_templates) if club_templates else random.choice(other_social_templates)
-            current_social_insights_for_profile.append(chosen_base_social)
-        
-        # 2. 40% chance for a "Behavioral Note:"
+        # Try to add one "Clubs:" template
+        if club_templates:
+            selected_social_items_for_profile.add(random.choice(club_templates))
+
+        # 40% chance to add one "Behavioral Note:" template
         if behavioral_notes_templates and random.random() < 0.4:
-            chosen_behavioral = random.choice(behavioral_notes_templates)
-            if chosen_behavioral not in current_social_insights_for_profile: # Avoid duplicate if base was also behavioral
-                 current_social_insights_for_profile.append(chosen_behavioral)
+            selected_social_items_for_profile.add(random.choice(behavioral_notes_templates))
         
-        # 3. Fill up to have 1 or 2 distinct SOCIAL_TEMPLATES items if possible
-        # (This count is for SOCIAL_TEMPLATES only, co-location and jabs are separate)
-        num_distinct_social_desired = random.randint(1, 2)
-        while len(current_social_insights_for_profile) < num_distinct_social_desired and SOCIAL_TEMPLATES:
-            potential_add = random.choice(SOCIAL_TEMPLATES)
-            if potential_add not in current_social_insights_for_profile:
-                current_social_insights_for_profile.append(potential_add)
-            # Break if we can't find more unique ones easily to prevent infinite loop on small template sets
-            if len(current_social_insights_for_profile) >= len(SOCIAL_TEMPLATES): 
-                break
+        # If after the above, we still have 0 or 1 item, and we want to ensure at least 1 (or up to 2)
+        # distinct items from SOCIAL_TEMPLATES, try to add more.
+        desired_count_from_social_templates = random.randint(1, 2)
+        fill_attempts = 0
+        # Ensure at least one item if currently none and SOCIAL_TEMPLATES is not empty
+        if not selected_social_items_for_profile and SOCIAL_TEMPLATES:
+             selected_social_items_for_profile.add(random.choice(SOCIAL_TEMPLATES))
+
+        while len(selected_social_items_for_profile) < desired_count_from_social_templates and SOCIAL_TEMPLATES and fill_attempts < 5:
+            item_to_add = random.choice(SOCIAL_TEMPLATES) # Pick from the full list to allow variety
+            selected_social_items_for_profile.add(item_to_add) 
+            fill_attempts += 1
+            
+        for item_text in list(selected_social_items_for_profile):
+            to_upsert.append((p, fake_name, 'cooccur', item_text, now))
         
-        for s_template in current_social_insights_for_profile:
-            to_upsert.append((p, fake_name, 'cooccur', s_template, now))
-        
-        # Generate 1-2 co-location messages (type='cooccur')
-        for _ in range(random.randint(1, 2)):
+        # 3. Co-location messages (type='cooccur')
+        for _ in range(random.randint(1, 2)): # 1 to 2 co-location messages
             other_device_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
             location = random.choice(BUILDINGS)
             coloc_msg = random.choice(COLOCATION_TEMPLATES).format(other_device=other_device_name, location=location)
             to_upsert.append((p, fake_name, 'cooccur', coloc_msg, now))
 
-        # 30% chance to add a DEVICE_JABS (type='cooccur')
-        if DEVICE_JABS and random.random() < 0.3:
+        # 4. Device Jabs (type='cooccur')
+        if DEVICE_JABS and random.random() < 0.3: # 30% chance for a jab
             jab = random.choice(DEVICE_JABS).format(name=fake_name)
             to_upsert.append((p, fake_name, 'cooccur', jab, now))
 
-        # Generate 1-2 routine messages (type='routine')
-        for _ in range(random.randint(1, 2)):
+        # 5. Routine messages (type='routine')
+        for _ in range(random.randint(1, 2)): # 1 to 2 routine messages
             ct = random.choice(CLASS_TIMES)
             bld = random.choice(BUILDINGS)
             routine_msg = f"Typically active {ct} in the {bld}."
