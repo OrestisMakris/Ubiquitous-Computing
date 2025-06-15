@@ -104,64 +104,40 @@ def seed_synthetic():
     club_templates = [s for s in SOCIAL_TEMPLATES if s.startswith("Clubs:")]
     behavioral_notes_templates = [s for s in SOCIAL_TEMPLATES if s.startswith("Behavioral Note:")]
 
-    for p_idx, p in enumerate(all_pseuds):
+    for p in all_pseuds:
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
-        # 1. Synthetic Movement Patterns (type='last_seen')
-        #    Generate 2-3 "Last spotted at..." messages for ALL devices (real and fake).
-        #    Real devices will have their actual timestamp prepended by the frontend.
-        num_last_spotted_messages = random.randint(2, 3)
-        for _ in range(num_last_spotted_messages):
-            spot_building = random.choice(BUILDINGS)
-            spot_time = random_time_str()
-            movement_msg = f"Last spotted at {spot_building} around {spot_time}"
-            to_upsert.append((p, fake_name, 'last_seen', movement_msg, now))
-        
-        # Optionally, add one more general movement pattern for variety
-        if random.random() < 0.5 and BASE_MOVEMENT_TEMPLATES: # 50% chance
-            general_movement_template = random.choice(BASE_MOVEMENT_TEMPLATES)
-            general_movement_msg = general_movement_template.format(building=random.choice(BUILDINGS))
-            to_upsert.append((p, fake_name, 'last_seen', general_movement_msg, now))
+        # 1) MOVEMENT: 3–4 “Last spotted…” + 2–3 general movement
+        for _ in range(random.randint(3, 4)):
+            b = random.choice(BUILDINGS)
+            t = random_time_str()
+            to_upsert.append((p, fake_name, 'last_seen', f"Last spotted at {b} around {t}.", now))
+        for _ in range(random.randint(2, 3)):
+            tpl = random.choice(BASE_MOVEMENT_TEMPLATES).format(building=random.choice(BUILDINGS))
+            to_upsert.append((p, fake_name, 'last_seen', tpl + '.', now))
 
+        # 2) SOCIAL: pick 1–3 distinct templates
+        count = random.randint(1, min(3, len(SOCIAL_TEMPLATES)))
+        for s in random.sample(SOCIAL_TEMPLATES, count):
+            to_upsert.append((p, fake_name, 'cooccur', s, now))
 
-        # 2. Social Insights from SOCIAL_TEMPLATES (type='cooccur')
-        selected_social_items_for_profile = set() # Use a set to ensure uniqueness
+        # 3) COLOCATION (unchanged)
+        for _ in range(random.randint(1,2)):
+            od = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
+            loc = random.choice(BUILDINGS)
+            msg = random.choice(COLOCATION_TEMPLATES).format(other_device=od, location=loc)
+            to_upsert.append((p, fake_name, 'cooccur', msg, now))
 
-        # Ensure at least one "Clubs:" item if available
-        if club_templates:
-            selected_social_items_for_profile.add(random.choice(club_templates))
-
-        # 40% chance to add one "Behavioral Note:" item if available
-        if behavioral_notes_templates and random.random() < 0.4:
-            selected_social_items_for_profile.add(random.choice(behavioral_notes_templates))
-        
-        # If after the above, the set is empty (e.g., no club templates and behavioral note wasn't picked),
-        # AND SOCIAL_TEMPLATES itself is not empty, add one random item from SOCIAL_TEMPLATES.
-        if not selected_social_items_for_profile and SOCIAL_TEMPLATES:
-             selected_social_items_for_profile.add(random.choice(SOCIAL_TEMPLATES))
-            
-        for item_text in list(selected_social_items_for_profile): # Convert set to list for iteration
-            if item_text: # Ensure item_text is not None or empty
-                to_upsert.append((p, fake_name, 'cooccur', item_text, now))
-        
-        # 3. Co-location messages (type='cooccur')
-        for _ in range(random.randint(1, 2)): # 1 to 2 co-location messages
-            other_device_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
-            location = random.choice(BUILDINGS)
-            coloc_msg = random.choice(COLOCATION_TEMPLATES).format(other_device=other_device_name, location=location)
-            to_upsert.append((p, fake_name, 'cooccur', coloc_msg, now))
-
-        # 4. Device Jabs (type='cooccur')
-        if DEVICE_JABS and random.random() < 0.3: # 30% chance for a jab
+        # 4) JABS (unchanged)
+        if random.random() < 0.3:
             jab = random.choice(DEVICE_JABS).format(name=fake_name)
             to_upsert.append((p, fake_name, 'cooccur', jab, now))
 
-        # 5. Routine messages (type='routine')
-        for _ in range(random.randint(1, 2)): # 1 to 2 routine messages
-            activity_phrase = random.choice(CLASS_TIMES_ACTIVITIES)
+        # 5) ROUTINE (unchanged)
+        for _ in range(random.randint(1,2)):
+            act = random.choice(CLASS_TIMES_ACTIVITIES)
             bld = random.choice(BUILDINGS)
-            routine_msg = f"Typically active {activity_phrase} in the {bld}."
-            to_upsert.append((p, fake_name, 'routine', routine_msg, now))
+            to_upsert.append((p, fake_name, 'routine', f"Typically active {act} in the {bld}.", now))
 
     sql = """
       INSERT INTO synthetic_patterns

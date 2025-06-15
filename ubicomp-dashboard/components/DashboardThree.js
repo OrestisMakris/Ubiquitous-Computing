@@ -131,57 +131,46 @@ export default function DashboardThree() {
  
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-5 text-base">
-              <div className="mb-5">
-                <h4 className="text-lg md:text-xl font-semibold text-slate-700 mb-3 flex items-center">
-                  <span role="img" aria-label="location pin" className="mr-2 text-xl">📍</span>
-                  Movement Patterns
-                </h4>
-                {dev.final_movement_patterns && dev.final_movement_patterns.length > 0
-                  ? dev.final_movement_patterns.map((m, j) => (
-                      <div key={`mov-${j}`} className="flex items-start py-1.5 text-slate-600 hover:text-slate-900 transition-colors">
-                        <span role="img" aria-label="map" className="mr-2.5 mt-1 text-lg">🗺️</span>
-                        <span className="font-medium">{m}</span>
-                      </div>
-                    ))
-                  : <p className="text-slate-500 italic py-1.5">— No specific movement data —</p>
-                }
-              </div>
-              <div>
-                <h4 className="text-lg md:text-xl font-semibold text-slate-700 mb-3 flex items-center">
-                  <span role="img" aria-label="speech bubble" className="mr-2 text-xl">💬</span>
-                  Social Insights
-                </h4>
-                {dev.social_insights_cooccur && dev.social_insights_cooccur.length > 0
-                  ? dev.social_insights_cooccur.map((m, j) => (
-                      <div key={`coo-${j}`} className="flex items-start py-1.5 text-slate-600 hover:text-slate-900 transition-colors">
-                        <span className="mr-2.5 mt-1 text-lg">
-                            {m.includes("Clubs:") ? "🏆" : 
-                             m.includes("Behavioral Note:") ? "🧠" :
-                             m.includes("co-located") || m.includes("seen with") || m.includes("pairs up") ? "🔗" :
-                             m.includes("mystery device") || m.includes("skipping all lectures") || m.includes("vanishes during exam") ? "👻" :
-                             "🗣️"}
-                        </span>
-                        <span className="font-medium">{m}</span>
-                      </div>
-                    ))
-                  : null
-                }
-                {dev.social_insights_routine && dev.social_insights_routine.length > 0
-                  ? dev.social_insights_routine.map((m, j) => (
-                      <div key={`rou-${j}`} className="flex items-start py-1.5 text-slate-600 hover:text-slate-900 transition-colors">
-                        <span role="img" aria-label="timer" className="mr-2.5 mt-1 text-lg">⏱️</span>
-                        <span className="font-medium">{m}</span>
-                      </div>
-                    ))
-                  : null
-                }
-                {(!dev.social_insights_cooccur || dev.social_insights_cooccur.length === 0) &&
-                 (!dev.social_insights_routine || dev.social_insights_routine.length === 0) &&
-                    <p className="text-slate-500 italic py-1.5">— No specific social insights —</p>
-                }
-              </div>
-            </CardContent>
+<CardContent className="p-5 text-base">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <h4 className="text-lg font-semibold mb-2 flex items-center">
+        <span className="mr-2 text-xl">📍</span>Movement Patterns
+      </h4>
+      {dev.final_movement_patterns.length
+        ? dev.final_movement_patterns.map((m,j)=>(
+            <div key={j} className="flex items-start py-1">
+              <span className="mr-2 text-lg">🗺️</span>
+              <span>{m}</span>
+            </div>
+          ))
+        : <p className="italic text-gray-500">— none —</p>
+      }
+    </div>
+    <div>
+      <h4 className="text-lg font-semibold mb-2 flex items-center">
+        <span className="mr-2 text-xl">💬</span>Social Insights
+      </h4>
+      {dev.social_insights_cooccur.length
+        ? dev.social_insights_cooccur.map((m,j)=>(
+            <div key={j} className="flex items-start py-1">
+              <span className="mr-2 text-lg">
+                {m.startsWith("Clubs:") ? "🏆" :
+                 m.startsWith("Behavioral Note:") ? "🧠" : "🔗"}
+              </span>
+              <span>{m}</span>
+            </div>
+          ))
+        : <p className="italic text-gray-500">— none —</p>
+      }
+      {dev.social_insights_routine.map((m,j)=>(
+        <div key={`r${j}`} className="flex items-start py-1">
+          <span className="mr-2 text-lg">⏱️</span><span>{m}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</CardContent>
           </Card>
         ))}
       </div>
