@@ -129,9 +129,6 @@ export default function DashboardThree() {
                 <span role="img" aria-label="device" className="mr-2 text-2xl">📱</span>
                 {dev.device_name}
                 {dev.is_real_device && (
-                  <span className="ml-auto text-xs font-semibold bg-green-500 text-white px-3 py-1 rounded-full shadow-md">
-                    ⚡ LIVE
-                  </span>
                 )}
               </CardTitle>
             </CardHeader>
