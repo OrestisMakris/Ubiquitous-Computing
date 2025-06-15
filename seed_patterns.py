@@ -12,28 +12,13 @@ BUILDINGS = [
     "Lab D1", "Lab D2", "Building B", "Library", "Cafeteria", "Academic Zone", "Courtyard",
     "Student Hub", "Research Center", "Sports Complex", "Administration Building"
 ]
-DEVICE_BRANDS = ["iPhone","Samsung","HTC","Pixel","OnePlus","Airpods", "MacBook", "Lenovo", "Asus", "Dell"]
+DEVICE_BRANDS = ["iPhone","Samsung","HTC","Pixel","OnePlus","Airpods", "MacBook", "Lenovo", "Asus", "Dell", "BT_Device"]
 GREEK_NAMES = [
     "Γιώργος","Μαρία","Αλέξανδρος","Ελένη","Δημήτρης",
     "Κατερίνα","Νίκος","Άννα","Σπύρος","Χριστίνα"
 ]
 
 # --- Template Definitions ---
-
-# For pattern_type = 'last_seen' (Movement Patterns)
-# These will be used to generate "Last spotted at..." messages
-# BASE_MOVEMENT_TEMPLATES is now less critical as we'll focus on "Last spotted at..."
-# but can be used for additional variety if desired.
-BASE_MOVEMENT_TEMPLATES = [
-    "sporadic library visits",
-    "inconsistent campus presence",
-    "often seen near the {building}",
-    "frequently in {building} during midday",
-    "usually in {building} after 6 PM",
-    "morning: {building}",
-    "afternoon: {building}",
-    "evening: {building}",
-]
 
 # For pattern_type = 'cooccur' (Social Insights)
 SOCIAL_TEMPLATES = [
@@ -77,9 +62,10 @@ CLASS_TIMES_ACTIVITIES = [
     "for the 4 PM society meetup",
     "late evening study session until 10 PM",
 ]
+
 def random_time_str():
     hour = random.randint(8, 22)
-    minute = random.choice([0,15,30,45])
+    minute = random.choice([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55])
     return f"{hour:02d}:{minute:02d}"
 
 def seed_synthetic():
@@ -88,53 +74,86 @@ def seed_synthetic():
     cur.execute("TRUNCATE TABLE synthetic_patterns")
 
     cur.execute("SELECT DISTINCT pseudonym FROM device_sessions")
-    pseuds = [r['pseudonym'] for r in cur.fetchall()]
-    if len(pseuds) < 50:
-        pseuds += [f"dummy_{i}" for i in range(50 - len(pseuds))]
-    pseuds = random.sample(pseuds, min(len(pseuds),200))
+    all_pseuds_from_db = [r['pseudonym'] for r in cur.fetchall()]
+    
+    if len(all_pseuds_from_db) < 50:
+        needed_dummies = 50 - len(all_pseuds_from_db)
+        dummy_pseuds = [f"dummy_pseud_seed_{i}" for i in range(needed_dummies)]
+        all_pseuds_from_db.extend(dummy_pseuds)
+
+    all_pseuds = random.sample(all_pseuds_from_db, min(len(all_pseuds_from_db), 200)) 
 
     now = datetime.now().replace(microsecond=0)
     to_upsert = []
 
-    for p in pseuds:
+    for p_idx, p in enumerate(all_pseuds):
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
-        # 1) Movement: 2–4 “Last spotted …” messages
-        for _ in range(random.randint(2,4)):
-            b = random.choice(BUILDINGS)
-            t = random_time_str()
-            to_upsert.append((p, fake_name, 'last_seen',
-                              f"Last spotted at {b} around {t}.", now))
+        # 1. Synthetic Movement Patterns (type='last_seen')
+        #    Generate 2-4 "Last spotted at..." messages for ALL devices.
+        num_movement_messages = random.randint(2, 4)
+        for _ in range(num_movement_messages):
+            spot_building = random.choice(BUILDINGS)
+            spot_time = random_time_str()
+            movement_msg = f"Last spotted at {spot_building} around {spot_time}"
+            to_upsert.append((p, fake_name, 'last_seen', movement_msg, now))
+        
+        # 2. Social Insights (type='cooccur')
+        #    This includes SOCIAL_TEMPLATES, COLOCATION_TEMPLATES, DEVICE_JABS
+        #    Aim for 2-4 total cooccur messages, ensuring at least one from SOCIAL_TEMPLATES.
+        
+        selected_cooccur_messages = set() # Use a set to avoid duplicates initially
 
-        # 2) Social Insights: 2–5 items from SOCIAL_TEMPLATES + coloc + jabs
-        count = random.randint(2,5)
-        pool = SOCIAL_TEMPLATES + COLOCATION_TEMPLATES + DEVICE_JABS
-        items = random.sample(SOCIAL_TEMPLATES,
-                              min(2, len(SOCIAL_TEMPLATES)))  # ensure ≥2 real templates
-        while len(items) < count:
-            cand = random.choice(pool)
-            if cand not in items:
-                items.append(cand)
-        for msg in items:
+        # Ensure at least one item from SOCIAL_TEMPLATES (clubs/behavioral)
+        if SOCIAL_TEMPLATES:
+            selected_cooccur_messages.add(random.choice(SOCIAL_TEMPLATES))
+
+        # Create a combined pool for remaining cooccur messages
+        cooccur_pool = []
+        if SOCIAL_TEMPLATES: # Add remaining social templates
+             cooccur_pool.extend(s for s in SOCIAL_TEMPLATES if s not in selected_cooccur_messages)
+        if COLOCATION_TEMPLATES:
+            cooccur_pool.extend([
+                tpl.format(other_device=f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}", location=random.choice(BUILDINGS))
+                for tpl in COLOCATION_TEMPLATES
+            ])
+        if DEVICE_JABS:
+            cooccur_pool.extend([tpl.format(name=fake_name) for tpl in DEVICE_JABS])
+        
+        random.shuffle(cooccur_pool) # Shuffle to get variety
+
+        num_total_cooccur_messages = random.randint(2, 4)
+        
+        # Fill up to the desired number of cooccur messages
+        while len(selected_cooccur_messages) < num_total_cooccur_messages and cooccur_pool:
+            selected_cooccur_messages.add(cooccur_pool.pop())
+            
+        for msg in list(selected_cooccur_messages):
             to_upsert.append((p, fake_name, 'cooccur', msg, now))
 
-        # 3) Routine unchanged
-        for _ in range(random.randint(1,2)):
-            act = random.choice(CLASS_TIMES_ACTIVITIES)
-            b = random.choice(BUILDINGS)
-            to_upsert.append((p, fake_name, 'routine',
-                              f"Typically active {act} in the {b}.", now))
+        # 3. Routine messages (type='routine') - 1 to 2 messages
+        for _ in range(random.randint(1, 2)):
+            activity_phrase = random.choice(CLASS_TIMES_ACTIVITIES)
+            bld = random.choice(BUILDINGS)
+            routine_msg = f"Typically active {activity_phrase} in the {bld}."
+            to_upsert.append((p, fake_name, 'routine', routine_msg, now))
 
     sql = """
       INSERT INTO synthetic_patterns
-        (pseudonym,device_name,pattern_type,message,created_at)
+        (pseudonym, device_name, pattern_type, message, created_at)
       VALUES (%s,%s,%s,%s,%s)
       ON DUPLICATE KEY UPDATE
+        device_name=VALUES(device_name),
         message=VALUES(message),
         created_at=VALUES(created_at)
     """
-    cur.executemany(sql, to_upsert)
-    db.commit()
+    if to_upsert:
+        cur.executemany(sql, to_upsert)
+        db.commit()
+    
     cur.close()
     db.close()
-    print("Seeded", len(to_upsert), "entries")
+    print(f"Seeded {len(to_upsert)} pattern entries for {len(all_pseuds)} pseudonyms.")
+
+if __name__ == "__main__":
+    seed_synthetic()
