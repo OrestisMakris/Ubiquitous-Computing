@@ -7,7 +7,6 @@ This project was developed for the CEID_NE576 — Ubiquitous Computing Live Exer
 ## Features
 
 *   **Live Device Tracking:** Displays currently visible Bluetooth devices.
-*   **Synthetic Data Generation:** Creates plausible movement patterns and social insights for anonymized devices.
 *   **Multiple Dashboard Views:**
     *   **Dashboard One:** General presence statistics (live count, daily unique, device type analysis).
     *   **Dashboard Two:** Pattern observer for temporary device names, proximity clusters, and recent activity timeline.
