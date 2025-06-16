@@ -1,9 +1,10 @@
 import { pool } from '@/lib/db';
 
 export default async function handler(req, res) {
-  const RECENT_SEC = 20; // Window for "currently visible"
-  const NEW_WINDOW_SEC = 15 * 60; // 15-minute window to check for prior presence for "New!" flag
-  const MAX_DURATION_LOOKBACK_SEC = 2 * 60 * 60; // 2-hour lookback for calculating session duration
+
+  const RECENT_SEC = 20; 
+  const NEW_WINDOW_SEC = 15 * 60;   
+  const MAX_DURATION_LOOKBACK_SEC = 2 * 60 * 60; 
 
   const [rows] = await pool.query(
     `

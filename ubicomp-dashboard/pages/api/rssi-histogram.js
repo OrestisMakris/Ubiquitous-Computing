@@ -2,7 +2,8 @@
 import { pool } from '@/lib/db';
 
 export default async function handler(req, res) {
-  const twentyMinutesAgo = Math.floor(Date.now() / 1000) - (15* 60); // 20 minutes ago
+  
+  const twentyMinutesAgo = Math.floor(Date.now() / 1000) - (15* 60); 
 
   const [rows] = await pool.query(
     `SELECT

@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   );
   const realNameMap = new Map(realDeviceNameRows.map(r => [r.pseudonym, r.device_name]));
 
-  // Get synthetic 'cooccur' patterns, excluding 'Unknown'
+  
   const [synthRows] = await pool.query(
     `SELECT pseudonym, device_name AS synthetic_name, message
      FROM synthetic_patterns
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
   const cooccurPatterns = synthRows.map(s => ({
     pseudonym: s.pseudonym,
-    // Use real name if known for this pseudonym, otherwise use the name from synthetic_patterns
+    //
     device_name: realNameMap.get(s.pseudonym) || s.synthetic_name,
     message: s.message
   }));

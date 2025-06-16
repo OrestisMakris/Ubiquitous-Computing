@@ -1,4 +1,4 @@
-// pages/api/class-distribution.js
+
 import { pool } from '@/lib/db';
 
 export default async function handler(req, res) {
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
      GROUP BY major_class`
   );
 
-  // format for PieChart
+  
   const data = rows.map(({ major_class, cnt }) => ({
     name: major_class,
     value: cnt

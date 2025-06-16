@@ -11,7 +11,7 @@ SESSION_KEY = "temporary_secret_2025"
 SCAN_INTERVAL = 8
 SCANNER_LOCATION = "Room_B"
 
-# ---- Major Class Mapping ----
+# ---- Major Class Mappi
 MAJOR_CLASSES = {
     0x00: "Misc",
     0x01: "Computer",
@@ -25,7 +25,7 @@ MAJOR_CLASSES = {
     0x09: "Health",
 }
 
-# ---- Utilities ----
+
 def hash_mac(mac, session_key):
     return hashlib.sha256((mac + session_key).encode()).hexdigest()[:12]
 
@@ -33,7 +33,6 @@ def parse_major_class(device_class):
     major = (device_class >> 8) & 0x1F
     return MAJOR_CLASSES.get(major, "Unknown")
 
-# ---- Classic Bluetooth ----
 def scan_classic_bt():
     try:
         print("Scanning Classic Bluetooth devices...")
@@ -50,7 +49,7 @@ def scan_classic_bt():
         print(f"[Classic BT Error] {e}")
         return []
 
-# BLE Scanner with bleak
+
 async def scan_ble():
     devices = await BleakScanner.discover(timeout=SCAN_INTERVAL)
     results = []
@@ -80,8 +79,11 @@ def scan_classic_bt():
         print(f"[Classic BT Error] {e}")
         return []
 
-# Main loop
+
+
 async def main_loop():
+
+    
     while True:
         ble_devices = await scan_ble()
         bt_devices = scan_classic_bt()
