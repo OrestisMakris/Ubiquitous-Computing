@@ -10,7 +10,7 @@ This project was developed for the CEID_NE576 — Ubiquitous Computing Live Exer
 *   **Live Device Tracking:** Displays currently visible Bluetooth devices.
 *   **Multiple Dashboard Views:**
     *   **Dashboard One:** General presence statistics (live count, daily unique, device type analysis).  
-       <img src="Images/Screenshot 2025-06-16 100731.png" width="100%" />
+       <img src="Images/Screenshot 2025-06-16 100731.png" width="90%" />
 
     *   **Dashboard Two:** Pattern observer for temporary device names, proximity clusters, and recent activity timeline.  
         <img src="Images/Screenshot 2025-06-16 100743.png" width="110%" />
