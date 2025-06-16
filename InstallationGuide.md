@@ -134,90 +134,141 @@ The Python scripts are responsible for scanning Bluetooth devices (`Python_Scann
 
 ## 5. Next.js Application Setup (`ubicomp-dashboard`)
 
-The Next.js application serves the web dashboard and the backend API endpoints.
+The Next.js application serves the web dashboard and the backend API endpoints. This setup involves configuring environment variables and installing Node.js dependencies.
 
 1.  **Navigate to Next.js Directory:**
+    From your project's root directory (`Ubiquitous-Computing`), change to the Next.js application directory:
     ```bash
     cd ubicomp-dashboard
     ```
-2.  **Create Environment Configuration File:**
-    Create a file named `.env.local` in the `ubicomp-dashboard` directory. This file will store sensitive configuration and is ignored by Git (if `.env.local` is in your `.gitignore` file, which is good practice).
-    Add the following content, replacing placeholder values with your actual database credentials and the session key:
-    ```env
-    # ubicomp-dashboard/.env.local
 
-    # Database Configuration
-    DB_HOST='127.0.0.1'       # Or your MySQL host
-    DB_USER='ubicomp_user'
-    DB_PASSWORD='your_strong_password' # The password for ubicomp_user
-    DB_NAME='dashboard'
+2.  **Create and Configure Environment Variables (`.env.local`):**
+    Environment variables are crucial for managing configuration that varies between environments (development, production) or contains sensitive information like API keys and database credentials. Next.js has built-in support for environment variables using `.env` files.
 
-    # Session Key for MAC Hashing
-    # IMPORTANT: This MUST be the exact same key used in Python_Scanning/scan_bt.py
-    SESSION_KEY='your_very_secret_and_unique_key_2025'
-    ```
-    The `lib/db.js` file is typically set up to read these environment variables. If it's hardcoding credentials, modify it to use `process.env.DB_HOST`, etc.
-    The `pages/api/device-log.js` should also use `process.env.SESSION_KEY`.
-3.  **Install Node.js Dependencies:**
-    This command reads the `package.json` file and installs all necessary Node.js packages.
-    ```bash
-    npm install
-    ```
-    If you encounter issues, ensure you have a compatible version of Node.js and npm installed.
+    *   **Create the file:** In the `ubicomp-dashboard` directory, create a file named `.env.local`.
+        ```bash
+        # Example for Linux/macOS
+        touch .env.local
+        # For Windows, you can create it manually with a text editor.
+        ```
+    *   **Purpose of `.env.local`:**
+        *   Variables defined in `.env.local` are loaded by Next.js during development (`npm run dev`) and at build time (`npm run build`).
+        *   This file is **not committed to Git** (it should be listed in your `.gitignore` file) to keep sensitive credentials secure and out of version control.
+        *   It overrides variables defined in other `.env` files (like `.env.development` or `.env.production`) for your local setup.
+    *   **Add Configuration:** Open `.env.local` with a text editor and add the following content. **Replace placeholder values with your actual settings.**
+        ```env
+        # ubicomp-dashboard/.env.local
+
+        # --- Database Configuration ---
+        # These are used by `lib/db.js` to connect to your MySQL/MariaDB instance.
+        DB_HOST='127.0.0.1'       # Hostname or IP address of your database server.
+        DB_USER='ubicomp_user'    # The database user you created.
+        DB_PASSWORD='your_strong_password' # The password for 'ubicomp_user'.
+        DB_NAME='dashboard'       # The name of the database you created.
+
+        # --- Session Key for MAC Hashing ---
+        # This key is used by `/api/device-log.js` to create pseudonyms.
+        # IMPORTANT: This MUST be the exact same secret key used in `Python_Scanning/scan_bt.py`.
+        SESSION_KEY='your_very_secret_and_unique_key_2025'
+
+        # --- Next.js Specific (Optional) ---
+        # NEXT_PUBLIC_SOME_VARIABLE='this_can_be_read_by_browser' # Variables prefixed with NEXT_PUBLIC_ are exposed to the browser.
+                                                              # Avoid putting sensitive info in NEXT_PUBLIC_ variables.
+        ```
+    *   **Accessing Environment Variables in Code:**
+        *   **Backend (API Routes, `getServerSideProps`):** `process.env.DB_HOST`, `process.env.SESSION_KEY`
+        *   **Frontend (Browser):** Only variables prefixed with `NEXT_PUBLIC_` (e.g., `process.env.NEXT_PUBLIC_ANALYTICS_ID`).
+
+3.  **Install Node.js Dependencies (`npm install`):**
+    Node.js projects use `npm` (Node Package Manager) or `yarn` to manage external libraries and tools (dependencies) listed in the `package.json` file.
+
+    *   **What `npm install` does:**
+        *   Reads `package.json` to identify all project dependencies (e.g., React, Next.js, Tailwind CSS, Recharts) and development dependencies (e.g., ESLint, Prettier).
+        *   Downloads these packages from the npm registry (or a configured private registry).
+        *   Installs them into a `node_modules` directory within `ubicomp-dashboard`. This directory can be very large and is typically not committed to Git.
+        *   Creates or updates a `package-lock.json` file. This file records the exact versions of all installed packages and their sub-dependencies, ensuring consistent installations across different machines and times (deterministic builds). **It's important to commit `package-lock.json` to Git.**
+    *   **Run the command:**
+        ```bash
+        npm install
+        ```
+        This command might take a few minutes, especially on the first run or if there are many dependencies.
+    *   **Common `npm install` Issues:**
+        *   **Network Issues:** Ensure you have a stable internet connection.
+        *   **Permissions:** On some systems, you might encounter permission errors. Avoid using `sudo npm install` globally if possible; manage Node.js versions with tools like `nvm` (Node Version Manager) to avoid permission issues.
+        *   **Outdated npm/Node.js:** Ensure your Node.js and npm versions are compatible with the project's requirements (check `package.json` "engines" field if present, or project documentation). Update Node.js (which usually updates npm) if necessary.
+        *   **Corrupted `node_modules` or `package-lock.json`:** If you face persistent issues, try deleting the `node_modules` directory and the `package-lock.json` file, then run `npm install` again:
+            ```bash
+            rm -rf node_modules package-lock.json # Linux/macOS
+            # For Windows: rmdir /s /q node_modules & del package-lock.json
+            npm install
+            ```
+        *   **Platform-Specific Dependencies:** Some packages might have dependencies that require build tools (like Python, C++ compilers). If installation fails on such packages, the error messages usually indicate missing system dependencies.
 
 ## 6. Running the Application
 
+After setting up the database, Python scripts, and the Next.js application, you can run the full system.
+
 1.  **Ensure MySQL/MariaDB server is running.**
-2.  **Run the Python Scanner Script:**
-    Open a new terminal. Navigate to the `Python_Scanning` directory. Activate the Python virtual environment if you haven't already in this terminal session.
+    (Check your system's services or use `sudo systemctl status mariadb` / `sudo systemctl status mysql` on Linux).
+
+2.  **Run the Python Scanner Script (`Python_Scanning/scan_bt.py`):**
+    Open a **new terminal window/tab**.
     ```bash
     cd /path/to/Ubiquitous-Computing/Python_Scanning
-    # If not already active: source ../.venv/bin/activate  (adjust path if needed)
+    # Activate virtual environment if not already active in this terminal:
+    # source ../.venv/bin/activate  (Linux/macOS, adjust path if needed)
+    # ..\.venv\Scripts\activate    (Windows CMD, adjust path if needed)
     python scan_bt.py
     ```
-    (On Linux, you might need `sudo python scan_bt.py` if you encounter permission issues with Bluetooth, or configure user permissions for Bluetooth access.)
-    You should see output indicating scanning activity and data being sent.
-3.  **Run the Python Data Seeder (Optional - for initial data or to refresh synthetic patterns):**
-    Open another terminal. Navigate to the `ubicomp-dashboard` directory (where `seed_patterns.py` is located). Activate the Python virtual environment.
+    Keep this terminal open. It will continuously scan for Bluetooth devices and send data to the Next.js API.
+
+3.  **Run the Python Data Seeder (`ubicomp-dashboard/seed_patterns.py`) (Optional):**
+    If you want to populate or refresh the synthetic behavioral patterns, open **another new terminal window/tab**.
     ```bash
     cd /path/to/Ubiquitous-Computing/ubicomp-dashboard
-    # If not already active: source ../.venv/bin/activate (adjust path if needed)
+    # Activate virtual environment if not already active in this terminal:
+    # source ../.venv/bin/activate  (Linux/macOS, adjust path if needed)
+    # ..\.venv\Scripts\activate    (Windows CMD, adjust path if needed)
     python seed_patterns.py
     ```
-    This will populate the `synthetic_patterns` table.
-4.  **Start the Next.js Server:**
-    Open another terminal. Navigate to the `ubicomp-dashboard` directory.
-    *   **For development (with hot reloading):**
+    This script runs once and then exits.
+
+4.  **Start the Next.js Application Server:**
+    Open **yet another new terminal window/tab**.
+    ```bash
+    cd /path/to/Ubiquitous-Computing/ubicomp-dashboard
+    ```
+    You have two main options to run the Next.js application:
+
+    *   **A. Development Mode (`npm run dev`):**
+        This is ideal for development and debugging.
         ```bash
         npm run dev
         ```
-    *   **For production (after building the app):**
-        First, build the application:
-        ```bash
-        npm run build
-        ```
-        Then, start the production server:
-        ```bash
-        npm start
-        ```
+        *   **Features:**
+            *   Starts a development server (usually on `http://localhost:3000`).
+            *   Enables **Hot Module Replacement (HMR)**: Changes to your code (e.g., React components, API routes) are reflected in the browser almost instantly without a full page reload.
+            *   Provides detailed error messages and source maps for easier debugging.
+            *   Generally slower and uses more resources than a production build.
+        *   Next.js will recompile your application when you save files. Environment variables from `.env.local` are loaded.
+
+    *   **B. Production Mode (`npm run build` then `npm start`):**
+        This is how you would run the application in a live/production environment.
+        1.  **Build the Application:**
+            ```bash
+            npm run build
+            ```
+            *   This command creates an optimized production build of your application.
+            *   It bundles your JavaScript, optimizes assets (images, CSS), and pre-renders pages where possible.
+            *   The output is typically placed in a `.next` directory.
+            *   Environment variables from `.env.local` (or other relevant `.env` files like `.env.production`) are baked into the build if they are used in a way that Next.js can statically analyze (e.g., `NEXT_PUBLIC_` variables).
+        2.  **Start the Production Server:**
+            ```bash
+            npm start
+            ```
+            *   This command starts a Node.js server that serves the optimized build created by `npm run build`.
+            *   It's much more performant and uses fewer resources than the development server.
+            *   Does not have HMR; code changes require a new build and server restart.
+
 5.  **Access the Dashboard:**
-    Open your web browser and go to `http://localhost:3000` (or the port specified if `npm run dev` or `npm start` indicates a different one).
-
-## 7. Troubleshooting
-
-*   **Database Connection Issues:**
-    *   Verify that your MySQL/MariaDB server is running.
-    *   Double-check `DB_HOST`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` in `ubicomp-dashboard/.env.local` and in `ubicomp-dashboard/seed_patterns.py`.
-    *   Ensure the `ubicomp_user` has the correct privileges for the `dashboard` database from the host where your Next.js app and Python scripts are running (usually `localhost`).
-*   **Python `ModuleNotFoundError`:**
-    *   Ensure your Python virtual environment (`.venv`) is activated in the terminal session where you are trying to run `scan_bt.py` or `seed_patterns.py`.
-    *   Confirm that all dependencies from `requirements.txt` were installed successfully into the virtual environment.
-*   **Bluetooth Scanner Permissions (Linux):**
-    *   `bleak` and `PyBluez` might require root privileges (`sudo python scan_bt.py`).
-    *   Alternatively, add your user to the `bluetooth` group: `sudo usermod -aG bluetooth $USER`. You'll need to log out and log back in for this change to take effect.
-    *   Ensure Bluetooth service is running: `sudo systemctl status bluetooth`.
-*   **`SESSION_KEY` Mismatch:** If devices are logged but pseudonyms seem inconsistent between what the scanner sends and what the API processes, or if data doesn't link up correctly in DashboardThree, ensure the `SESSION_KEY` is **exactly identical** in `Python_Scanning/scan_bt.py` and `ubicomp-dashboard/.env.local`.
-*   **API Errors (e.g., 400, 500):** Check the terminal output where `npm run dev` (or `npm start`) is running. This usually provides detailed error messages from the Next.js API routes.
-*   **npm Install Failures:** Ensure Node.js and npm are up to date. Sometimes, deleting `node_modules` and `package-lock.json` (or `yarn.lock`) and running `npm install` again can resolve issues.
-```// filepath: c:\Users\orest\OneDrive - University of Patras\Documents\GitHub\Ubiquitous-Computing\InstallationGuide.md
-# Ubiquitous Computing Environment Monitor - Installation Guide
+    Open your web browser and navigate to `http://localhost:3000` (or the port indicated in the terminal if it's different, e.g., if port 3000 was already in use).
