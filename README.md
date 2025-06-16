@@ -13,10 +13,10 @@ This project was developed for the CEID_NE576 — Ubiquitous Computing Live Exer
        <img src="Images/Screenshot 2025-06-16 100731.png" width="100%" />
 
     *   **Dashboard Two:** Pattern observer for temporary device names, proximity clusters, and recent activity timeline.  
-        <img src="Images/Screenshot 2025-06-16 100743.png" width="100%" />
+        <img src="Images/Screenshot 2025-06-16 100743.png" width="110%" />
 
     *   **Dashboard Three:** "Active Surveillance Profiles" with detailed synthetic movement and social insights for selected devices.  
-        <img src="Images/Screenshot 2025-06-16 100805.png"  width="100%" />
+        <img src="Images/Screenshot 2025-06-16 100805.png"  width="120%" />
 
 *   **Anonymization:** Uses hashed MAC addresses as pseudonyms.
 
