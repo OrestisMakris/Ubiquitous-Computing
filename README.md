@@ -1,5 +1,6 @@
 # Ubiquitous Computing - Live Bluetooth Environment Monitor
 
+
 This project is a web-based dashboard for monitoring Bluetooth devices in the local environment. It captures device presence, analyzes patterns, and displays synthetic behavioral insights. The system consists of Python scripts for scanning and data seeding, a Next.js application for the frontend and API, and a MySQL database for data storage.
 
 This project was developed for the CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25 course by Orestis Antonis Makris, under Prof. Andreas Komninos.
@@ -8,9 +9,12 @@ This project was developed for the CEID_NE576 — Ubiquitous Computing Live Exer
 
 *   **Live Device Tracking:** Displays currently visible Bluetooth devices.
 *   **Multiple Dashboard Views:**
-    *   **Dashboard One:** General presence statistics (live count, daily unique, device type analysis).
-    *   **Dashboard Two:** Pattern observer for temporary device names, proximity clusters, and recent activity timeline.
-    *   **Dashboard Three:** "Active Surveillance Profiles" with detailed synthetic movement and social insights for selected devices.
+    *   **Dashboard One:** General presence statistics (live count, daily unique, device type analysis).  
+        ![Dashboard One – Live Overview](Images/Screenshot 2025-06-16 100731.png)
+    *   **Dashboard Two:** Pattern observer for temporary device names, proximity clusters, and recent activity timeline.  
+        ![Dashboard Two – Pattern Observer](Images/Screenshot 2025-06-16 100743.png)
+    *   **Dashboard Three:** "Active Surveillance Profiles" with detailed synthetic movement and social insights for selected devices.  
+        ![Dashboard Three – Surveillance Profiles](Images/Screenshot 2025-06-16 100805.png)
 *   **Anonymization:** Uses hashed MAC addresses as pseudonyms.
 
 ## Tech Stack & Dependencies
@@ -130,9 +134,7 @@ All under `ubicomp-dashboard/pages/api/`:
 ## Key Scripts
 - **scan_bt.py**: Replaces old `scanner.py`; scans BLE & Classic, hashes MAC + SESSION_KEY, posts to `/api/device-log`.  
 - **seed_patterns.py**: Generates 2–4 “Last spotted…” + 2–4 social insights per pseudonym and upserts into `synthetic_patterns`.  
-![Dashboard One – Live Overview](<YOUR_LINK_TO_IMAGE1>)  
-![Dashboard Two – Pattern Observer](<YOUR_LINK_TO_IMAGE2>)  
-![Dashboard Three – Surveillance Profiles](<YOUR_LINK_TO_IMAGE3>)
+
 ## Author
 
 *   **Orestis Antonis Makris** (AM 1084516)  — CEID_NE576
