@@ -121,7 +121,7 @@ export default function DashboardOne() {
     <Card className="mx-auto max-w-lg">
   <CardContent>
     <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
-      🔒 Privacy Notice: All data is anonymized and aggregated. No individual tracking.
+      🔒 Ειδοποίηση Απορρήτου: Όλα τα δεδομένα είναι ανωνυμοποιημένα και συγκεντρωτικά. Δεν πραγματοποιείται ατομική παρακολούθηση.
     </p>
   </CardContent>
 </Card>

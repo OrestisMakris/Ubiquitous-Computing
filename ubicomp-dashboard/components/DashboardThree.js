@@ -177,5 +177,18 @@ export default function DashboardThree() {
           </Card>
         ))}
       </div>
-    </div>  );
+          <Card className="mx-auto max-w-lg">
+        <CardContent>
+          <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
+            ⚠️ ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Αυτή είναι μια προσομοιωμένη επίδειξη επιτήρησης. Δεν πραγματοποιείται καμία πραγματική επίμονη παρακολούθηση.
+          </p>
+        </CardContent>
+      </Card>
+            <footer className="text-center text-sm text-gray-400">
+              © 2025 | CEID_NE576 — Ubiquitous Computing Live Exercise<br/>
+              👤 Ορέστης Αντώνης Μακρής (AM 1084516)
+            </footer>
+    </div>  
+    );
 }
+
