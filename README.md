@@ -97,7 +97,7 @@ Refer to `INSTALLATION_GUIDE.md` for detailed setup instructions.
 
 ## Key Scripts
 
-*   **`scanner.py`:** Actively scans for BLE devices using `bleak` and sends data to the `/api/device-log` endpoint.
+*   **`scan_bt.py:** Actively scans for BLE devices using `bleak` and sends data to the `/api/device-log` endpoint.
 *   **`seed_patterns.py`:** Populates the `synthetic_patterns` table in the database with generated movement and social insights.
 
 ## API Endpoints
