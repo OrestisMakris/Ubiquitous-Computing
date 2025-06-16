@@ -8,7 +8,7 @@ from bleak import BleakScanner
 # ---- Config ----
 SERVER_URL = "http://192.168.1.107:3000/api/device-log"
 SESSION_KEY = "temporary_secret_2025"
-SCAN_INTERVAL = 4
+SCAN_INTERVAL = 8
 SCANNER_LOCATION = "Room_B"
 
 # ---- Major Class Mapping ----
