@@ -1,116 +1,110 @@
-# Ubiquitous-Computing
-Project part of Ubiquitous Computing Course (CEID_NE576)
+# Ubiquitous Computing - Live Bluetooth Environment Monitor
 
+This project is a web-based dashboard for monitoring Bluetooth devices in the local environment. It captures device presence, analyzes patterns, and displays synthetic behavioral insights. The system consists of Python scripts for scanning and data seeding, a Next.js application for the frontend and API, and a MySQL database for data storage.
 
-// components/DashboardOne.js
-import React, { useEffect, useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import {
-  PieChart, Pie, Cell, ResponsiveContainer as PieResp, Tooltip as PieTip,
-  BarChart, Bar, XAxis, YAxis, Tooltip as BarTip, ResponsiveContainer as BarResp
-} from 'recharts';
+This project was developed for the CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25 course by Orestis Antonis Makris, under Prof. Andreas Komninos.
 
-const COLORS = ['#151dbd','#4f5fe8','#8fa9ff','#dce1ff'];
+## Features
 
-export default function DashboardOne() {
-  const [liveCount, setLive] = useState(0);
-  const [dailyCount, setDaily] = useState(0);
-  const [nameAnalysis, setName] = useState({ commonInitial: '', topKeys: [] });
-  const [rssi, setRssi] = useState([]);
-  const [clsDist, setCls] = useState([]);
+*   **Live Device Tracking:** Displays currently visible Bluetooth devices.
+*   **Synthetic Data Generation:** Creates plausible movement patterns and social insights for anonymized devices.
+*   **Multiple Dashboard Views:**
+    *   **Dashboard One:** General presence statistics (live count, daily unique, device type analysis).
+    *   **Dashboard Two:** Pattern observer for temporary device names, proximity clusters, and recent activity timeline.
+    *   **Dashboard Three:** "Active Surveillance Profiles" with detailed synthetic movement and social insights for selected devices.
+*   **Anonymization:** Uses hashed MAC addresses as pseudonyms.
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      const [live, daily, name, rs, cls] = await Promise.all([
-        fetch('/api/live-count').then(r => r.json()),
-        fetch('/api/daily-unique').then(r => r.json()),
-        fetch('/api/name-analysis').then(r => r.json()),
-        fetch('/api/rssi-histogram').then(r => r.json()),
-        fetch('/api/class-distribution').then(r => r.json()),
-      ]);
-      setLive(live.liveCount);
-      setDaily(daily.dailyCount);
-      setName(name);
-      setRssi(rs);
-      setCls(cls);
-    };
-    fetchAll();
-    const iv = setInterval(fetchAll, 10000);
-    return () => clearInterval(iv);
-  }, []);
+## Tech Stack
 
-  return (
-    <div className="space-y-10">
-      <header className="text-center py-4">
-        <h1 className="text-3xl font-semibold">📡 UbiComp Live Presence Dashboard</h1>
-        <p className="text-sm text-gray-500">CEID_NE576 — Καθ. Πολυζωγοπούλου — Ομάδα: Ορέστης Μακρής</p>
-      </header>
+*   **Frontend:** Next.js, React, Tailwind CSS
+*   **Backend API:** Node.js (Next.js API routes)
+*   **Database:** MySQL
+*   **Bluetooth Scanning & Data Seeding:** Python 3
+    *   Libraries: `bleak` (for BLE scanning), `requests`, `mysql-connector-python`
+*   **OS for Scanner:** Linux (recommended for `bleak` full functionality, or for `bluetoothctl` if using alternative scanner scripts). Windows/macOS for Next.js development.
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle>👥 Πλήθος Παρόντων Τώρα</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-4xl">{liveCount}</p>
-          </CardContent>
-        </Card>
+## Project Structure
 
-        <Card>
-          <CardHeader><CardTitle>📅 Μοναδικοί Επισκέπτες Σήμερα</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-4xl">{dailyCount}</p>
-          </CardContent>
-        </Card>
+```
+Ubiquitous-Computing/
+├── ubicomp-dashboard/        # Next.js project
+│   ├── app/                  # Next.js App Router (layout, globals)
+│   ├── components/           # React components (Dashboards, UI elements)
+│   ├── lib/                  # Database connection (db.js)
+│   ├── pages/                # Next.js Pages Router (index, API routes)
+│   │   └── api/              # API endpoints
+│   ├── public/               # Static assets
+│   ├── next.config.ts
+│   ├── package.json
+│   └── ...
+├── seed_patterns.py          # Python script to seed synthetic pattern data
+├── scanner.py                # Python script for BLE device scanning (uses bleak)
+├── sc.py                     # Alternative Python scanner (uses bluepy, older)
+├── sccr.py                   # Alternative Python scanner (uses bluetoothctl)
+└── README.md                 # This file
+```
 
-        <Card className="md:col-span-2">
-          <CardHeader><CardTitle className="text-2xl">🔤 Ανάλυση Ονομάτων</CardTitle></CardHeader>
-          <CardContent>
-            <p>Πιο συχνό αρχικό όνομα: <strong>{nameAnalysis.commonInitial}</strong></p>
-            <p>Δημοφιλή πλήκτρα-χαρακτήρες: <strong>{nameAnalysis.topKeys.join(', ')}</strong></p>
-          </CardContent>
-        </Card>
+## Setup and Installation
 
-        <Card className="md:col-span-2">
-          <CardHeader><CardTitle>📶 Κατανομή RSSI</CardTitle></CardHeader>
-          <CardContent>
-            <BarResp width="100%" height={200}>
-              <BarChart data={rssi}>
-                <XAxis dataKey="range" />
-                <YAxis />
-                <BarTip />
-                <Bar dataKey="count" fill="#151dbd" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </BarResp>
-          </CardContent>
-        </Card>
+Refer to `INSTALLATION_GUIDE.md` for detailed setup instructions. A guide for Raspberry Pi setup is available in `RASPBERRY_PI_SETUP.md`.
 
-        <Card>
-          <CardHeader><CardTitle>📊 Κατανομή Κατηγοριών</CardTitle></CardHeader>
-          <CardContent>
-            <PieResp width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={clsDist}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  dataKey="value"
-                  paddingAngle={5}
-                >
-                  {clsDist.map((e, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <PieTip />
-              </PieChart>
-            </PieResp>
-          </CardContent>
-        </Card>
-      </div>
+**Quick Overview:**
 
-      <footer className="text-center text-sm text-gray-400">
-        © 2025 | CEID_NE576 — Ορέστης Μακρής
-      </footer>
-    </div>
-  );
-}
+1.  **Prerequisites:**
+    *   Node.js (LTS version recommended, e.g., v18+)
+    *   Python (3.8+ recommended)
+    *   MySQL Server
+    *   Git
+    *   (Linux for scanner) Bluetooth development libraries (e.g., `libbluetooth-dev`, `libglib2.0-dev` for `bleak`).
+2.  **Clone the repository.**
+3.  **Setup MySQL Database:** Create a database (e.g., `dashboard`) and the required tables (`device_sessions`, `synthetic_patterns`).
+4.  **Configure Python Scripts:**
+    *   Create a Python virtual environment and install dependencies (`bleak`, `requests`, `mysql-connector-python`).
+    *   Update database credentials in `seed_patterns.py`.
+    *   Update `SERVER_URL` (e.g., `http://localhost:3000/api/device-log`) and `SESSION_KEY` in `scanner.py`.
+5.  **Configure Next.js Application (`ubicomp-dashboard`):**
+    *   Update database credentials in `lib/db.js`.
+    *   Ensure `SESSION_KEY` in `pages/api/device-log.js` matches the one in `scanner.py`.
+    *   Install Node.js dependencies: `npm install`.
+
+## Running the Project
+
+1.  **Start MySQL Server.**
+2.  **Run the Python Scanner:**
+    ```bash
+    # Navigate to the root project directory
+    # Activate your Python virtual environment
+    python scanner.py
+    ```
+3.  **Run the Python Data Seeder (Optional, for initial data or updates):**
+    ```bash
+    # Navigate to the root project directory
+    # Activate your Python virtual environment
+    python seed_patterns.py
+    ```
+4.  **Start the Next.js Development Server:**
+    ```bash
+    # Navigate to the ubicomp-dashboard directory
+    npm run dev
+    ```
+5.  Access the dashboard in your browser, typically at `http://localhost:3000`.
+
+## Key Scripts
+
+*   **`scanner.py`:** Actively scans for BLE devices using `bleak` and sends data to the `/api/device-log` endpoint.
+*   **`seed_patterns.py`:** Populates the `synthetic_patterns` table in the database with generated movement and social insights.
+
+## Main API Endpoints
+
+Located in `ubicomp-dashboard/pages/api/`:
+
+*   `device-log.js`: Receives data from the Python scanner.
+*   `pattern-last-seen.js`: Provides movement patterns and real last seen data.
+*   `pattern-cooccur.js`: Provides co-occurrence based social insights.
+*   `pattern-routine.js`: Provides routine-based social insights.
+*   Other endpoints for specific dashboard statistics (e.g., `live-count.js`, `name-analysis.js`).
+
+## Author
+
+*   **Orestis Antonis Makris** (AM 1084516)
+```
