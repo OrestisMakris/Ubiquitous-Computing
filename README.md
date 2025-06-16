@@ -13,14 +13,20 @@ This project was developed for the CEID_NE576 — Ubiquitous Computing Live Exer
     *   **Dashboard Three:** "Active Surveillance Profiles" with detailed synthetic movement and social insights for selected devices.
 *   **Anonymization:** Uses hashed MAC addresses as pseudonyms.
 
-## Tech Stack
+## Tech Stack & Dependencies
 
-*   **Frontend:** Next.js, React, Tailwind CSS
-*   **Backend API:** Node.js (Next.js API routes)
-*   **Database:** MySQL
-*   **Bluetooth Scanning & Data Seeding:** Python 3
-    *   Libraries: `bleak` (for BLE scanning), `requests`, `mysql-connector-python`
-*   **OS for Scanner:** Linux (recommended for `bleak` full functionality, or for `bluetoothctl` if using alternative scanner scripts). Windows/macOS for Next.js development.
+- **Frontend & Backend**  
+  - Next.js (React) + Tailwind CSS  
+  - Recharts (charts)  
+  - Node.js API routes  
+- **Database**  
+  - MySQL or MariaDB (>=5.7)  
+- **Python Scanning & Seeding**  
+  - `scan_bt.py` (uses `bleak`, PyBluez / `bluetooth` module)  
+  - `seed_patterns.py` (uses `mysql-connector-python`)  
+- **Other Dependencies**  
+  - Python 3.8+ (`asyncio`, `requests`, `bleak`)  
+  - Linux Bluetooth dev libraries: `libbluetooth-dev`, `libglib2.0-dev`
 
 ## Project Structure
 
@@ -35,17 +41,18 @@ Ubiquitous-Computing/
 │   ├── public/               # Static assets
 │   ├── next.config.ts
 │   ├── package.json
+│   ├── seed_patterns.py      # Python script to seed synthetic pattern data
 │   └── ...
-├── seed_patterns.py          # Python script to seed synthetic pattern data
-├── scanner.py                # Python script for BLE device scanning (uses bleak)
-├── sc.py                     # Alternative Python scanner (uses bluepy, older)
-├── sccr.py                   # Alternative Python scanner (uses bluetoothctl)
+├── Python_Scanning/          # Directory for Python scanning scripts
+│   ├── scan_bt.py            # Python script for BLE device scanning (run on Windows/Linux, raspberry pi bleutooth may have issues)
+│   └── 
+├── INSTALLATION_GUIDE.md    # Detailed installation guide
 └── README.md                 # This file
 ```
 
 ## Setup and Installation
 
-Refer to `INSTALLATION_GUIDE.md` for detailed setup instructions. A guide for Raspberry Pi setup is available in `RASPBERRY_PI_SETUP.md`.
+Refer to `INSTALLATION_GUIDE.md` for detailed setup instructions.
 
 **Quick Overview:**
 
@@ -93,17 +100,41 @@ Refer to `INSTALLATION_GUIDE.md` for detailed setup instructions. A guide for Ra
 *   **`scanner.py`:** Actively scans for BLE devices using `bleak` and sends data to the `/api/device-log` endpoint.
 *   **`seed_patterns.py`:** Populates the `synthetic_patterns` table in the database with generated movement and social insights.
 
-## Main API Endpoints
+## API Endpoints
 
-Located in `ubicomp-dashboard/pages/api/`:
+All under `ubicomp-dashboard/pages/api/`:
 
-*   `device-log.js`: Receives data from the Python scanner.
-*   `pattern-last-seen.js`: Provides movement patterns and real last seen data.
-*   `pattern-cooccur.js`: Provides co-occurrence based social insights.
-*   `pattern-routine.js`: Provides routine-based social insights.
-*   Other endpoints for specific dashboard statistics (e.g., `live-count.js`, `name-analysis.js`).
-
+- **POST** `/api/device-log.js`  
+  Ingests scanner payload, pseudonymizes MAC → `device_sessions`.  
+- **GET** `/api/live-count.js`  
+  Returns count of distinct devices seen in the last 20 s.  
+- **GET** `/api/daily-unique.js`  
+  Returns unique devices seen since 00:00 (or configured day start).  
+- **GET** `/api/name-analysis.js`  
+  Returns the most common `major_class` among recent devices.  
+- **GET** `/api/class-distribution.js`  
+  Returns data for a pie chart of `major_class` proportions.  
+- **GET** `/api/rssi-histogram.js`  
+  Returns counts of signal‐strength bins (near/mid/far).  
+- **GET** `/api/visible-devices.js`  
+  Returns currently visible devices, durations & “new” flags.  
+- **GET** `/api/device-events.js`  
+  Returns a timestamp sequence of detection events (last 15 min).  
+- **GET** `/api/pattern-last-seen.js`  
+  Merges real “Last Seen” markers + synthetic “Last spotted at…” messages.  
+- **GET** `/api/pattern-cooccur.js`  
+  Returns synthetic and co-location “social insights” messages.  
+- **GET** `/api/pattern-routine.js`  
+  Returns synthetic routine-based activity messages.
+  
+## Key Scripts
+- **scan_bt.py**: Replaces old `scanner.py`; scans BLE & Classic, hashes MAC + SESSION_KEY, posts to `/api/device-log`.  
+- **seed_patterns.py**: Generates 2–4 “Last spotted…” + 2–4 social insights per pseudonym and upserts into `synthetic_patterns`.  
+![Dashboard One – Live Overview](<YOUR_LINK_TO_IMAGE1>)  
+![Dashboard Two – Pattern Observer](<YOUR_LINK_TO_IMAGE2>)  
+![Dashboard Three – Surveillance Profiles](<YOUR_LINK_TO_IMAGE3>)
 ## Author
 
-*   **Orestis Antonis Makris** (AM 1084516)
+*   **Orestis Antonis Makris** (AM 1084516)  — CEID_NE576
+Distributed under the MIT License.  
 ```
