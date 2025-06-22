@@ -13,5 +13,5 @@ export function CardTitle({ children, ...props }) {
 }
 
 export function CardContent({ children, ...props }) {
-  return <div style={{ fontWeight: 900 , marginLeft: 40 , fontSize: '1.6rem' }} {...props}>{children}</div>;
+  return <div style={{ fontWeight: 900 , marginLeft: 40 , fontSize: '2.6rem' }} {...props}>{children}</div>;
 }

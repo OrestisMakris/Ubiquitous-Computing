@@ -155,11 +155,11 @@ export default function DashboardTwo() {
                         <span
                           style={{
                             paddingLeft: '0.75rem',
-                            paddingRight: '0.75rem',
+                            paddingRight: '2 rem',
                             paddingTop: '0.25rem',
                             paddingBottom: '0.25rem',
                             backgroundColor: '#fee2e2',
-                            color: '#dc2626',
+                            color: '#b30505',
                             borderRadius: '0.5rem',
                             fontSize: '1.8rem',
                             lineHeight: '1.5rem',
@@ -172,9 +172,9 @@ export default function DashboardTwo() {
                       )}
                       <span
                         style={{
-                          fontSize: '2.2rem',
+                          fontSize: '2.4rem',
                           lineHeight: '2rem',
-                          fontWeight: '800',
+                          fontWeight: '600',
                           color: 'rgb(0, 19, 159)',
                         }}
                       >
@@ -186,7 +186,7 @@ export default function DashboardTwo() {
                         fontSize: '2.2rem',
                         lineHeight: '2rem',
                         color: 'rgb(64, 0, 107)',
-                        fontWeight: '800',
+                        fontWeight: '600',
                       }}
                     >
                       {label}
@@ -281,7 +281,7 @@ export default function DashboardTwo() {
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
             </p>
-            <BarResp width="100%" height={150}>
+            <BarResp width="100%" height={250}>
                 <BarChart data={hist}>
                 <XAxis dataKey="time" tick={{ fontSize: 10 }} />
                 <YAxis hide domain={[0, 'dataMax']} />
