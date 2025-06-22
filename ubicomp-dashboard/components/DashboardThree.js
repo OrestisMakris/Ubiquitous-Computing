@@ -184,10 +184,10 @@ export default function DashboardThree() {
           </p>
         </CardContent>
       </Card>
-            <footer className="text-center text-sm text-gray-400">
-              © 2025 | CEID_NE576 — Ubiquitous Computing Live Exercise<br/>
-              👤 Ορέστης Αντώνης Μακρής (AM 1084516)
-            </footer>
+      <footer className="text-center text-base text-gray-800 font-extrabold mt-10">
+        © 2025 | CEID_NE576 — Ubiquitous Computing Lab Exercise  2024/25<br/>
+        👤 Orestis Antonis Makris (AM 1084516) Prof. Andreas Komninos
+      </footer>
     </div>  
     );
 }

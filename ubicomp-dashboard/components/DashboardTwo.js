@@ -307,9 +307,9 @@ export default function DashboardTwo() {
           </p>
         </CardContent>
       </Card>
-            <footer className="text-center text-sm text-gray-400">
-        ©&nbsp;2025&nbsp;|&nbsp;CEID_NE576 —&nbsp;Ubiquitous Computing Live Exercise<br/>
-        👤&nbsp;Ορέστης&nbsp;Αντώνης&nbsp;Μακρής&nbsp;(AM&nbsp;1084516)
+      <footer className="text-center text-base text-gray-800 font-extrabold mt-10">
+        © 2025 | CEID_NE576 — Ubiquitous Computing Lab Exercise  2024/25<br/>
+        👤 Orestis Antonis Makris (AM 1084516) Prof. Andreas Komninos
       </footer>
     </div>
   );
