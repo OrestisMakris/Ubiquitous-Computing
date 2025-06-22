@@ -276,14 +276,14 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-4 text-lg text-gray-800 font-semibold">
+            <p className="mb-4 text-lg text-gray-400 font-semibold">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
             </p>
             <BarResp width="100%" height={250}>
                 <BarChart data={hist}>
-                <XAxis dataKey="time" tick={{ fontSize: 20 ,fontWeight: 600 }} />
+                <XAxis dataKey="time" tick={{ fontSize: 18 ,fontWeight: 600 }} />
                 <YAxis hide domain={[0, 'dataMax']} />
                 <Tooltip />
                 <Bar dataKey="count" radius={[4, 4, 0, 0]}>
