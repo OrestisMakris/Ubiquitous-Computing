@@ -136,7 +136,7 @@ export default function DashboardThree() {
 <CardContent className="p-5 text-base">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-      <h4 className="text-[2rem] font-bold mb-2 flex items-center">
+      <h4 className="text-[1.8rem] font-bold mb-2 flex items-center">
         <span className="mr-2 text-xl">📍</span>Movement Patterns
       </h4>
       {dev.final_movement_patterns.length
@@ -149,7 +149,7 @@ export default function DashboardThree() {
       }
     </div>
     <div>
-      <h4 className="text-lg font-bold mb-2 flex items-center">
+      <h4 className="text-[1.8rem] font-bold mb-2 flex items-center">
         <span className="mr-2 text-xl">💬</span>Social Insights
       </h4>
       {dev.social_insights_cooccur.length
