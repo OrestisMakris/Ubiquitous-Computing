@@ -9,7 +9,7 @@ export function CardHeader({ children, ...props }) {
 }
 
 export function CardTitle({ children, ...props }) {
-  return <h2 style={{ fontWeight: 600, margin: 2, fontSize: '2.2rem' }} {...props}>{children}</h2>;
+  return <h2 style={{ fontWeight: 700, margin: 200, fontSize: '2.4rem' }} {...props}>{children}</h2>;
 }
 
 export function CardContent({ children, ...props }) {
