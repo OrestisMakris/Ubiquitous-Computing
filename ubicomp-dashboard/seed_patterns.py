@@ -89,10 +89,14 @@ def seed_synthetic():
     for p_idx, p in enumerate(all_pseuds):
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
+        # 1. Synthetic Movement Patterns (type='last_seen')
         num_movement_messages = random.randint(3, 5)
         for _ in range(num_movement_messages):
             spot_building = random.choice(BUILDINGS)
-            spot_time = random_time_str()
+            spot_time     = random_time_str()
+            message       = f"Last spotted at {spot_building} around {spot_time}"
+            to_upsert.append((p, fake_name, 'last_seen', message, now))
+
 
         
         selected_cooccur_messages = set() # Use a set to avoid duplicates initially

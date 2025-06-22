@@ -144,11 +144,14 @@ export default function DashboardThree() {
         <span className="mr-2 text-xl">📍</span>Movement Patterns
       </h4>
       {dev.final_movement_patterns.length
-        ? dev.final_movement_patterns.map((m,j)=>(
-            <div key={j} className="flex items-start py-1">
-              <span className="mr-2 text-lg">🗺️</span><span>{m}</span>
-            </div>
-          ))
+        ? dev.final_movement_patterns
+            .slice(0, 4)
+            .map((m, j) => (
+              <div key={j} className="flex items-start py-1">
+                <span className="mr-2 text-lg">🗺️</span>
+                <span>{m}</span>
+              </div>
+            ))
         : <p className="italic text-gray-500">— none —</p>
       }
     </div>
@@ -156,18 +159,17 @@ export default function DashboardThree() {
       <h4 className="text-[1.8rem] font-bold mb-2 flex items-center">
         <span className="mr-2 text-xl">💬</span>Social Insights
       </h4>
-      {dev.social_insights_cooccur.length
-        ? dev.social_insights_cooccur.map((m,j)=>(
+    {dev.social_insights_cooccur.length
+      ? dev.social_insights_cooccur
+          .slice(0, 4)
+          .map((m, j) => (
             <div key={j} className="flex items-start py-1">
-              <span className="mr-2 text-lg">
-                {m.startsWith("Clubs:") ? "🏆" :
-                 m.startsWith("Behavioral Note:") ? "🧠" : "🔗"}
-              </span>
+              <span className="mr-2 text-lg">{/* …icon logic… */}</span>
               <span>{m}</span>
             </div>
           ))
-        : <p className="italic text-gray-500">— none —</p>
-      }
+      : <p className="italic text-gray-500">— none —</p>
+    }
       {dev.social_insights_routine.map((m,j)=>(
         <div key={`r${j}`} className="flex items-start py-1">
           <span className="mr-2 text-lg">⏱️</span><span>{m}</span>
