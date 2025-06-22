@@ -61,7 +61,7 @@ export default function DashboardOne() {
             <CardTitle> 🔹Μοναδικοί Επισκέπτες Σήμερα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-8xl text-[#0017a5] font-extrabold">{dailyCount}</p>
+            <p className="text-4xl text-[#0017a5] font-extrabold">{dailyCount}</p>
           </CardContent>
         </Card>
 
