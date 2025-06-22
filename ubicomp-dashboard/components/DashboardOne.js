@@ -34,59 +34,58 @@ export default function DashboardOne() {
     return () => clearInterval(iv);
   }, []);
 
-// ...existing code...
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        <p className="text-5xl text-[#0017a5] font-extrabold">
+        <p className="text-4xl text-[#0017a5] font-bold">
           📡 UbiComp Live Presence Dashboard
         </p>
-        <p className="mt-16 text-lg text-gray-600">
+        <p className="mt-16 text-sm text-gray-600">
           CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25<br/>
           Prof. Andreas Komninos — Authors: Orestis Antonis Makris
         </p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">🔹Πλήθος Παρόντων Τώρα</CardTitle>
+            <CardTitle>🔹Πλήθος Παρόντων Τώρα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-6xl font-bold text-[#0017a5]">{liveCount}</p>
+            <p className="text-4xl text-[#0017a5]">{liveCount}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold"> 🔹Μοναδικοί Επισκέπτες Σήμερα</CardTitle>
+            <CardTitle> 🔹Μοναδικοί Επισκέπτες Σήμερα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-6xl font-bold text-[#0017a5]">{dailyCount}</p>
+            <p className="text-4xl text-[#0017a5]">{dailyCount}</p>
           </CardContent>
         </Card>
 
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">🔹Ανάλυση Ονομάτων Συσκευών</CardTitle>
+            <CardTitle className="text-2xl">🔹Ανάλυση Ονομάτων Συσκευών</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl">
-              Πιο συχνός τύπος συσκευής: <strong className="font-extrabold">{nameAnalysis.commonClass}</strong>
+            <p>
+              Πιο συχνός τύπος συσκευής: <strong>{nameAnalysis.commonClass}</strong>
             </p>
           </CardContent>
         </Card>
 
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">📊 Κατανομή RSSI</CardTitle>
+            <CardTitle>📊 Κατανομή RSSI</CardTitle>
           </CardHeader>
           <CardContent>
-            <BarResp width="100%" height={250}>
-              <BarChart data={rssi} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                <XAxis dataKey="range" tick={{ fontSize: 16, fontWeight: 'bold' }} />
-                <YAxis domain={[0, 'dataMax']} tick={{ fontSize: 16, fontWeight: 'bold' }} />
-                <BarTip contentStyle={{ fontSize: '16px' }} />
+            <BarResp width="100%" height={200}>
+              <BarChart data={rssi}>
+                <XAxis dataKey="range" />
+                <YAxis domain={[0, 'dataMax']} />
+                <BarTip />
                 <Bar dataKey="count" radius={[8, 8, 0, 0]} fill="#0017a5" />
               </BarChart>
             </BarResp>
@@ -95,40 +94,38 @@ export default function DashboardOne() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Κατανομή Κατηγοριών Συσκευών</CardTitle>
+            <CardTitle>Κατανομή Κατηγοριών Συσκευών</CardTitle>
           </CardHeader>
           <CardContent>
-            <PieResp width="100%" height={250}>
+            <PieResp width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={clsDist}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius={50}
+                  outerRadius={80}
                   dataKey="value"
                   paddingAngle={5}
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 >
                   {clsDist.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
             </Pie>
-                <PieTip contentStyle={{ fontSize: '16px' }} />
+                <PieTip />
               </PieChart>
             </PieResp>
           </CardContent>
         </Card>
       </div>
-    <Card className="mx-auto max-w-2xl">
-  <CardContent className="pt-6">
-    <p className="text-center text-3xl md:text-4xl font-extrabold text-gray-800">
+    <Card className="mx-auto max-w-lg">
+  <CardContent>
+    <p className="text-center text-2xl md:text-3xl font-extrabold text-gray-800">
       🔒 Ειδοποίηση Απορρήτου: Όλα τα δεδομένα είναι ανωνυμοποιημένα και συγκεντρωτικά. Δεν πραγματοποιείται ατομική παρακολούθηση.
     </p>
   </CardContent>
 </Card>
-      <footer className="text-center text-base text-gray-500 font-bold">
+      <footer className="text-center text-sm text-gray-400">
         © 2025 | CEID_NE576 — Ubiquitous Computing Live Exercise<br/>
         👤 Ορέστης Αντώνης Μακρής (AM 1084516)
       </footer>
