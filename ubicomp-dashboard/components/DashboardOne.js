@@ -52,7 +52,7 @@ export default function DashboardOne() {
             <CardTitle>🔹Πλήθος Παρόντων Τώρα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl text-[#0017a5]">{liveCount}</p>
+            <p className="text-4xl text-[#0017a5] font-extrabold">{liveCount}</p>
           </CardContent>
         </Card>
 
@@ -61,13 +61,13 @@ export default function DashboardOne() {
             <CardTitle> 🔹Μοναδικοί Επισκέπτες Σήμερα</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl text-[#0017a5]">{dailyCount}</p>
+            <p className="text-4xl text-[#0017a5] font-extrabold">{dailyCount}</p>
           </CardContent>
         </Card>
 
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-2xl">🔹Ανάλυση Ονομάτων Συσκευών</CardTitle>
+            <CardTitle className="text-4xl">🔹Ανάλυση Ονομάτων Συσκευών</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
