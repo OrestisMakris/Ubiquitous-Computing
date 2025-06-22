@@ -252,18 +252,18 @@ export default function DashboardTwo() {
         
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+            <Wifi className="h-5 w-5 text-gray-500 mr-3" />
             <CardTitle className="text-xl font-bold">Session Overview</CardTitle>
-            <Wifi className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
-            <div className="flex items-center">
+            <div className="flex items-center justify-between">
               <p className="text-lg text-gray-700 font-semibold">Total Unique Devices:</p>
-              <p className="text-3xl font-bold text-amber-600 ml-auto">{sessionOverviewData.totalUnique}</p>
+              <p className="text-3xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-between">
               <p className="text-lg text-gray-700 font-semibold">Longest Present:</p>
-              <p className="text-3xl font-bold text-amber-600 ml-auto">
+              <p className="text-3xl font-bold text-amber-600">
                 {sessionOverviewData.longestPresent} min
               </p>
             </div>
@@ -276,7 +276,7 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-4 text-[1.4rem] text-gray-400">
+            <p className="mb-4 text-[0.8rem] text-gray-600">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
