@@ -5,11 +5,11 @@ export function Card({ children, ...props }) {
 }
 
 export function CardHeader({ children, ...props }) {
-  return <div style={{ fontWeight: 'extrabold', marginBottom: 8 }} {...props}>{children}</div>;
+  return <div style={{ fontWeight: 'extrabold', marginBottom: 14 }} {...props}>{children}</div>;
 }
 
 export function CardTitle({ children, ...props }) {
-  return <h2 style={{ fontWeight: 'extrabold', margin: 0, fontSize: '2.8rem' }} {...props}>{children}</h2>;
+  return <h2 style={{ fontWeight: 'extrabold', margin: 0, fontSize: '2.5rem' }} {...props}>{children}</h2>;
 }
 
 export function CardContent({ children, ...props }) {
