@@ -40,7 +40,7 @@ export default function DashboardOne() {
         <p className="text-5xl text-[#0017a5] font-extrabold">
           📡 UbiComp Live Presence Dashboard
         </p>
-        <p className="mt-16 text-sm text-gray-600">
+        <p className="mt-28 text-sm text-gray-600">
           CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25<br/>
           Prof. Andreas Komninos — Authors: Orestis Antonis Makris
         </p>
