@@ -252,7 +252,6 @@ export default function DashboardTwo() {
         
         <Card>
           <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-            <Wifi className="h-5 w-5 text-gray-500 mr-3" />
             <CardTitle className="text-xl font-bold">Session Overview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
