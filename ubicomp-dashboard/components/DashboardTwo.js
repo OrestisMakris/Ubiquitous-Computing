@@ -253,8 +253,8 @@ export default function DashboardTwo() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <Wifi className="h-4 w-4 text-gray-500" />
             <CardTitle className="text-xl font-bold">Session Overview</CardTitle>
+            <Wifi className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             <div className="flex items-center">
@@ -276,7 +276,7 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-4 text-sm text-gray-600">
+            <p className="mb-4 text-[1.4rem] text-gray-400">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
