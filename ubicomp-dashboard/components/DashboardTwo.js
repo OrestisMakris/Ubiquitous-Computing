@@ -106,18 +106,17 @@ export default function DashboardTwo() {
       {newlyWelcomedPhones.length > 0 && (
         <div className="my-4 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm text-center">
           {newlyWelcomedPhones.map(phone => (
-            <p key={phone.pseudonym} className="text-lg text-blue-700"> {/* Adjusted base styling */}
-              <strong className="font-bold">👋 Καλωσήρθες</strong>{' '} {/* Bold "Καλωσήρθες" */}
-              <span
-                style={{
-                  fontSize: '2rem',
-                  lineHeight: '2rem',
-                  fontWeight: '800',
-                  color: 'rgb(0, 9, 76)', // Applied custom style
-                }}
-              >
-                {phone.name}
-              </span>
+            <p 
+              key={phone.pseudonym}
+              style={{
+                fontSize: '1.8rem',
+                lineHeight: '2rem',
+                fontWeight: '600',
+                color: 'rgb(0, 9, 76)',
+              }}
+            > 
+              <strong className="font-bold">👋 Καλωσήρθες</strong>{' '} 
+              {phone.name}
               !
             </p>
           ))}
@@ -154,8 +153,8 @@ export default function DashboardTwo() {
                       {d.isNew && (
                         <span
                           style={{
-                            paddingLeft: '0.75rem',
-                            paddingRight: '2 rem',
+                            paddingLeft: '2rem',
+                            paddingRight: '0.75 rem',
                             paddingTop: '0.25rem',
                             paddingBottom: '0.25rem',
                             backgroundColor: '#fee2e2',
@@ -256,13 +255,9 @@ export default function DashboardTwo() {
           <CardContent className="space-y-4 pt-4">
             <div className="flex items-center justify-between">
               <p className="text-lg text-gray-600 font-semibold">Total Unique Devices: {sessionOverviewData.totalUnique}</p>
-              <p className="text-1xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
             </div>
             <div className="flex items-center justify-between">
               <p className="text-lg text-gray-600 font-semibold">Longest Present: {sessionOverviewData.longestPresent} min</p>
-              <p className="text-1xl font-bold text-amber-600">
-                {sessionOverviewData.longestPresent} min
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -272,7 +267,7 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-4 text-[1px] text-gray-500">
+            <p className="mb-2 text-[0.1px] text-gray-500">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
