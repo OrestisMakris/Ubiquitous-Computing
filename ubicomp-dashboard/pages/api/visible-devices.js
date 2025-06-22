@@ -2,7 +2,7 @@ import { pool } from '@/lib/db';
 
 export default async function handler(req, res) {
 
-  const RECENT_SEC = 11; 
+  const RECENT_SEC = 25; 
   const NEW_WINDOW_SEC = 15 * 60;   
   const MAX_DURATION_LOOKBACK_SEC = 2 * 60 * 60; 
 
