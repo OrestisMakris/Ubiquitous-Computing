@@ -9,9 +9,9 @@ export function CardHeader({ children, ...props }) {
 }
 
 export function CardTitle({ children, ...props }) {
-  return <h2 style={{ fontWeight: 770, marginBottom: 28, fontSize: '2.5rem' }} {...props}>{children}</h2>;
+  return <h2 style={{ fontWeight: 770, marginBottom: 20, fontSize: '2.5rem' }} {...props}>{children}</h2>;
 }
 
 export function CardContent({ children, ...props }) {
-  return <div style={{ fontWeight: 600 , marginLeft: 40 , fontSize: '1.9rem' ,color: '#0b129d'}} {...props}>{children}</div>;
+  return <div style={{ fontWeight: 800 , marginLeft: 40 , fontSize: '2.6rem' ,color: '#0b129d'}} {...props}>{children}</div>;
 }
