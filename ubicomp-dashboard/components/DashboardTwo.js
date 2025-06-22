@@ -256,12 +256,12 @@ export default function DashboardTwo() {
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
             <div className="flex items-center justify-between">
-              <p className="text-lg text-gray-700 font-semibold">Total Unique Devices:</p>
-              <p className="text-3xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
+              <p className="text-lg text-gray-600 font-semibold">Total Unique Devices:</p>
+              <p className="text-1xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-lg text-gray-700 font-semibold">Longest Present:</p>
-              <p className="text-3xl font-bold text-amber-600">
+              <p className="text-lg text-gray-600 font-semibold">Longest Present:</p>
+              <p className="text-1xl font-bold text-amber-600">
                 {sessionOverviewData.longestPresent} min
               </p>
             </div>
@@ -273,7 +273,7 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-4 text-[14px] text-gray-500">
+            <p className="mb-4 text-[5px] text-gray-500">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
