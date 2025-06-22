@@ -250,20 +250,19 @@ export default function DashboardTwo() {
           </CardContent>
         </Card>
         
-
         <Card>
           <CardHeader className="flex flex-row items-center space-y-0 pb-2">
             <Wifi className="h-5 w-5 text-gray-500 mr-3" />
             <CardTitle className="text-xl font-bold">Session Overview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center">
               <p className="text-lg text-gray-700 font-semibold">Total Unique Devices:</p>
-              <p className="text-3xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
+              <p className="text-3xl font-bold text-amber-600 ml-auto">{sessionOverviewData.totalUnique}</p>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center">
               <p className="text-lg text-gray-700 font-semibold">Longest Present:</p>
-              <p className="text-3xl font-bold text-amber-600">
+              <p className="text-3xl font-bold text-amber-600 ml-auto">
                 {sessionOverviewData.longestPresent} min
               </p>
             </div>
