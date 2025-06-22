@@ -40,10 +40,6 @@ export default function DashboardOne() {
         <p className="text-4xl text-[#0017a5] font-semibold">
           📡 UbiComp Live Presence Dashboard
         </p>
-        <p className="mt-16 text-lg text-gray-600 font-semibold">
-          CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25<br/>
-          Prof. Andreas Komninos — Authors: Orestis Antonis Makris
-        </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -125,9 +121,9 @@ export default function DashboardOne() {
     </p>
   </CardContent>
 </Card>
-      <footer className="text-center text-sm text-gray-400">
-        © 2025 | CEID_NE576 — Ubiquitous Computing Live Exercise<br/>
-        👤 Ορέστης Αντώνης Μακρής (AM 1084516)
+      <footer className="text-center text-sm text-gray-400 mt-10">
+        © 2025 | CEID_NE576 — Ubiquitous Computing Lab Exercise  2024/25<br/>
+        👤 Orestis Antonis Makris (AM 1084516) Prof. Andreas Komninos
       </footer>
     </div>
   );
