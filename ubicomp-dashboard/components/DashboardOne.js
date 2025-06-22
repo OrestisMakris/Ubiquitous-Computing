@@ -37,7 +37,7 @@ export default function DashboardOne() {
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        <p className="text-4xl text-[#0017a5]-1500 font-extrabold">
+        <p className="text-4xl text-[#0017a5] font-extrabold">
           📡 Live Presence Dashboard 1
         </p>
       </header>
