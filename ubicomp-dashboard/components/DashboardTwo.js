@@ -95,7 +95,7 @@ export default function DashboardTwo() {
     <div className="space-y-10">
       <header className="text-center py-6">
         <p className="text-4xl text-[#0017a5] font-bold">
-          🕵️‍♂️ Dashboard Παρατηρητής Μοτίβων
+          🕵️‍♂️ Παρατηρητής Μοτίβων Dashboard  2 
         </p>
         <p className="mt-2 text-sm text-gray-600">
           Παρατηρεί προσωρινά δημόσια ονόματα συσκευών χωρίς μακροχρόνιο ιστορικό
@@ -110,9 +110,9 @@ export default function DashboardTwo() {
               <strong className="font-bold">👋 Καλωσήρθες</strong>{' '} {/* Bold "Καλωσήρθες" */}
               <span
                 style={{
-                  fontSize: '1.5rem',
+                  fontSize: '2rem',
                   lineHeight: '2rem',
-                  fontWeight: '700',
+                  fontWeight: '800',
                   color: 'rgb(0, 9, 76)', // Applied custom style
                 }}
               >
@@ -161,9 +161,9 @@ export default function DashboardTwo() {
                             backgroundColor: '#fee2e2',
                             color: '#dc2626',
                             borderRadius: '0.5rem',
-                            fontSize: '1rem',
+                            fontSize: '1.8rem',
                             lineHeight: '1.5rem',
-                            fontWeight: '700',
+                            fontWeight: '800',
                             boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
                           }}
                         >
@@ -172,9 +172,9 @@ export default function DashboardTwo() {
                       )}
                       <span
                         style={{
-                          fontSize: '1.5rem',
+                          fontSize: '2.2rem',
                           lineHeight: '2rem',
-                          fontWeight: '700',
+                          fontWeight: '800',
                           color: 'rgb(0, 19, 159)',
                         }}
                       >
@@ -183,10 +183,10 @@ export default function DashboardTwo() {
                     </div>
                     <span
                       style={{
-                        fontSize: '1.5rem',
+                        fontSize: '2.2rem',
                         lineHeight: '2rem',
                         color: 'rgb(64, 0, 107)',
-                        fontWeight: '600',
+                        fontWeight: '800',
                       }}
                     >
                       {label}
@@ -209,8 +209,8 @@ export default function DashboardTwo() {
           <CardContent className="flex flex-col items-center">
             <div className="flex items-center justify-center w-full py-6">
               <svg
-                width={200}
-                height={200}
+                width={400}
+                height={400}
                 viewBox="0 0 256 256" 
                 className="mx-auto"
               >
@@ -276,7 +276,7 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-2 text-sm text-gray-600">
+            <p className="mb-2 text-sm text-gray-900 font-semibold">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.

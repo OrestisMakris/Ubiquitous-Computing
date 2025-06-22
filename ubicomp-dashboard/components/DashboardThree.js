@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card3';
 
 export default function DashboardThree() {
   const [apiLastSeenData, setApiLastSeenData] = useState([]);
@@ -120,8 +120,7 @@ export default function DashboardThree() {
       <header className="text-center py-6 mb-8">
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 tracking-tight">
           <span role="img" aria-label="eye" className="mr-2">👁️</span>
-          Active Surveillance Profiles
-          <span role="img" aria-label="eye" className="ml-2">👁️</span>
+          Ενεργή Παρακολούθηση Συσκευών ? Dashboard 3
         </h1>
       </header>
       <div className="max-w-screen-xl mx-auto grid grid-cols-1 gap-6 xl:gap-8">
