@@ -136,21 +136,20 @@ export default function DashboardThree() {
 <CardContent className="p-5 text-base">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-      <h4 className="text-lg font-semibold mb-2 flex items-center">
+      <h4 className="text-lg font-extrabold mb-2 flex items-center">
         <span className="mr-2 text-xl">📍</span>Movement Patterns
       </h4>
       {dev.final_movement_patterns.length
         ? dev.final_movement_patterns.map((m,j)=>(
             <div key={j} className="flex items-start py-1">
-              <span className="mr-2 text-lg">🗺️</span>
-              <span>{m}</span>
+              <span className="mr-2 text-lg">🗺️</span><span>{m}</span>
             </div>
           ))
         : <p className="italic text-gray-500">— none —</p>
       }
     </div>
     <div>
-      <h4 className="text-lg font-semibold mb-2 flex items-center">
+      <h4 className="text-lg font-extrabold mb-2 flex items-center">
         <span className="mr-2 text-xl">💬</span>Social Insights
       </h4>
       {dev.social_insights_cooccur.length

@@ -258,11 +258,11 @@ export default function DashboardTwo() {
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-700">Total Unique Devices:</p>
+              <p className="text-sm text-gray-700 font-semibold">Total Unique Devices:</p>
               <p className="text-xl font-bold text-amber-600">{sessionOverviewData.totalUnique}</p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-700">Longest Present:</p>
+              <p className="text-sm text-gray-700 font-semibold">Longest Present:</p>
               <p className="text-xl font-bold text-amber-600">
                 {sessionOverviewData.longestPresent} min
               </p>
@@ -276,14 +276,14 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-2 text-sm text-gray-900 font-semibold">
+            <p className="mb-4 text-lg text-gray-800 font-semibold">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
             </p>
             <BarResp width="100%" height={250}>
                 <BarChart data={hist}>
-                <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+                <XAxis dataKey="time" tick={{ fontSize: 20 ,fontWeight: 600 }} />
                 <YAxis hide domain={[0, 'dataMax']} />
                 <Tooltip />
                 <Bar dataKey="count" radius={[4, 4, 0, 0]}>
