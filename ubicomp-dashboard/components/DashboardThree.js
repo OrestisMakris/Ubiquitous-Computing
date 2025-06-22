@@ -82,20 +82,32 @@ export default function DashboardThree() {
     let allProfilesArray = Array.from(profilesMap.values());
 
     allProfilesArray.forEach(profile => {
+      const realMsg    = profile.real_last_seen_message;
+      const synthetic  = profile.synthetic_movement_patterns;
+
+      // pick synthetic "Last spotted..." messages
+      const lastSpotted = synthetic.filter(m => m.startsWith("Last spotted"));
+      // pick synthetic time-of-day snippets (matches morning/afternoon/etc)
+      const timeOfDay   = synthetic.filter(m =>
+        /(morning|afternoon|midday|evening)/i.test(m)
+      );
+
       let finalMovements = [];
+
       if (profile.is_real_device) {
-        // Real devices ONLY show their real last seen message.
-        if (profile.real_last_seen_message) {
-          finalMovements.push(profile.real_last_seen_message);
-        }
+        // 1) real device: real timestamp
+        if (realMsg) finalMovements.push(realMsg);
+        // 2) add one time-of-day if available
+        if (timeOfDay.length) finalMovements.push(timeOfDay[0]);
       } else {
-        // Fake devices show their synthetic movement patterns.
-        finalMovements.push(...profile.synthetic_movement_patterns);
+        // 1) fake device: one synthetic "Last spotted..."
+        if (lastSpotted.length) finalMovements.push(lastSpotted[0]);
+        // 2) one time-of-day snippet
+        if (timeOfDay.length)   finalMovements.push(timeOfDay[0]);
       }
-      
+
+      // dedupe & assign
       profile.final_movement_patterns = [...new Set(finalMovements)];
-      profile.social_insights_cooccur = [...new Set(profile.social_insights_cooccur)];
-      profile.social_insights_routine = [...new Set(profile.social_insights_routine)];
     });
     
     // Final filter for any (Unknown) names that might have been set initially or if device_name is null/empty
