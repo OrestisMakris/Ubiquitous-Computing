@@ -37,7 +37,7 @@ export default function DashboardOne() {
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        <p className="text-8xl text-[#0017a5] font-bold">
+        <p className="text-4xl text-[#0017a5] font-extrabold">
           📡 UbiComp Live Presence Dashboard
         </p>
         <p className="mt-16 text-sm text-gray-600">
