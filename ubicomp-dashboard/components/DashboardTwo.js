@@ -276,7 +276,7 @@ export default function DashboardTwo() {
             <CardTitle>⏱️ Οπτικοποίηση Πρόσφατης Δραστηριότητας</CardTitle>
             </CardHeader>
             <CardContent>
-            <p className="mb-4 text-lg text-gray-800">
+            <p className="mb-2 text-lg text-gray-600">
                 Μια χρονογραμμή με ανώνυμα “blips” που δείχνουν γεγονότα ανίχνευσης
                 συσκευών τα τελευταία ~15′. Κάθε bar απεικονίζει ένταση ανιχνεύσεων,
                 όχι “νέα” συσκευή.
