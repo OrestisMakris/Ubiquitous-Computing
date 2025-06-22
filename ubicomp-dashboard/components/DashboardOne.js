@@ -37,10 +37,10 @@ export default function DashboardOne() {
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        <p className="text-4xl text-[#0017a5] font-extrabold">
+        <p className="text-5xl text-[#0017a5] font-semibold">
           📡 UbiComp Live Presence Dashboard
         </p>
-        <p className="mt-28 text-sm text-gray-600">
+        <p className="mt-12 text-lg text-gray-600 font-semibold">
           CEID_NE576 — Ubiquitous Computing Live Exercise 2024/25<br/>
           Prof. Andreas Komninos — Authors: Orestis Antonis Makris
         </p>

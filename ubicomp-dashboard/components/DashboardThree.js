@@ -135,7 +135,7 @@ export default function DashboardThree() {
               </CardTitle>
             </CardHeader>
 <CardContent className="p-5 text-base">
-  <div className="grid grid-cols-1 gap-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
       <h4 className="text-lg font-semibold mb-2 flex items-center">
         <span className="mr-2 text-xl">📍</span>Movement Patterns
