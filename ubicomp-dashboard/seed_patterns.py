@@ -89,18 +89,11 @@ def seed_synthetic():
     for p_idx, p in enumerate(all_pseuds):
         fake_name = f"{random.choice(DEVICE_BRANDS)}_{random.choice(GREEK_NAMES)}"
 
-        # 1. Synthetic Movement Patterns (type='last_seen')
-        #    Generate 2-4 "Last spotted at..." messages for ALL devices.
-        num_movement_messages = random.randint(2, 4)
+        num_movement_messages = random.randint(3, 5)
         for _ in range(num_movement_messages):
             spot_building = random.choice(BUILDINGS)
             spot_time = random_time_str()
-            movement_msg = f"Last spotted at {spot_building} around {spot_time}"
-            to_upsert.append((p, fake_name, 'last_seen', movement_msg, now))
-        
-        # 2. Social Insights (type='cooccur')
-        #    This includes SOCIAL_TEMPLATES, COLOCATION_TEMPLATES, DEVICE_JABS
-        #    Aim for 2-4 total cooccur messages, ensuring at least one from SOCIAL_TEMPLATES.
+
         
         selected_cooccur_messages = set() # Use a set to avoid duplicates initially
 
@@ -120,9 +113,9 @@ def seed_synthetic():
         if DEVICE_JABS:
             cooccur_pool.extend([tpl.format(name=fake_name) for tpl in DEVICE_JABS])
         
-        random.shuffle(cooccur_pool) # Shuffle to get variety
+        random.shuffle(cooccur_pool)
 
-        num_total_cooccur_messages = random.randint(2, 4)
+        num_total_cooccur_messages = random.randint(3, 6)
         
         # Fill up to the desired number of cooccur messages
         while len(selected_cooccur_messages) < num_total_cooccur_messages and cooccur_pool:

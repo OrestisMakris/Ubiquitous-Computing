@@ -82,14 +82,18 @@ export default function DashboardThree() {
     let allProfilesArray = Array.from(profilesMap.values());
 
     allProfilesArray.forEach(profile => {
-      let combinedMovements = [];
-      if (profile.real_last_seen_message) { // Real devices get their timestamped "Last Seen"
-        combinedMovements.push(profile.real_last_seen_message);
+      let finalMovements = [];
+      if (profile.is_real_device) {
+        // Real devices ONLY show their real last seen message.
+        if (profile.real_last_seen_message) {
+          finalMovements.push(profile.real_last_seen_message);
+        }
+      } else {
+        // Fake devices show their synthetic movement patterns.
+        finalMovements.push(...profile.synthetic_movement_patterns);
       }
-      // Both real and fake devices get their synthetic movement patterns
-      combinedMovements.push(...profile.synthetic_movement_patterns);
       
-      profile.final_movement_patterns = [...new Set(combinedMovements)];
+      profile.final_movement_patterns = [...new Set(finalMovements)];
       profile.social_insights_cooccur = [...new Set(profile.social_insights_cooccur)];
       profile.social_insights_routine = [...new Set(profile.social_insights_routine)];
     });
