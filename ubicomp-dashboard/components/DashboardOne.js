@@ -37,7 +37,7 @@ export default function DashboardOne() {
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        <p className="text-6xl text-[#0017a5] font-semibold">
+        <p className="text-4xl text-[#0017a5]-500 font-extrabold">
           📡 Live Presence Dashboard 1
         </p>
       </header>
@@ -121,7 +121,7 @@ export default function DashboardOne() {
     </p>
   </CardContent>
 </Card>
-      <footer className="text-center text-base text-gray-500 font-semibold mt-10">
+      <footer className="text-center text-base text-gray-700 font-bold mt-10">
         © 2025 | CEID_NE576 — Ubiquitous Computing Lab Exercise  2024/25<br/>
         👤 Orestis Antonis Makris (AM 1084516) Prof. Andreas Komninos
       </footer>
