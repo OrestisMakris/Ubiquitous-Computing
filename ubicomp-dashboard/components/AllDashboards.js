@@ -25,7 +25,6 @@ export default function AllDashboards() {
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white p-6">
       <Tabs value={tab} onValueChange={setTab}>
         <div className="flex items-center justify-between mb-6">
-          <Image src="/logo.png" alt="Logo" width={60} height={60} />
           <TabsList className="space-x-2">
               <Image src="/logo.png" alt="Logo" width={60} height={60} />
             <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
