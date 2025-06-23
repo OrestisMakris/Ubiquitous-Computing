@@ -23,7 +23,7 @@ export default function AllDashboards() {
         alt="Logo"
         width={32}
         height={32}
-        className="absolute top-4 right-4"
+        className="absolute top-4 left-4"
       />
 
       <Tabs value={tab} onValueChange={setTab}>
