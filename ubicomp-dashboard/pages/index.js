@@ -7,6 +7,7 @@ export default function Home() {
 
       <Head>
         <title>UbiComp Dashboards</title>
+        <link rel="icon" href="/logo.png" />
       </Head>
       <main className="container mx-auto p-6">
         {/**/}
