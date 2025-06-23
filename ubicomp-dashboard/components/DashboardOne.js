@@ -37,12 +37,9 @@ export default function DashboardOne() {
   return (
     <div className="space-y-10">
       <header className="text-center py-6">
-        <div className="flex justify-center items-center gap-4">
-          <Image src="/logo.png" alt="Logo" width={50} height={50} />
-          <p className="text-4xl text-[#0017a5] font-extrabold">
-            📡 Live Presence Dashboard 1
-          </p>
-        </div>
+        <p className="text-4xl text-[#0017a5] font-extrabold">
+          📡 Live Presence Dashboard 1
+        </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
