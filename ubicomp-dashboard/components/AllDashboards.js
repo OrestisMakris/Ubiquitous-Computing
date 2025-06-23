@@ -27,6 +27,7 @@ export default function AllDashboards() {
         <div className="flex items-center justify-between mb-6">
           <Image src="/logo.png" alt="Logo" width={60} height={60} />
           <TabsList className="space-x-2">
+              <Image src="/logo.png" alt="Logo" width={60} height={60} />
             <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
             <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
             <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
