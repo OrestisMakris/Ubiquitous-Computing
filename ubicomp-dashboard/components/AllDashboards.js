@@ -24,12 +24,11 @@ export default function AllDashboards() {
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white p-6">
       <Tabs value={tab} onValueChange={setTab}>
         {/* This div is the key: it's a flex container that aligns its children horizontally */}
-        <div className="flex items-center justify-between mb-6">
-          {/* Child 1: The Logo (resized for better alignment) */}
-          <Image src="/logo.png" alt="Logo" width={40} height={40} />
+<div className="flex items-center gap-4 mb-6">
+  <Image src="/logo.png" alt="Logo" width={32} height={32} />
 
           {/* Child 2: The list of tabs */}
-          <TabsList className="space-x-2">
+  <TabsList className="flex items-center space-x-2">
             <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
             <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
             <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
