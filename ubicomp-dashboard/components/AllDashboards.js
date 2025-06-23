@@ -22,23 +22,22 @@ export default function AllDashboards() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white p-6">
-      <Tabs value={tab} onValueChange={setTab}>
-        <div className="flex items-center mb-6">
-          {/* Logo on left */}
-          <Image src="/logo.png" alt="Logo" width={32} height={32} />
+<Tabs value={tab} onValueChange={setTab}>
+  <div className="flex flex-row flex-nowrap items-center gap-4 mb-6">
+    <Image src="/logo.png" alt="Logo" width={32} height={32} />
 
-          {/* Tabs sit immediately to its right */}
-          <TabsList className="inline-flex items-center ml-4 space-x-2">
-            <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
-            <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
-            <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
-          </TabsList>
-        </div>
+    {/* make sure this is also a row, not a column */}
+    <TabsList className="flex flex-row flex-nowrap items-center gap-2">
+      <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
+      <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
+      <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
+    </TabsList>
+  </div>
 
-        {/* Tab 1 */}
-        <TabsContent value="d1">
-          <DashboardOne />
-        </TabsContent>
+  <TabsContent value="d1">
+    <DashboardOne />
+  </TabsContent>
+  …
 
         {/* Tab 2: only mount when active */}
         <TabsContent value="d2">
