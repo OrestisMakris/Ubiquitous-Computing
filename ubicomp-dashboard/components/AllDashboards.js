@@ -23,8 +23,8 @@ export default function AllDashboards() {
           <Image
             src="/logo.png"
             alt="Logo"
-            width={64}
-            height={64}
+            width={100}
+            height={100}
             className="mb-4"
           />
           <TabsList className="space-x-4">
