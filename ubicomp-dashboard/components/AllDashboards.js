@@ -31,6 +31,7 @@ export default function AllDashboards() {
             alt="Logo"
             width={60}
             height={60}
+            className="mr-50"
           />
         </div>
 
