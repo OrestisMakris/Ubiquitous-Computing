@@ -23,7 +23,8 @@ export default function AllDashboards() {
         alt="Logo"
         width={32}
         height={32}
-        className="absolute top-4 right-400"
+        className="absolute"
+        style={{ top: '16px', right: '16px', zIndex: 50 }}
       />
 
       <Tabs value={tab} onValueChange={setTab}>
