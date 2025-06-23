@@ -17,24 +17,22 @@ export default function AllDashboards() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-100 to-white p-6">
-            <div className="absolute top-4 right-4 z-50">
-      <Image
-        src="/logo.png"
-        alt="Logo"
-        width={32}
-        height={32}
-        className="absolute"
-        style={{ top: '50px', right: '130px', zIndex: 50 }}
-      />
-      </div>
-
       <Tabs value={tab} onValueChange={setTab}>
-        {/* Centered tabs */}
-        <TabsList className="flex justify-center mb-6 space-x-4">
-          <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
-          <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
-          <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
-        </TabsList>
+        {/* Logo and tabs centered together */}
+        <div className="flex flex-col items-center mb-6">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={64}
+            height={64}
+            className="mb-4"
+          />
+          <TabsList className="space-x-4">
+            <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
+            <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
+            <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="d1">
           <DashboardOne />
