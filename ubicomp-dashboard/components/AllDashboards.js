@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import {
   Tabs,
   TabsList,
@@ -23,11 +24,14 @@ export default function AllDashboards() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white p-6">
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="mb-6 space-x-2">
-          <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
-          <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
-          <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between mb-6">
+          <Image src="/logo.png" alt="Logo" width={60} height={60} />
+          <TabsList className="space-x-2">
+            <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
+            <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
+            <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Tab 1 */}
         <TabsContent value="d1">
