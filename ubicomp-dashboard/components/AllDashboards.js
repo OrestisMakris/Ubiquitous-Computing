@@ -18,20 +18,20 @@ export default function AllDashboards() {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-100 to-white p-6">
       <Tabs value={tab} onValueChange={setTab}>
-        {/* Logo and tabs centered together */}
-        <div className="flex flex-col items-center mb-6">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={100}
-            height={100}
-            className="mb-4"
-          />
+        {/* Logo on right, tabs on left */}
+        <div className="flex items-center justify-between mb-6">
           <TabsList className="space-x-4">
             <TabsTrigger value="d1">📊 Snapshot Overview</TabsTrigger>
             <TabsTrigger value="d2">📈 Pattern Observer</TabsTrigger>
             <TabsTrigger value="d3">🕵️‍♂️ Big Brother</TabsTrigger>
           </TabsList>
+          
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={60}
+            height={60}
+          />
         </div>
 
         <TabsContent value="d1">
