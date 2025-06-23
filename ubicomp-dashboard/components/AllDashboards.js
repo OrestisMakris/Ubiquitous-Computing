@@ -17,7 +17,7 @@ export default function AllDashboards() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-100 to-white p-6">
-      {/* Logo in top-right corner */}
+            <div className="absolute top-4 right-4 z-50">
       <Image
         src="/logo.png"
         alt="Logo"
@@ -26,6 +26,7 @@ export default function AllDashboards() {
         className="absolute"
         style={{ top: '16px', right: '1600px', zIndex: 50 }}
       />
+      </div>
 
       <Tabs value={tab} onValueChange={setTab}>
         {/* Centered tabs */}
