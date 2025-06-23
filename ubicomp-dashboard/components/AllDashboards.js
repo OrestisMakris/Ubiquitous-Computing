@@ -24,7 +24,7 @@ export default function AllDashboards() {
         width={32}
         height={32}
         className="absolute"
-        style={{ top: '16px', right: '16px', zIndex: 50 }}
+        style={{ top: '16px', right: '1600px', zIndex: 50 }}
       />
 
       <Tabs value={tab} onValueChange={setTab}>
